@@ -8,6 +8,7 @@
  *
  * 위는 "어디서든 같은 것"(찾기 · 조건 · 알림 · 나), 왼쪽 사이드바는 "어디로 가나"(메뉴)만 맡는다.
  * 사이드바와 같은 어두운 초록으로 ㄱ자 틀을 만들고, 한 단 짙게 해 둘을 가른다.
+ * 브랜드는 글자만 둔다(2026-09-28 로고 타일 제거) — 기호는 브라우저 탭의 파비콘(쉼표)이 맡는다.
  * 테마 버튼을 따로 둔다 — 사용자 메뉴 안에만 있을 때 다크 전환을 찾지 못했다.
  */
 import { computed, defineAsyncComponent, ref } from 'vue'
@@ -54,7 +55,6 @@ const meItems = computed<PvItem[]>(() => [
       <AppIcon name="menu" :size="20" />
     </button>
     <RouterLink :to="sys.home" class="tp__brand" :aria-label="`${sys.label} — 첫 화면`">
-      <span class="tp__logo" aria-hidden="true">지</span>
       <span class="tp__name">{{ sys.label }}</span>
     </RouterLink>
 
@@ -94,7 +94,8 @@ const meItems = computed<PvItem[]>(() => [
 
 <style scoped>
 .tp {
-  display: flex; align-items: center; gap: 8px; height: var(--ws-top-h); padding: 0 12px 0 8px;
+  /* 왼쪽 14 — ☰(36) 가운데가 32px에 온다. 사이드바 아이콘 가운데(펼침 · 레일 모두 32)와 한 세로줄 */
+  display: flex; align-items: center; gap: 8px; height: var(--ws-top-h); padding: 0 12px 0 14px;
   background: var(--ws-top-bg); color: var(--ws-top-fg); border-bottom: 1px solid var(--ws-top-line);
 }
 .tp__ib {
@@ -108,7 +109,6 @@ const meItems = computed<PvItem[]>(() => [
   background: none; color: var(--ws-top-fg); font: inherit; text-decoration: none;
 }
 .tp__brand:hover { text-decoration: none; }
-.tp__logo { display: grid; place-items: center; width: 28px; height: 28px; border-radius: var(--ws-radius); background: var(--ws-brand); color: #fff; font-size: 11px; font-weight: 700; }
 .tp__name { font-size: 15px; font-weight: 700; white-space: nowrap; }
 .tp__r { margin-left: auto; display: flex; align-items: center; gap: 4px; }
 .tp__ctx { margin-right: 8px; }

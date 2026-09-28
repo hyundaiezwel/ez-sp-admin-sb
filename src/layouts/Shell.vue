@@ -163,14 +163,15 @@ const fmt = (n: number) => (n > 999 ? '999+' : String(n))
 
 /* 행 40 · 아이콘 상자 20 고정 — 라벨 시작점이 한 축에 선다(DS1 navigation.md §2-3) */
 .sd__row {
-  position: relative; display: flex; align-items: center; gap: 8px; width: 100%; height: 40px; padding: 0 12px;
+  position: relative; display: flex; align-items: center; gap: 8px; width: 100%; height: 40px; padding: 0 12px 0 14px;
   border: 0; border-radius: var(--ws-radius); background: none; color: var(--ws-side-fg);
   font: inherit; text-align: left; text-decoration: none; cursor: pointer;
 }
 .sd__row:hover { background: var(--ws-side-hover); text-decoration: none; }
 .sd__ic { flex: none; display: grid; place-items: center; width: 20px; }
 .sd__lb { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.sd__row--sub { height: 36px; padding-left: 40px; color: var(--ws-side-sub); font-size: var(--ws-font-size-md); }
+/* 아이콘 가운데 = 8 + 14 + 10 = 32 — 레일(64 ÷ 2)과 같아 접어도 아이콘이 제자리다. 상단바 ☰도 32에 맞췄다 */
+.sd__row--sub { height: 36px; padding-left: 42px; color: var(--ws-side-sub); font-size: var(--ws-font-size-md); }
 .sd__row.is-on { background: var(--ws-side-on-bg); color: var(--ws-text-inverse); font-weight: 700; box-shadow: inset 3px 0 0 var(--ws-brand); }
 .sd__row.is-within { color: var(--ws-text-inverse); font-weight: 700; }
 .sd__chev { flex: none; color: var(--ws-side-muted); transition: transform 0.15s; }
