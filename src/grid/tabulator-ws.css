@@ -55,8 +55,10 @@
 .ws-datagrid .tabulator-header-filter select {
   height: 26px; padding: 0 6px;
   border: 1px solid var(--ws-field-border); border-radius: var(--ws-radius-sm);
-  background: var(--ws-surface); font-size: var(--ws-font-size-sm);
+  background: var(--ws-field-bg); box-shadow: var(--ws-field-inset); font-size: var(--ws-font-size-sm);
 }
+.ws-datagrid .tabulator-header-filter input:focus,
+.ws-datagrid .tabulator-header-filter select:focus { background: var(--ws-surface); box-shadow: 0 0 0 1px var(--ws-field-border-focus); border-color: var(--ws-field-border-focus); outline: none; }
 
 /* --- 본문 ------------------------------------------------------------------ */
 .ws-datagrid .tabulator-row,

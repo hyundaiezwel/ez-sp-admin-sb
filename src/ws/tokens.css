@@ -69,6 +69,10 @@
   --ws-field-border-focus: #008472;
   /* 캔버스 위에 바로 놓이는 컨트롤(대시보드 기간 선택기 등). #939393은 캔버스에서 2.84라 미달 */
   --ws-field-border-canvas: #8a8a8a;
+  /* 입력 칸 안 — D8 F2(2026-09-28). 한 단 칠하고 위쪽 안쪽 그림자로 오목하게. 포커스를 받으면 흰 칸으로 돌아온다.
+     흐린 글자(placeholder) 4.64 · 본문 14.69 */
+  --ws-field-bg: #f4f6f8;
+  --ws-field-inset: inset 0 1px 3px rgb(0 0 0 / 0.12);
 
   /* --- 액션 ---------------------------------------------------------------
    * **주버튼이 둘이다.** 원본 규칙 그대로다.
@@ -262,6 +266,8 @@
   --ws-field-border: #707b83;
   --ws-field-border-focus: #4ccab4;
   --ws-field-border-canvas: #707b83;
+  --ws-field-bg: #15191c;        /* 면(#1b2024)보다 한 단 어둡게 — 오목 */
+  --ws-field-inset: inset 0 1px 3px rgb(0 0 0 / 0.45);
 
   --ws-action-primary: #d6dce0;
   --ws-action-primary-hover: #eef1f3;

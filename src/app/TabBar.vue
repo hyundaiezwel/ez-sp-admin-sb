@@ -69,6 +69,7 @@ const active = computed(() => tabs.active)
 .tb__scroll::-webkit-scrollbar { display: none; }
 
 .tb__item {
+  position: relative;
   flex: none;
   width: var(--tab-w);
   display: flex;
@@ -76,7 +77,7 @@ const active = computed(() => tabs.active)
   gap: 4px;
   height: calc(var(--ws-tab-h) + 1px);
   margin-bottom: -1px; /* 밑줄을 덮는다 */
-  padding: 0 8px 0 14px;
+  padding: 0 30px; /* D7 T3 — 좌우 같게, 이름이 가운데 */
   border: 1px solid transparent;
   border-bottom: 0;
   border-radius: var(--ws-radius) var(--ws-radius) 0 0;
@@ -90,8 +91,12 @@ const active = computed(() => tabs.active)
   color: var(--ws-text);
   font-weight: 700;
 }
-.tb__label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.tb__x { flex: none; display: grid; place-items: center; width: 20px; height: 20px; border: 0; border-radius: var(--ws-radius-sm); background: none; color: var(--ws-text-muted); cursor: pointer; }
+/* D7 T3(2026-09-28) — 이름은 탭 가운데. 좌우 안쪽 여백을 30으로 같게 두고 닫기는 오른쪽에 띄운다(이름 폭을 먹지 않게).
+   닫기는 활성 탭 · 올렸을 때 · 키보드로 들어왔을 때만 보인다 — 쉬는 탭 줄이 조용해진다 */
+.tb__label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; }
+.tb__x { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); display: grid; place-items: center; width: 20px; height: 20px; border: 0; border-radius: var(--ws-radius-sm); background: none; color: var(--ws-text-muted); cursor: pointer; }
+.tb__item:not(.is-on):not(:hover):not(:focus-within) .tb__x { opacity: 0; }
+.tb__x:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--ws-field-border-focus); }
 .tb__x:hover { background: var(--ws-surface-alt); color: var(--ws-text); }
 .tb__nav { flex: none; width: 24px; height: var(--ws-tab-h); border: 0; background: none; color: var(--ws-text-sub); font-size: 18px; cursor: pointer; }
 </style>

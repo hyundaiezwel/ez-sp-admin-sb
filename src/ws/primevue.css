@@ -39,7 +39,8 @@
 .p-button.ws-line { border-radius: var(--ws-radius-pill); }
 .p-button.ws-line .p-button-label { font-weight: 400; }
 
-/* 포커스 — 우리 링을 쓴다 */
+/* 포커스 — 우리 링을 쓴다. 입력 칸(D8 F2)은 포커스를 받으면 음영 · 안쪽 그림자를 걷고 흰 칸이 된다 — "지금 여기"를 또렷하게 */
+.p-inputtext:focus, .p-textarea:focus, .p-select.p-focus, .p-multiselect.p-focus, .p-autocomplete-input-multiple:focus-within { background: var(--ws-surface); }
 .p-inputtext:focus-visible, .p-select.p-focus, .p-multiselect.p-focus { box-shadow: 0 0 0 1px var(--ws-field-border-focus); }
 .p-button:focus-visible { outline: none; box-shadow: var(--ws-focus-ring); }
 

@@ -53,6 +53,9 @@ const PAIRS = [
   ['--ws-field-border-canvas', '--ws-canvas', UI],
   // 컨트롤 경계 — 1.4.11
   ['--ws-field-border', '--ws-surface', UI],
+  // 입력 칸 안(D8 F2 음영) — 글자 · 흐린 글자(placeholder)
+  ['--ws-text', '--ws-field-bg', TEXT],
+  ['--ws-text-muted', '--ws-field-bg', TEXT],
   ['--ws-field-border-focus', '--ws-surface', UI],
   // 셸 — 어두운 레일 위 흰 글자 · 흐린 아이콘
   ['--ws-text-inverse', '--ws-shell-rail-bg', TEXT],

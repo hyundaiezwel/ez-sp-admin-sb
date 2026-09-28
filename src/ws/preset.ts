@@ -41,7 +41,7 @@ const scheme = {
   },
   mask: { background: 'rgb(0 0 0 / 0.4)', color: 'var(--ws-text)' },
   formField: {
-    background: 'var(--ws-surface)',
+    background: 'var(--ws-field-bg)',
     disabledBackground: 'var(--ws-surface-alt)',
     filledBackground: 'var(--ws-surface-alt)',
     filledHoverBackground: 'var(--ws-surface-alt)',
@@ -59,7 +59,7 @@ const scheme = {
     floatLabelActiveColor: 'var(--ws-text-muted)',
     floatLabelInvalidColor: 'var(--ws-text-danger)',
     iconColor: 'var(--ws-text-muted)',
-    shadow: 'none',
+    shadow: 'var(--ws-field-inset)',
   },
   text: {
     color: 'var(--ws-text)',
