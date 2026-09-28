@@ -1,6 +1,6 @@
 import { reactive, readonly } from 'vue'
 import type { Router } from 'vue-router'
-import { SYSTEMS, systemOf, titleOf, type SystemDef } from './menu'
+import { SYSTEM, titleOf } from './menu'
 
 /**
  * 멀티 탭 상태.
@@ -17,17 +17,12 @@ export interface Tab {
   fixed?: boolean
 }
 
-/**
- * 탭 목록은 **시스템마다 따로** 둔다. 샘플 화면과 지원 사업 미리보기를 오가도 각자 열어 둔
- * 탭이 남는다. 고정 탭은 그 시스템의 첫 화면이다.
- */
-const home = (sys: SystemDef): Tab => ({ path: sys.home, title: titleOf(sys.home), fixed: true })
-const state = reactive<{ lists: Record<string, Tab[]>; sys: string; active: string }>({
-  lists: Object.fromEntries(SYSTEMS.map((s) => [s.id, [home(s)]])),
-  sys: 'sample',
-  active: '/',
+/** 고정 탭은 첫 화면(업무 현황)이다 */
+const state = reactive<{ items: Tab[]; active: string }>({
+  items: [{ path: SYSTEM.home, title: titleOf(SYSTEM.home), fixed: true }],
+  active: SYSTEM.home,
 })
-const list = () => state.lists[state.sys]
+const list = () => state.items
 
 export const tabs = readonly({
   get items() { return list() },
@@ -35,7 +30,6 @@ export const tabs = readonly({
 })
 
 export function open(path: string) {
-  state.sys = systemOf(path).id
   if (!list().some((t) => t.path === path)) {
     list().push({ path, title: titleOf(path) })
   }
@@ -56,6 +50,6 @@ export function close(path: string, router: Router) {
 }
 
 export function closeOthers(path: string, router: Router) {
-  state.lists[state.sys] = list().filter((t) => t.fixed || t.path === path)
+  state.items = list().filter((t) => t.fixed || t.path === path)
   if (state.active !== path) router.push(path)
 }

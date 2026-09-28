@@ -1,5 +1,7 @@
 /* 기본 — 원본 base.css의 전역 규칙 중 화면 생김새를 정하는 것만 옮긴다 */
-@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
+/* 글꼴 — Inter(라틴 · 숫자) + Noto Sans KR(한글). 2026-09-28 Pretendard에서 바꿨다: Pretendard는 이 둘을 뿌리로 한
+   합본이라 생김새가 가깝고, Google Fonts라 Artifact 시안과 앱이 같은 글꼴로 그려진다. 한글은 unicode-range 조각으로 받는다 */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Noto+Sans+KR:wght@400..700&display=swap');
 
 /* 우선순위 — 초기화 < PrimeVue < 우리 보정(레이어 밖).
    초기화를 레이어 밖에 두면 `button { color: inherit }` 같은 규칙이 PrimeVue 버튼 색까지

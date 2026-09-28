@@ -4,8 +4,8 @@ import { titleOf } from './app/menu'
 
 /**
  * 해시 히스토리 — GitHub Pages는 정적 호스팅이라 깊은 주소를 새로고침하면 404가 난다.
- * 샘플 화면은 DS1과 **같은 열 개**다. 두 디자인 시스템을 같은 화면으로 나란히 비교하기 위해서다.
- * `/sp`는 지원 사업 관리 미리보기다 — 같은 셸이 두 시스템을 싣는다(menu.ts `SYSTEMS`).
+ * 시스템은 지원 사업 관리 하나다. 2026-09-28 관리자 센터(DS1과 같은 샘플 열 장)를 없애고
+ * 대시보드 · 통계 · 공통코드 · 카탈로그만 `/sp` 아래로 옮겼다. 샘플 열 장은 태그 `ds3-admin-center`에 있다.
  */
 const routes: RouteRecordRaw[] = [
   { path: '/login', component: () => import('./pages/LoginPage.vue') },
@@ -13,17 +13,13 @@ const routes: RouteRecordRaw[] = [
     path: '/',
     component: Shell,
     children: [
-      { path: '', component: () => import('./pages/DashboardPage.vue') },
-      { path: 'cs/inquiries', component: () => import('./pages/InquiryPage.vue') },
-      { path: 'cs/members', component: () => import('./pages/MemberPage.vue') },
-      { path: 'sales/promotions', component: () => import('./pages/PromotionPage.vue') },
-      { path: 'sales/orders', component: () => import('./pages/OrderPage.vue') },
-      { path: 'sales/products', component: () => import('./pages/ProductFormPage.vue') },
-      { path: 'stats', component: () => import('./pages/StatsPage.vue') },
-      { path: 'system/catalog', component: () => import('./pages/CatalogPage.vue') },
-      { path: 'system/codes', component: () => import('./pages/CodePage.vue') },
+      { path: '', redirect: '/sp/home' },
       // 지원 사업 관리 — IA 확정 전 미리보기. 제안 메뉴는 src/sp/menu.ts
       { path: 'sp', component: () => import('./pages/sp/IaPage.vue') },
+      { path: 'sp/home', component: () => import('./pages/sp/HomePage.vue') },
+      { path: 'sp/usage-stats', component: () => import('./pages/sp/UsageStatsPage.vue') },
+      { path: 'sp/codes', component: () => import('./pages/sp/CodePage.vue') },
+      { path: 'sp/catalog', component: () => import('./pages/CatalogPage.vue') },
       { path: 'sp/elements', component: () => import('./pages/sp/ElementsPage.vue') },
       { path: 'sp/intake', component: () => import('./pages/sp/IntakePage.vue') },
       { path: 'sp/basic-info', component: () => import('./pages/sp/BasicInfoPage.vue') },
@@ -44,7 +40,7 @@ const routes: RouteRecordRaw[] = [
       { path: 'sp/p/:id', component: () => import('./pages/sp/PendingPage.vue') },
     ],
   },
-  { path: '/:pathMatch(.*)*', redirect: '/' },
+  { path: '/:pathMatch(.*)*', redirect: '/sp/home' },
 ]
 
 export const router = createRouter({ history: createWebHashHistory(), routes, scrollBehavior: () => ({ top: 0 }) })

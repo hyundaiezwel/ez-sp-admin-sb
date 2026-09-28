@@ -2,7 +2,7 @@
 /**
  * 앱 셸 — D6 A: 전폭 상단바 + 메뉴 사이드바(2026-09-28, D2 A '머리줄 없는 사이드바'를 뒤집었다).
  *
- *   상단바(TopBar)  접기 · 브랜드(시스템 전환) · 통합 검색 · 전역 조건 · 테마 · 알림 · 사용자
+ *   상단바(TopBar)  접기 · 브랜드 · 통합 검색 · 전역 조건 · 테마 · 알림 · 사용자
  *   사이드바        메뉴만 — 남는 공간을 전부 먹고 넘치면 여기만 스크롤. 바닥에 시스템 링크
  *   본문            탭줄 → 화면(KeepAlive)
  *
@@ -11,9 +11,9 @@
  * 접으면 64px 레일(240 ÷ 3.75). 라벨을 자르지 않고 하위는 펼침 메뉴로 낸다. 색은 원본 레일(#2a403d),
  * 상단바는 한 단 짙게(#1f2d2b) — 두 테마 모두 어둡다.
  */
-import { computed, defineAsyncComponent, ref, watch } from 'vue'
+import { defineAsyncComponent, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { systemOf, groupCount, type MenuItem } from '../app/menu'
+import { SYSTEM as sys, groupCount, type MenuItem } from '../app/menu'
 import TopBar from '../app/TopBar.vue'
 import { open as openTab } from '../app/tabs'
 import AppIcon from '../app/AppIcon.vue'
@@ -28,9 +28,7 @@ const KEY = 'ds3-rail'
 const rail = ref((() => { try { return localStorage.getItem(KEY) === '1' } catch { return false } })())
 watch(rail, (v) => { try { localStorage.setItem(KEY, v ? '1' : '0') } catch { /* 이번 방문만 */ } })
 
-/** 지금 셸이 싣고 있는 시스템 — 주소가 정한다 */
-const sys = computed(() => systemOf(route.path))
-const MENU_ = computed(() => sys.value.menu)
+const MENU_ = sys.menu
 
 const expanded = ref<Set<string>>(new Set())
 const flyout = ref<string | null>(null)
@@ -39,7 +37,7 @@ watch(
   () => route.path,
   (p) => {
     openTab(p)
-    const top = systemOf(p).menu.find((m) => m.children?.some((c) => c.to === p || p.startsWith(c.to + '/')))
+    const top = sys.menu.find((m) => m.children?.some((c) => c.to === p || p.startsWith(c.to + '/')))
     if (top) expanded.value = new Set([...expanded.value, top.id])
     flyout.value = null
   },
@@ -64,7 +62,7 @@ const fmt = (n: number) => (n > 999 ? '999+' : String(n))
   <div class="sh" :class="{ 'is-rail': rail }">
     <a class="ws-skip" href="#main">본문 바로가기</a>
 
-    <TopBar v-model:rail="rail" :sys="sys" class="sh-top" />
+    <TopBar v-model:rail="rail" class="sh-top" />
 
     <nav class="sd" aria-label="주 메뉴">
       <!-- 주 메뉴 — 남는 공간을 전부 먹는다. 넘치면 여기만 스크롤 -->
@@ -204,6 +202,8 @@ const fmt = (n: number) => (n > 999 ? '999+' : String(n))
 
 /* --- 본문 ----------------------------------------------------------------- */
 .sh-main { min-width: 0; min-height: 0; display: flex; flex-direction: column; }
-.sh-scroll { flex: 1; min-height: 0; overflow: auto; background: var(--ws-surface); }
+/* position: relative — 표 caption의 .ws-sr-only(absolute)가 이 영역을 기준으로 잡혀야 잘린다. 없으면 문서 높이를
+   늘려(900 → 1419) 본문 스크롤이 끝난 뒤 바깥 문서가 이어 밀리고 상단바가 화면 밖으로 올라갔다 */
+.sh-scroll { position: relative; flex: 1; min-height: 0; overflow: auto; background: var(--ws-surface); }
 .sh-scroll:focus { outline: none; }
 </style>

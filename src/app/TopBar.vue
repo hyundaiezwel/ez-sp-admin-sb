@@ -2,9 +2,9 @@
 /**
  * 상단바 — D6 A 전폭(2026-09-28 결정: A안 · 사용자 상단 · 통합 검색 · 어두운 틀).
  *
- *   왼쪽   접기 · 브랜드(누르면 시스템 전환)
+ *   왼쪽   접기 · 브랜드(누르면 첫 화면)
  *   가운데 통합 검색 — `/` · ⌘K
- *   오른쪽 전역 조건(지원 사업만) · 테마 · 알림 · 사용자
+ *   오른쪽 전역 조건 · 테마 · 알림 · 사용자
  *
  * 위는 "어디서든 같은 것"(찾기 · 조건 · 알림 · 나), 왼쪽 사이드바는 "어디로 가나"(메뉴)만 맡는다.
  * 사이드바와 같은 어두운 초록으로 ㄱ자 틀을 만들고, 한 단 짙게 해 둘을 가른다.
@@ -17,22 +17,14 @@ import type { MenuItem as PvItem } from 'primevue/menuitem'
 import Popover from 'primevue/popover'
 import AppIcon from './AppIcon.vue'
 import GlobalSearch from './GlobalSearch.vue'
-import { SYSTEMS, type SystemDef } from './menu'
+import { PENDING, SYSTEM as sys } from './menu'
 import { prefs, type Theme } from './theme'
 import { previewExpiry } from './session'
-// 지원 사업에서만 쓴다 — 정적으로 물면 Select · Popover가 첫 로드에 실린다
+// 늦게 싣는다 — 정적으로 물면 Select · Popover가 첫 로드에 실린다
 const SpContext = defineAsyncComponent(() => import('../sp/SpContext.vue'))
 
-const props = defineProps<{ sys: SystemDef }>()
 const rail = defineModel<boolean>('rail', { required: true })
 const router = useRouter()
-
-/* 시스템 전환 */
-const sysMenu = ref<InstanceType<typeof Menu> | null>(null)
-const sysItems = computed(() => [{
-  label: '시스템',
-  items: SYSTEMS.map((s) => ({ label: s.id === 'sp' ? `${s.label} (미리보기)` : s.label, icon: props.sys.id === s.id ? 'ws-check' : 'ws-blank', command: () => router.push(s.home) })),
-}])
 
 /* 테마 — 버튼은 라이트 ↔ 다크만 뒤집는다. "시스템 따르기"는 사용자 메뉴에 */
 const dark = computed(() => prefs.resolved === 'dark')
@@ -40,8 +32,8 @@ const flipTheme = () => { prefs.theme = dark.value ? 'light' : 'dark' }
 
 /* 알림 — 메뉴의 처리 대기 건수를 모아 보인다(목업) */
 const bell = ref<InstanceType<typeof Popover> | null>(null)
-const notes = computed(() => [...props.sys.menu, ...props.sys.foot].flatMap((m) => (m.children ?? [m]).filter((c) => c.count).map((c) => ({ label: c.label, group: m.children ? m.label : '', count: c.count!, to: c.to! }))))
-const total = computed(() => notes.value.reduce((s, n) => s + n.count, 0))
+const notes = PENDING
+const total = notes.reduce((s, n) => s + n.count, 0)
 
 /* 사용자 */
 const me = ref<InstanceType<typeof Menu> | null>(null)
@@ -61,19 +53,16 @@ const meItems = computed<PvItem[]>(() => [
     <button type="button" class="tp__ib" :aria-label="rail ? '메뉴 펼치기' : '메뉴 접기'" :aria-expanded="!rail" v-tooltip.bottom="rail ? '메뉴 펼치기' : '메뉴 접기'" @click="rail = !rail">
       <AppIcon name="menu" :size="20" />
     </button>
-    <button type="button" class="tp__brand" aria-haspopup="menu" :aria-label="`${sys.label} — 시스템 전환`" @click="(e) => sysMenu?.toggle(e)">
-      <span class="tp__logo" aria-hidden="true">{{ sys.id === 'sp' ? '지' : 'EZ' }}</span>
+    <RouterLink :to="sys.home" class="tp__brand" :aria-label="`${sys.label} — 첫 화면`">
+      <span class="tp__logo" aria-hidden="true">지</span>
       <span class="tp__name">{{ sys.label }}</span>
-      <AppIcon name="chevron" :size="14" class="tp__chev" />
-    </button>
-    <Menu ref="sysMenu" :model="sysItems" popup>
-      <template #itemicon="{ item }"><span class="me-ic" aria-hidden="true">{{ item.icon === 'ws-check' ? '✓' : '' }}</span></template>
-    </Menu>
+    </RouterLink>
 
-    <GlobalSearch :sys="sys" class="tp__search" />
+    <GlobalSearch class="tp__search" />
 
     <div class="tp__r">
-      <SpContext v-if="sys.id === 'sp'" class="tp__ctx" />
+      <!-- SpContext는 칩 + 팝오버 두 뿌리라 class가 붙지 않는다 — 감싸서 아래 :deep 보정이 걸리게 한다 -->
+      <div class="tp__ctx"><SpContext /></div>
       <button type="button" class="tp__ib" :aria-label="dark ? '라이트 테마로' : '다크 테마로'" v-tooltip.bottom="dark ? '라이트 테마로' : '다크 테마로'" @click="flipTheme">
         <AppIcon :name="dark ? 'sun' : 'moon'" :size="18" />
       </button>
@@ -116,11 +105,11 @@ const meItems = computed<PvItem[]>(() => [
 .tp__ib:focus-visible, .tp__brand:focus-visible, .tp__me:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--ws-top-fg); }
 .tp__brand {
   flex: none; display: flex; align-items: center; gap: 10px; height: 36px; padding: 0 8px; margin-right: 16px; border: 0; border-radius: var(--ws-radius);
-  background: none; color: var(--ws-top-fg); font: inherit; cursor: pointer;
+  background: none; color: var(--ws-top-fg); font: inherit; text-decoration: none;
 }
+.tp__brand:hover { text-decoration: none; }
 .tp__logo { display: grid; place-items: center; width: 28px; height: 28px; border-radius: var(--ws-radius); background: var(--ws-brand); color: #fff; font-size: 11px; font-weight: 700; }
 .tp__name { font-size: 15px; font-weight: 700; white-space: nowrap; }
-.tp__chev { color: var(--ws-top-muted); }
 .tp__r { margin-left: auto; display: flex; align-items: center; gap: 4px; }
 .tp__ctx { margin-right: 8px; }
 .tp__dot {

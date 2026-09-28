@@ -100,7 +100,10 @@ const merged = computed(() => {
   // "yAxis 0 not found"로 setOption이 중간에 죽는다 — 그 뒤로 이 인스턴스는 계속 "main process" 오류를 낸다
   const withAxis = (a: any) => (a ? (Array.isArray(a) ? a.map((x) => ({ ...axis, ...x })) : { ...axis, ...a }) : undefined)
 
+  // 화면이 준 옵션을 **먼저** 편다. 뒤에 펴면 legend · tooltip · grid 원본이 아래 병합본을 덮어
+  // 글자색 · 배경이 ECharts 기본값(#333 · 흰 바탕)으로 돌아간다 — 다크에서 범례가 안 읽혔다
   return {
+    ...props.option,
     color: palette,
     backgroundColor: 'transparent',
     textStyle: { fontFamily: token('--ws-font'), color: text },
@@ -110,9 +113,9 @@ const merged = computed(() => {
       textStyle: { color: text, fontSize: 12 },
       ...(props.option.tooltip ?? {}),
     },
-    legend: { textStyle: { color: muted, fontSize: 11 }, icon: 'roundRect', ...(props.option.legend ?? {}) },
+    // 범례는 위가 기본이다(grid top 28이 그 자리). 아래에 두려면 화면이 bottom을 준다
+    legend: { textStyle: { color: muted, fontSize: 11 }, icon: 'roundRect', ...(props.option.legend?.bottom == null ? { top: 0 } : {}), ...(props.option.legend ?? {}) },
     grid: { left: 48, right: 16, top: 28, bottom: 28, ...(props.option.grid ?? {}) },
-    ...props.option,
     series: withSeparators(props.option.series, surface),
     xAxis: withAxis(props.option.xAxis),
     yAxis: withAxis(props.option.yAxis),

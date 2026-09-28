@@ -22,58 +22,17 @@ export interface MenuItem {
   built?: boolean
 }
 
-export const MENU: MenuItem[] = [
-  { id: 'dashboard', label: '대시보드', to: '/', icon: 'grid' },
-  {
-    id: 'cs',
-    label: '고객 지원',
-    icon: 'chat',
-    children: [
-      { id: 'inquiries', label: '문의 답변 관리', to: '/cs/inquiries', count: 12 },
-      { id: 'members', label: '회원 관리', to: '/cs/members' },
-    ],
-  },
-  {
-    id: 'sales',
-    label: '영업 관리',
-    icon: 'cart',
-    children: [
-      { id: 'promotions', label: '프로모션 등록·관리', to: '/sales/promotions' },
-      { id: 'orders', label: '주문·정산 관리', to: '/sales/orders' },
-      { id: 'products', label: '상품 등록·수정', to: '/sales/products' },
-    ],
-  },
-  { id: 'stats', label: '통계', to: '/stats', icon: 'chart' },
-  {
-    id: 'system',
-    label: '시스템 관리',
-    icon: 'cog',
-    children: [
-      { id: 'catalog', label: '컴포넌트 카탈로그', to: '/system/catalog' },
-      { id: 'codes', label: '공통코드', to: '/system/codes' },
-    ],
-  },
-]
-
 /**
- * 하단 고정 구역. 주 메뉴와 성격이 달라서 자리도 다르다 —
- * "어디로 가나"가 아니라 "시스템에 관한 것"이다. 메뉴가 길어져도 바닥에 붙어 있다.
+ * 시스템 — 지원 사업 관리 하나다(2026-09-28 관리자 센터 폐기). 관리자 센터의 대시보드 · 통계 ·
+ * 시스템 관리는 지원 사업 메뉴로 옮겼다(`sp/menu.ts`). 같은 셸이 두 시스템을 싣던 전환은 없앴다.
  */
-export const MENU_FOOT: MenuItem[] = [
-  { id: 'help', label: '도움말', to: '/system/catalog', icon: 'info' },
-  { id: 'prefs', label: '환경설정', to: '/system/codes', icon: 'cog' },
-]
+export interface SystemDef { label: string; home: string; menu: MenuItem[]; foot: MenuItem[] }
+export const SYSTEM: SystemDef = { label: '지원 사업 관리', home: '/sp/home', menu: SP_MENU, foot: SP_FOOT }
 
-/**
- * 시스템 — 같은 셸이 둘을 싣는다. **주소가 정한다**(`/sp`로 시작하면 지원 사업).
- * 상태로 두면 새로고침·딥링크에서 사이드바와 본문이 서로 다른 시스템을 가리킬 수 있다.
- */
-export interface SystemDef { id: 'sample' | 'sp'; label: string; home: string; menu: MenuItem[]; foot: MenuItem[] }
-export const SYSTEMS: SystemDef[] = [
-  { id: 'sample', label: '관리자센터', home: '/', menu: MENU, foot: MENU_FOOT },
-  { id: 'sp', label: '지원 사업 관리', home: '/sp', menu: SP_MENU, foot: SP_FOOT },
-]
-export const systemOf = (path: string) => (path === '/sp' || path.startsWith('/sp/') ? SYSTEMS[1] : SYSTEMS[0])
+/** 처리 대기 — 건수가 달린 메뉴. 상단바 알림과 업무 현황이 같은 원천을 본다 */
+export const PENDING = [...SP_MENU, ...SP_FOOT].flatMap((m) =>
+  (m.children ?? [m]).filter((c) => c.count).map((c) => ({ label: c.label, group: m.children ? m.label : '', count: c.count!, to: c.to! })),
+)
 
 /** 그룹이 품은 하위 건수의 합. 접힌 그룹도 안에 쌓인 것을 알려야 한다 */
 export function groupCount(item: MenuItem): number {
@@ -88,8 +47,7 @@ export function groupCount(item: MenuItem): number {
  * 열려서 딥링크·새로고침·탭이 안 됐다(N-3·N-4).
  */
 export function trail(path: string): { top: MenuItem; leaf?: MenuItem; detail?: string } | null {
-  const sys = systemOf(path)
-  const all = [...sys.menu, ...sys.foot]
+  const all = [...SYSTEM.menu, ...SYSTEM.foot]
   for (const top of all) {
     if (top.to === path) return { top }
     const leaf = top.children?.find((c) => c.to === path)

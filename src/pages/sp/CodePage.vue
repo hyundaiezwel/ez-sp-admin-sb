@@ -1,47 +1,46 @@
 <script setup lang="ts">
 /**
  * 공통코드 — 마스터·디테일 2단 연동. 좌측을 고르면 우측이 따라온다.
+ * 관리자 센터에서 옮겨 지원 사업 코드 사전(`sp/codes.ts`)을 싣는다(2026-09-28). 코드값은 미리보기용으로 지어낸 값이다.
  *
- * 마스터는 6행짜리 조회 전용이라 Tabulator를 띄우지 않고 정적 표(`.ws-gtb`)로 둔다 —
+ * 마스터는 조회 전용 소량이라 Tabulator를 띄우지 않고 정적 표(`.ws-gtb`)로 둔다 —
  * 50행 이하 조회 전용은 정적 표가 규칙이다. 두 표가 같은 치수라 섞여도 한 화면으로 읽힌다.
  *
  * 행 선택은 **행 안의 버튼**으로 받는다. `<tr>`에 click만 걸면 키보드로는 고를 수 없다.
  */
 import { computed, onMounted, ref } from 'vue'
-import PageHead from '../app/PageHead.vue'
-import QueryState from '../app/QueryState.vue'
-import WsSearch from '../ws/WsSearch.vue'
+import PageHead from '../../app/PageHead.vue'
+import QueryState from '../../app/QueryState.vue'
+import WsSearch from '../../ws/WsSearch.vue'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
-import { badgeClass } from '../ws/badge'
-import { useMockQuery, ERROR_KEYWORD } from '../app/useMockQuery'
+import { badgeClass, type Tone } from '../../ws/badge'
+import { useMockQuery, ERROR_KEYWORD } from '../../app/useMockQuery'
+import { CO_FG, HANDLE, ROLES, STATES, SUSPEND_REASONS } from '../../sp/codes'
+import { MEMBER_STS } from '@fixtures/sp'
 
 interface Group { code: string; name: string; count: number; use: 'Y' | 'N' }
-interface Detail { code: string; name: string; tone: string; sort: number; use: 'Y' | 'N' }
+interface Detail { code: string; name: string; tone: Tone; sort: number; use: 'Y' | 'N' }
 
-const GROUPS: Group[] = [
-  { code: 'INQ_STATUS', name: '문의 처리 상태', count: 5, use: 'Y' },
-  { code: 'INQ_CHANNEL', name: '문의 채널', count: 5, use: 'Y' },
-  { code: 'ORD_STATUS', name: '주문 상태', count: 6, use: 'Y' },
-  { code: 'MBR_GRADE', name: '회원 등급', count: 4, use: 'Y' },
-  { code: 'PRM_STATUS', name: '프로모션 상태', count: 5, use: 'Y' },
-  { code: 'LEGACY_TYPE', name: '(구) 분류 코드', count: 3, use: 'N' },
-]
+const rows = (xs: { code: string; label: string; tone?: Tone }[]): Detail[] =>
+  xs.map((x, i) => ({ code: x.code, name: x.label, tone: x.tone ?? 'neutral', sort: i + 1, use: 'Y' }))
 const DETAILS: Record<string, Detail[]> = {
-  INQ_STATUS: [
-    { code: 'RECEIVED', name: '접수', tone: 'neutral', sort: 1, use: 'Y' },
-    { code: 'PROGRESS', name: '처리중', tone: 'info', sort: 2, use: 'Y' },
-    { code: 'ANSWERED', name: '답변완료', tone: 'success', sort: 3, use: 'Y' },
-    { code: 'HOLD', name: '보류', tone: 'warning', sort: 4, use: 'Y' },
-    { code: 'CLOSED', name: '종결', tone: 'neutral', sort: 5, use: 'Y' },
-  ],
-  MBR_GRADE: [
-    { code: 'BASIC', name: '일반', tone: 'neutral', sort: 1, use: 'Y' },
-    { code: 'SILVER', name: '실버', tone: 'info', sort: 2, use: 'Y' },
-    { code: 'GOLD', name: '골드', tone: 'warning', sort: 3, use: 'Y' },
-    { code: 'VIP', name: 'VIP', tone: 'brand', sort: 4, use: 'Y' },
-  ],
+  CO_STATE: rows(STATES),
+  MBR_STATE: rows(MEMBER_STS.map((m) => ({ ...m, tone: m.tone as Tone }))),
+  CO_FG: rows(CO_FG),
+  ROLE: rows(ROLES),
+  SUSPEND: rows(SUSPEND_REASONS.map((label, i) => ({ code: `S${i + 1}`, label }))),
+  SCRAP_HANDLE: rows(HANDLE),
 }
+const GROUPS: Group[] = [
+  { code: 'CO_STATE', name: '기업 참여 상태', count: 0, use: 'Y' },
+  { code: 'MBR_STATE', name: '참여회원 상태', count: 0, use: 'Y' },
+  { code: 'CO_FG', name: '기업 구분', count: 0, use: 'Y' },
+  { code: 'ROLE', name: '관리자 역할', count: 0, use: 'Y' },
+  { code: 'SUSPEND', name: '이용정지 사유', count: 0, use: 'Y' },
+  { code: 'SCRAP_HANDLE', name: '적발 조치 상태', count: 0, use: 'Y' },
+  { code: 'LEGACY_TYPE', name: '(구) 분류 코드', count: 3, use: 'N' },
+].map((g) => ({ ...g, count: DETAILS[g.code]?.length ?? g.count }) as Group)
 
 const selected = ref<Group>(GROUPS[0])
 const keyword = ref('')

@@ -7,18 +7,21 @@ import type { MenuItem } from '../app/menu'
  * 회원관리 한 그룹에 17개가 몰리고, 기업 한 곳의 심사가 세 화면에 흩어진다.
  * 여기서는 **업무 흐름** 기준으로 다시 묶었다 — 참여 심사 → 기업 → 근로자 → 자금 → 제재.
  *
- * AS-IS 54 → TO-BE 47. AS-IS 14화면을 7자리로 합치고, 1화면을 빼고, 1자리를 더했다.
+ * AS-IS 54 → TO-BE 48. AS-IS 14화면을 7자리로 합치고, 1화면을 빼고, 2자리를 더했다.
  *   합침  RPA 사본 3쌍(라벨만 다르다) · 입금/환불확인 중복 등록 2쌍 · 계정현황+계정신청
  *         · 전자청구서+청구서기능(화면이 아니라 승인 결과 핸들러)
  *   뺌    비밀번호 변경 — 사용자 메뉴로
- *   더함  업무 현황(AS-IS 메인 대시보드 G-006 — 메뉴 밖에 있던 것)
+ *   더함  업무 현황(AS-IS 메인 대시보드 G-006 — 메뉴 밖에 있던 것) · 공통코드
+ *
+ * 2026-09-28 관리자 센터(샘플 시스템)를 없애며 대시보드 · 통계 · 시스템 관리를 여기로 흡수했다 —
+ * 대시보드는 업무 현황, 통계는 사용현황 자리에 지원 사업 데이터로 다시 채웠다. 공통코드는 시스템 관리로.
  *
  * `to`가 `/sp/p/`로 시작하는 화면은 아직 그리지 않았다 — 설계 카드(AS-IS 근거)가 뜬다.
  */
 const p = (id: string) => `/sp/p/${id}`
 
 export const SP_MENU: MenuItem[] = [
-  { id: 'home', label: '업무 현황', to: p('home'), icon: 'grid', asis: ['G-006'], note: 'AS-IS 상단 바의 금일등록·미처리·처리중 건수를 이 화면과 메뉴 옆 숫자로 옮긴다' },
+  { id: 'home', label: '업무 현황', to: '/sp/home', icon: 'grid', asis: ['G-006'], built: true, note: 'AS-IS 상단 바의 금일등록·미처리·처리중 건수를 이 화면과 메뉴 옆 숫자로 옮긴다' },
   {
     id: 'screen', label: '참여 심사', icon: 'check',
     children: [
@@ -78,7 +81,7 @@ export const SP_MENU: MenuItem[] = [
       { id: 'corpstat', label: '기업 세부현황', to: p('corpstat'), asis: ['S-006-02'] },
       { id: 'memstat', label: '회원 세부현황', to: p('memstat'), asis: ['S-006-03'] },
       { id: 'stopstat', label: '이용정지 통계', to: p('stopstat'), asis: ['S-006-06'] },
-      { id: 'usestat', label: '사용현황', to: p('usestat'), asis: ['S-006-01'], note: 'AS-IS 진입 불가(결함) — 무엇을 보여 주던 화면인지부터 확인이 필요하다' },
+      { id: 'usestat', label: '사용현황', to: '/sp/usage-stats', asis: ['S-006-01'], built: true, note: 'AS-IS 진입 불가(결함)라 내용을 모른다 — 포인트 사용 집계로 가정해 그렸다. 무엇을 보여 주던 화면인지 확인이 필요하다' },
     ],
   },
   {
@@ -109,13 +112,20 @@ export const SP_MENU: MenuItem[] = [
       { id: 'request', label: '업무요청', to: p('request'), count: 4, asis: ['S-001-02'] },
     ],
   },
-  { id: 'account', label: '관리자 계정', to: p('account'), icon: 'user', asis: ['S-008-01', 'S-008-02'], note: '계정현황과 계정신청을 한 목록 + 상태 필터로 합친다. 비밀번호 변경은 사용자 메뉴로 옮긴다(S-007-01)' },
+  {
+    id: 'system', label: '시스템 관리', icon: 'cog',
+    children: [
+      { id: 'account', label: '관리자 계정', to: p('account'), asis: ['S-008-01', 'S-008-02'], note: '계정현황과 계정신청을 한 목록 + 상태 필터로 합친다. 비밀번호 변경은 사용자 메뉴로 옮긴다(S-007-01)' },
+      { id: 'codes', label: '공통코드', to: '/sp/codes', built: true, note: 'AS-IS에 없던 자리 — 상태 · 구분 라벨을 화면에 박지 않고 여기서 내린다(관리자 센터에서 옮겼다)' },
+    ],
+  },
 ]
 
-/** 바닥 — 미리보기에 관한 것. 제안 메뉴와 섞지 않는다 */
+/** 바닥 — 미리보기 · 디자인 시스템에 관한 것. 제안 메뉴와 섞지 않는다 */
 export const SP_FOOT: MenuItem[] = [
   { id: 'ia', label: '메뉴 대응표', to: '/sp', icon: 'map' },
   { id: 'elements', label: '새 화면 요소', to: '/sp/elements', icon: 'info' },
+  { id: 'catalog', label: '컴포넌트 카탈로그', to: '/sp/catalog', icon: 'doc' },
 ]
 
 /** AS-IS에서 빠지는 화면 — 대응표가 "어디로 갔나"를 답해야 한다 */

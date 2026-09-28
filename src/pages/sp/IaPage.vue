@@ -23,7 +23,7 @@ const stats = computed(() => ({
   built: leaves.filter((x) => x.l.built).length,
   merged: leaves.filter((x) => (x.l.asis?.length ?? 0) > 1).length,
   removed: Object.keys(SP_REMOVED).length,
-  added: leaves.filter((x) => x.l.asis?.every((a) => a.startsWith('G-'))).length,
+  added: leaves.filter((x) => (x.l.asis ?? []).every((a) => a.startsWith('G-'))).length,
 }))
 const GNB = [...new Set(ASIS.map((s) => s.gnb))]
 const lvl = (n: number | null) => (n == null ? '—' : '●'.repeat(n))

@@ -2,20 +2,19 @@
 /**
  * 통합 검색 — 상단바 가운데(D6 A · Q2).
  *
- * 메뉴는 지금 시스템의 메뉴 트리에서 바로 찾고, 업무 데이터(기업 · 접수번호 · 회원 · 적발 번호)는
- * 지원 사업 관리에서만 — 처음 검색할 때 `sp/search.ts`를 늦게 싣는다.
+ * 메뉴는 메뉴 트리에서 바로 찾고, 업무 데이터(기업 · 접수번호 · 회원 · 적발 번호)는
+ * 처음 검색할 때 `sp/search.ts`를 늦게 싣는다.
  *
  * `/` 또는 ⌘K / Ctrl+K로 들어온다(입력 중이 아닐 때). ↑↓로 고르고 Enter로 간다. Esc는 지우고 닫는다.
  * WAI-ARIA 콤보박스 — 입력칸이 목록을 가리키고, 고른 항목을 `aria-activedescendant`로 알린다.
  */
 import { computed, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import type { SystemDef } from './menu'
+import { SYSTEM as sys } from './menu'
 import AppIcon from './AppIcon.vue'
 
 export interface SearchHit { group: string; label: string; sub?: string; to: string; before?: () => void }
 
-const props = defineProps<{ sys: SystemDef }>()
 const router = useRouter()
 const q = ref('')
 const open = ref(false)
@@ -26,7 +25,7 @@ const dataSearch = shallowRef<((q: string) => SearchHit[]) | null>(null)
 const menuHits = computed<SearchHit[]>(() => {
   const k = q.value.trim()
   if (!k) return []
-  return [...props.sys.menu, ...props.sys.foot]
+  return [...sys.menu, ...sys.foot]
     .flatMap((m) => (m.children ?? [m]).filter((c) => c.to && c.label.includes(k)).map((c) => ({ group: '메뉴', label: c.label, sub: m.children ? m.label : undefined, to: c.to! })))
     .slice(0, 6)
 })
@@ -35,7 +34,7 @@ const groups = computed(() => [...new Set(hits.value.map((h) => h.group))].map((
 watch(q, async (v) => {
   at.value = 0
   open.value = !!v.trim()
-  if (v.trim() && props.sys.id === 'sp' && !dataSearch.value) dataSearch.value = (await import('../sp/search')).searchData
+  if (v.trim() && !dataSearch.value) dataSearch.value = (await import('../sp/search')).searchData
 })
 
 function go(h: SearchHit | undefined) {
@@ -61,7 +60,7 @@ function global(e: KeyboardEvent) {
 onMounted(() => window.addEventListener('keydown', global))
 onBeforeUnmount(() => window.removeEventListener('keydown', global))
 const idx = (h: SearchHit) => hits.value.indexOf(h)
-const placeholder = computed(() => (props.sys.id === 'sp' ? '메뉴 · 기업 · 회원 · 접수번호 검색' : '메뉴 검색'))
+const placeholder = '메뉴 · 기업 · 회원 · 접수번호 검색'
 </script>
 
 <template>
@@ -86,7 +85,7 @@ const placeholder = computed(() => (props.sys.id === 'sp' ? '메뉴 · 기업 ·
         </div>
       </template>
       <p v-if="!hits.length" class="gs__none">일치하는 항목이 없습니다</p>
-      <p v-if="sys.id === 'sp'" class="gs__foot">회원은 2자 이상 · 이름은 가려서 보인다 · 적발은 SC-번호</p>
+      <p class="gs__foot">회원은 2자 이상 · 이름은 가려서 보인다 · 적발은 SC-번호</p>
     </div>
   </div>
 </template>

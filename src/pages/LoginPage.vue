@@ -8,8 +8,8 @@
  *   입력 40px · 안쪽 10 12 · 모서리 6 · 칸 사이 20 (마지막만 12)
  *   버튼 초록 40px · 모서리 8 · 15px/600
  *
- * 칸이 셋이다 — **도메인**(ooo.ezwel.com의 ooo) · 아이디 · 비밀번호. 고객사마다 관리자센터가
- * 따로 떠 있어서 어느 고객사인지를 먼저 받는다. 이 칸을 빼면 원본 화면이 아니다.
+ * 칸이 둘이다 — 아이디 · 비밀번호. 원본(관리자센터)에는 **도메인** 칸이 먼저 있었다 — 고객사마다
+ * 관리자센터가 따로 떠 있어서다. 지원 사업 관리는 시스템이 하나라 뺐다(2026-09-28 관리자 센터 폐기).
  *
  * 비밀번호 보기 토글은 원본에도 있다(`btn_pwDisp`). 버튼 이름을 상태에 맞춰 바꾼다.
  */
@@ -21,14 +21,14 @@ import Button from 'primevue/button'
 
 const router = useRouter()
 const base = import.meta.env.BASE_URL
-const f = ref({ domain: '', id: '', pw: '' })
+const f = ref({ id: '', pw: '' })
 const error = ref('')
 const busy = ref(false)
 
 function submit() {
   error.value = ''
-  if (!f.value.domain || !f.value.id || !f.value.pw) {
-    error.value = '도메인 · 아이디 · 비밀번호를 모두 입력하세요.'
+  if (!f.value.id || !f.value.pw) {
+    error.value = '아이디 · 비밀번호를 모두 입력하세요.'
     return
   }
   busy.value = true
@@ -41,12 +41,8 @@ function submit() {
     <div class="lg__box">
       <img class="lg__logo" :src="`${base}img/login_logo.svg`" alt="현대이지웰" width="200" height="29" />
       <form class="lg__card" novalidate @submit.prevent="submit">
-        <h1 class="lg__tit">관리자센터 로그인</h1>
+        <h1 class="lg__tit">지원 사업 관리 로그인</h1>
         <ul class="lg__fields">
-          <li>
-            <label class="ws-sr-only" for="lg-dom">도메인</label>
-            <InputText id="lg-dom" v-model="f.domain" size="large" fluid placeholder="ooo.ezwel.com의 ooo을 입력" autocomplete="organization" />
-          </li>
           <li>
             <label class="ws-sr-only" for="lg-id">아이디</label>
             <InputText id="lg-id" v-model="f.id" size="large" fluid placeholder="아이디 입력" autocomplete="username" />

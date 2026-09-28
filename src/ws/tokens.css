@@ -135,7 +135,7 @@
    * 원본은 html{font-size:62.5%}로 1rem=10px를 만들고 1.4rem을 쓴다.
    * 여기서는 px로 적는다 — 루트 크기에 기대면 다른 앱에 섞일 때 전부 틀어진다.
    * --------------------------------------------------------------------- */
-  --ws-font: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --ws-font: Inter, 'Noto Sans KR', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --ws-font-size: 14px;     /* 1.4rem — 본문·라벨·셀·버튼 전부 */
   --ws-font-size-sm: 12px;  /* 설명 */
   --ws-font-size-md: 13px;  /* 뱃지 */
