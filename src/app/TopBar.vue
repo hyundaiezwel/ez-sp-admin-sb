@@ -8,7 +8,8 @@
  *
  * 위는 "어디서든 같은 것"(찾기 · 조건 · 알림 · 나), 왼쪽 사이드바는 "어디로 가나"(메뉴)만 맡는다.
  * 사이드바와 같은 어두운 초록으로 ㄱ자 틀을 만들고, 한 단 짙게 해 둘을 가른다.
- * 브랜드는 글자만 둔다(2026-09-28 로고 타일 제거) — 기호는 브라우저 탭의 파비콘(쉼표)이 맡는다.
+ * 브랜드 기호는 파비콘 파일(`public/favicon.svg`)을 그대로 싣는다 — 쉼표 모양 정본이 한 벌이다.
+ * 어두운 바 위 대비 3.34(라이트 색) · 3.91(다크 색) — 둘 다 3:1 위.
  * 테마 버튼을 따로 둔다 — 사용자 메뉴 안에만 있을 때 다크 전환을 찾지 못했다.
  */
 import { computed, defineAsyncComponent, ref } from 'vue'
@@ -26,6 +27,7 @@ const SpContext = defineAsyncComponent(() => import('../sp/SpContext.vue'))
 
 const rail = defineModel<boolean>('rail', { required: true })
 const router = useRouter()
+const base = import.meta.env.BASE_URL
 
 /* 테마 — 버튼은 라이트 ↔ 다크만 뒤집는다. "시스템 따르기"는 사용자 메뉴에 */
 const dark = computed(() => prefs.resolved === 'dark')
@@ -55,6 +57,7 @@ const meItems = computed<PvItem[]>(() => [
       <AppIcon name="menu" :size="20" />
     </button>
     <RouterLink :to="sys.home" class="tp__brand" :aria-label="`${sys.label} — 첫 화면`">
+      <img class="tp__mark" :src="`${base}favicon.svg`" alt="" width="28" height="28" />
       <span class="tp__name">{{ sys.label }}</span>
     </RouterLink>
 
@@ -109,6 +112,8 @@ const meItems = computed<PvItem[]>(() => [
   background: none; color: var(--ws-top-fg); font: inherit; text-decoration: none;
 }
 .tp__brand:hover { text-decoration: none; }
+/* 쉼표 그림은 32 격자 가운데 15폭이라 상자 오른쪽이 빈다 — 글자와 틈을 13 안팎으로 */
+.tp__mark { flex: none; display: block; margin-right: -4px; }
 .tp__name { font-size: 15px; font-weight: 700; white-space: nowrap; }
 .tp__r { margin-left: auto; display: flex; align-items: center; gap: 4px; }
 .tp__ctx { margin-right: 8px; }
