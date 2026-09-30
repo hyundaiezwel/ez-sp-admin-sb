@@ -492,5 +492,24 @@
       "why": "IA는 주기 변경 화면을 없앴고, 보안 규칙을 어느 화면이 맡는지 정하지 않았다(A5 6절)."
     }
   ],
-  "effort": null
+  "effort": {
+    "spec": {
+      "minutes": 0.0,
+      "tokens": {
+        "input": 9,
+        "output": 4260,
+        "cacheRead": 616828,
+        "cacheWrite": 25899
+      }
+    },
+    "build": {
+      "minutes": 6.5,
+      "tokens": {
+        "input": 13,
+        "output": 4816,
+        "cacheRead": 1057635,
+        "cacheWrite": 19199
+      }
+    }
+  }
 }

@@ -348,5 +348,33 @@
       "why": "신고자는 게시글 링크 · 설명만 주므로 대상 특정 절차가 정해지지 않았다."
     }
   ],
-  "effort": null
+  "effort": {
+    "spec": {
+      "minutes": 3.8,
+      "tokens": {
+        "input": 6,
+        "output": 3640,
+        "cacheRead": 440827,
+        "cacheWrite": 20506
+      }
+    },
+    "build": {
+      "minutes": 6.4,
+      "tokens": {
+        "input": 8,
+        "output": 4551,
+        "cacheRead": 703533,
+        "cacheWrite": 14735
+      }
+    },
+    "fix": {
+      "minutes": 1.7,
+      "tokens": {
+        "input": 9,
+        "output": 1012,
+        "cacheRead": 571960,
+        "cacheWrite": 18542
+      }
+    }
+  }
 }

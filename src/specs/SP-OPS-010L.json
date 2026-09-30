@@ -328,5 +328,33 @@
       "why": "IA · AS-IS 모두 다운로드 언급이 없다. CS 통계(SP-STA-050P)로 충분한지 확인이 필요하다."
     }
   ],
-  "effort": null
+  "effort": {
+    "spec": {
+      "minutes": 2.8,
+      "tokens": {
+        "input": 4,
+        "output": 2694,
+        "cacheRead": 326251,
+        "cacheWrite": 15176
+      }
+    },
+    "build": {
+      "minutes": 6.4,
+      "tokens": {
+        "input": 8,
+        "output": 4551,
+        "cacheRead": 703533,
+        "cacheWrite": 14735
+      }
+    },
+    "fix": {
+      "minutes": 1.7,
+      "tokens": {
+        "input": 9,
+        "output": 1012,
+        "cacheRead": 571960,
+        "cacheWrite": 18542
+      }
+    }
+  }
 }

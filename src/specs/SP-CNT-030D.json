@@ -370,5 +370,33 @@
       "why": "AS-IS는 PC · 모바일을 따로 받았다. TO-BE 반응형 디자인 시안에 따라 다르다."
     }
   ],
-  "effort": null
+  "effort": {
+    "spec": {
+      "minutes": 5.2,
+      "tokens": {
+        "input": 7,
+        "output": 3315,
+        "cacheRead": 379894,
+        "cacheWrite": 20643
+      }
+    },
+    "build": {
+      "minutes": 5.2,
+      "tokens": {
+        "input": 11,
+        "output": 6082,
+        "cacheRead": 860137,
+        "cacheWrite": 28721
+      }
+    },
+    "fix": {
+      "minutes": 1.7,
+      "tokens": {
+        "input": 9,
+        "output": 662,
+        "cacheRead": 375740,
+        "cacheWrite": 9478
+      }
+    }
+  }
 }

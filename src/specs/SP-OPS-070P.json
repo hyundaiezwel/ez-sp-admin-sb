@@ -353,5 +353,24 @@
       "why": "AS-IS 부적합 상품(4종)과 통계(7종) 분류가 다르고 외식의 대응이 없다."
     }
   ],
-  "effort": null
+  "effort": {
+    "spec": {
+      "minutes": 3.8,
+      "tokens": {
+        "input": 6,
+        "output": 3640,
+        "cacheRead": 440827,
+        "cacheWrite": 20506
+      }
+    },
+    "build": {
+      "minutes": 6.4,
+      "tokens": {
+        "input": 8,
+        "output": 4551,
+        "cacheRead": 703533,
+        "cacheWrite": 14735
+      }
+    }
+  }
 }

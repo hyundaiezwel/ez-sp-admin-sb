@@ -319,5 +319,24 @@
       "why": "AS-IS 목록에서 다운로드를 확인하지 못했다. 권한 기본값에는 개인정보 다운로드가 있다."
     }
   ],
-  "effort": null
+  "effort": {
+    "spec": {
+      "minutes": 3.8,
+      "tokens": {
+        "input": 6,
+        "output": 3640,
+        "cacheRead": 440827,
+        "cacheWrite": 20506
+      }
+    },
+    "build": {
+      "minutes": 6.4,
+      "tokens": {
+        "input": 8,
+        "output": 4551,
+        "cacheRead": 703533,
+        "cacheWrite": 14735
+      }
+    }
+  }
 }

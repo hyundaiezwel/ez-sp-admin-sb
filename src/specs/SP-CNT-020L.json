@@ -328,5 +328,33 @@
       "why": "AS-IS는 노출 URL을 500자 입력으로 받았다. 누리집 TO-BE 주소 체계가 정해져야 한다."
     }
   ],
-  "effort": null
+  "effort": {
+    "spec": {
+      "minutes": 5.2,
+      "tokens": {
+        "input": 7,
+        "output": 3315,
+        "cacheRead": 379894,
+        "cacheWrite": 20643
+      }
+    },
+    "build": {
+      "minutes": 5.2,
+      "tokens": {
+        "input": 11,
+        "output": 6082,
+        "cacheRead": 860137,
+        "cacheWrite": 28721
+      }
+    },
+    "fix": {
+      "minutes": 1.7,
+      "tokens": {
+        "input": 9,
+        "output": 662,
+        "cacheRead": 375740,
+        "cacheWrite": 9478
+      }
+    }
+  }
 }

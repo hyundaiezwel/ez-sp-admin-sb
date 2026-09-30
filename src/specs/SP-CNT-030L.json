@@ -364,5 +364,33 @@
       "why": "화면 목록 77개에 없고 IA 03에만 행이 있다. 링크는 여기 흡수했다."
     }
   ],
-  "effort": null
+  "effort": {
+    "spec": {
+      "minutes": 5.2,
+      "tokens": {
+        "input": 7,
+        "output": 3315,
+        "cacheRead": 379894,
+        "cacheWrite": 20643
+      }
+    },
+    "build": {
+      "minutes": 5.2,
+      "tokens": {
+        "input": 11,
+        "output": 6082,
+        "cacheRead": 860137,
+        "cacheWrite": 28721
+      }
+    },
+    "fix": {
+      "minutes": 1.7,
+      "tokens": {
+        "input": 9,
+        "output": 662,
+        "cacheRead": 375740,
+        "cacheWrite": 9478
+      }
+    }
+  }
 }

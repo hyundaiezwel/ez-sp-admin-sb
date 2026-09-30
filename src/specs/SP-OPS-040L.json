@@ -302,5 +302,33 @@
       "why": "통합 공지 3종 어디에도 단기제휴 구분이 없다."
     }
   ],
-  "effort": null
+  "effort": {
+    "spec": {
+      "minutes": 2.0,
+      "tokens": {
+        "input": 3,
+        "output": 1892,
+        "cacheRead": 229152,
+        "cacheWrite": 10659
+      }
+    },
+    "build": {
+      "minutes": 6.4,
+      "tokens": {
+        "input": 8,
+        "output": 4551,
+        "cacheRead": 703533,
+        "cacheWrite": 14735
+      }
+    },
+    "fix": {
+      "minutes": 1.7,
+      "tokens": {
+        "input": 9,
+        "output": 1012,
+        "cacheRead": 571960,
+        "cacheWrite": 18542
+      }
+    }
+  }
 }

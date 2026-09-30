@@ -339,5 +339,33 @@
       "why": "답변 주체가 둘이라 발신자 표시가 정해지지 않았다."
     }
   ],
-  "effort": null
+  "effort": {
+    "spec": {
+      "minutes": 2.8,
+      "tokens": {
+        "input": 4,
+        "output": 2694,
+        "cacheRead": 326251,
+        "cacheWrite": 15176
+      }
+    },
+    "build": {
+      "minutes": 6.4,
+      "tokens": {
+        "input": 8,
+        "output": 4551,
+        "cacheRead": 703533,
+        "cacheWrite": 14735
+      }
+    },
+    "fix": {
+      "minutes": 1.7,
+      "tokens": {
+        "input": 9,
+        "output": 1012,
+        "cacheRead": 571960,
+        "cacheWrite": 18542
+      }
+    }
+  }
 }

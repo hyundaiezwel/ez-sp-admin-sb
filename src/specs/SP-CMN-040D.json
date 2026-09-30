@@ -410,5 +410,24 @@
       "why": "AS-IS 모듈은 어드민 종류마다 사유 문구가 달랐다. 운영사는 \"지원기관 요청\"이 따로 필요할 수 있다."
     }
   ],
-  "effort": null
+  "effort": {
+    "spec": {
+      "minutes": 0.0,
+      "tokens": {
+        "input": 9,
+        "output": 4260,
+        "cacheRead": 616828,
+        "cacheWrite": 25899
+      }
+    },
+    "build": {
+      "minutes": 6.5,
+      "tokens": {
+        "input": 13,
+        "output": 4816,
+        "cacheRead": 1057635,
+        "cacheWrite": 19199
+      }
+    }
+  }
 }

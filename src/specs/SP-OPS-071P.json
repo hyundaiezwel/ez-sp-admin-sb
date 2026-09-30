@@ -271,5 +271,24 @@
       "why": "선별 주기와 실행 위치가 정해지지 않았다."
     }
   ],
-  "effort": null
+  "effort": {
+    "spec": {
+      "minutes": 3.8,
+      "tokens": {
+        "input": 6,
+        "output": 3640,
+        "cacheRead": 440827,
+        "cacheWrite": 20506
+      }
+    },
+    "build": {
+      "minutes": 6.4,
+      "tokens": {
+        "input": 8,
+        "output": 4551,
+        "cacheRead": 703533,
+        "cacheWrite": 14735
+      }
+    }
+  }
 }

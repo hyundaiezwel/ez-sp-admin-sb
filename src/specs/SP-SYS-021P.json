@@ -343,5 +343,24 @@
       "why": "운영사 개인정보 반출 허용(경계 B10)과 함께 정해야 한다."
     }
   ],
-  "effort": null
+  "effort": {
+    "spec": {
+      "minutes": 0.0,
+      "tokens": {
+        "input": 9,
+        "output": 4260,
+        "cacheRead": 616828,
+        "cacheWrite": 25899
+      }
+    },
+    "build": {
+      "minutes": 6.5,
+      "tokens": {
+        "input": 13,
+        "output": 4816,
+        "cacheRead": 1057635,
+        "cacheWrite": 19199
+      }
+    }
+  }
 }

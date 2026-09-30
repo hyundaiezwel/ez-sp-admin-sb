@@ -464,5 +464,24 @@
       "why": "AS-IS 데이터 정리에서 모집기간으로 적은 칸과 목록의 모집기간 칸이 다른 필드로 보인다. 누리집 신청 가능 기간을 어느 쪽이 정하는지 정해야 한다."
     }
   ],
-  "effort": null
+  "effort": {
+    "spec": {
+      "minutes": 1.4,
+      "tokens": {
+        "input": 11,
+        "output": 5623,
+        "cacheRead": 761589,
+        "cacheWrite": 28081
+      }
+    },
+    "build": {
+      "minutes": 0.0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheWrite": 0
+      }
+    }
+  }
 }

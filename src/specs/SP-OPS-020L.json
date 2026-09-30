@@ -254,5 +254,33 @@
       "why": "CS 통계는 상담 시스템과 논의로 남아 있다."
     }
   ],
-  "effort": null
+  "effort": {
+    "spec": {
+      "minutes": 2.8,
+      "tokens": {
+        "input": 4,
+        "output": 2694,
+        "cacheRead": 326251,
+        "cacheWrite": 15176
+      }
+    },
+    "build": {
+      "minutes": 6.4,
+      "tokens": {
+        "input": 8,
+        "output": 4551,
+        "cacheRead": 703533,
+        "cacheWrite": 14735
+      }
+    },
+    "fix": {
+      "minutes": 1.7,
+      "tokens": {
+        "input": 9,
+        "output": 1012,
+        "cacheRead": 571960,
+        "cacheWrite": 18542
+      }
+    }
+  }
 }

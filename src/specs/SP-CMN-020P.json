@@ -288,5 +288,24 @@
       "why": "업무요청 답변 · 공지 작성처럼 긴 입력이 있다."
     }
   ],
-  "effort": null
+  "effort": {
+    "spec": {
+      "minutes": 0.0,
+      "tokens": {
+        "input": 9,
+        "output": 4260,
+        "cacheRead": 616828,
+        "cacheWrite": 25899
+      }
+    },
+    "build": {
+      "minutes": 6.5,
+      "tokens": {
+        "input": 13,
+        "output": 4816,
+        "cacheRead": 1057635,
+        "cacheWrite": 19199
+      }
+    }
+  }
 }

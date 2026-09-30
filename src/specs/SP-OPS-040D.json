@@ -341,5 +341,24 @@
       "why": "IA 03 기획확인 칸에 같은 질문이 남아 있다. 필요하면 공지구분에 지원기관 대상이 더해지고 출력처가 이 어드민 메인이 된다."
     }
   ],
-  "effort": null
+  "effort": {
+    "spec": {
+      "minutes": 2.0,
+      "tokens": {
+        "input": 3,
+        "output": 1892,
+        "cacheRead": 229152,
+        "cacheWrite": 10659
+      }
+    },
+    "build": {
+      "minutes": 6.4,
+      "tokens": {
+        "input": 8,
+        "output": 4551,
+        "cacheRead": 703533,
+        "cacheWrite": 14735
+      }
+    }
+  }
 }

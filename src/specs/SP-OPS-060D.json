@@ -542,5 +542,33 @@
       "why": "이용정지 전 상태(참여개시 하위 상태)를 기억해야 하는지 정해지지 않았다."
     }
   ],
-  "effort": null
+  "effort": {
+    "spec": {
+      "minutes": 3.8,
+      "tokens": {
+        "input": 6,
+        "output": 3640,
+        "cacheRead": 440827,
+        "cacheWrite": 20506
+      }
+    },
+    "build": {
+      "minutes": 6.4,
+      "tokens": {
+        "input": 8,
+        "output": 4551,
+        "cacheRead": 703533,
+        "cacheWrite": 14735
+      }
+    },
+    "fix": {
+      "minutes": 1.7,
+      "tokens": {
+        "input": 9,
+        "output": 1012,
+        "cacheRead": 571960,
+        "cacheWrite": 18542
+      }
+    }
+  }
 }

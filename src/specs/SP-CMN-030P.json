@@ -296,5 +296,24 @@
       "why": "AS-IS는 재인증 없이 연장했다. 보안 점검 기준에 따라 달라질 수 있다."
     }
   ],
-  "effort": null
+  "effort": {
+    "spec": {
+      "minutes": 0.0,
+      "tokens": {
+        "input": 9,
+        "output": 4260,
+        "cacheRead": 616828,
+        "cacheWrite": 25899
+      }
+    },
+    "build": {
+      "minutes": 6.5,
+      "tokens": {
+        "input": 13,
+        "output": 4816,
+        "cacheRead": 1057635,
+        "cacheWrite": 19199
+      }
+    }
+  }
 }

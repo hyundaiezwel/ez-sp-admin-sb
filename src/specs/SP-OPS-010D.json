@@ -418,5 +418,33 @@
       "why": "AS-IS에는 이관처리자 검색이 있으나 IA에는 이관 언급이 없다."
     }
   ],
-  "effort": null
+  "effort": {
+    "spec": {
+      "minutes": 2.8,
+      "tokens": {
+        "input": 4,
+        "output": 2694,
+        "cacheRead": 326251,
+        "cacheWrite": 15176
+      }
+    },
+    "build": {
+      "minutes": 6.4,
+      "tokens": {
+        "input": 8,
+        "output": 4551,
+        "cacheRead": 703533,
+        "cacheWrite": 14735
+      }
+    },
+    "fix": {
+      "minutes": 1.7,
+      "tokens": {
+        "input": 9,
+        "output": 1012,
+        "cacheRead": 571960,
+        "cacheWrite": 18542
+      }
+    }
+  }
 }
