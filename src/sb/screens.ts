@@ -104,19 +104,25 @@ export const SCREENS: Screen[] = [
   // @generated-end
 ]
 
-export const GROUPS = ['공통', '사업관리', '사업참여관리', '노동자 포인트관리', '운영지원', '콘텐츠관리', '정산', '통계분석', '시스템관리'] as const
+export const GROUPS = ['사업관리', '사업참여관리', '노동자 포인트관리', '운영지원', '콘텐츠관리', '정산', '통계분석', '공통', '시스템관리'] as const
 const ICON: Record<(typeof GROUPS)[number], string> = {
-  공통: 'grid', 사업관리: 'flag', 사업참여관리: 'check', '노동자 포인트관리': 'users', 운영지원: 'inbox',
+  공통: 'user', 사업관리: 'flag', 사업참여관리: 'check', '노동자 포인트관리': 'users', 운영지원: 'inbox',
   콘텐츠관리: 'doc', 정산: 'wallet', 통계분석: 'chart', 시스템관리: 'cog',
 }
 
 export const routeOf = (code: string) => `/sb/s/${code}`
 export const screenOf = (code: string) => SCREENS.find((s) => s.code === code)
 
-export const SB_MENU: MenuItem[] = GROUPS.map((g) => ({
-  id: `sb-${g}`, label: g, icon: ICON[g],
-  children: SCREENS.filter((s) => s.menu[0] === g).map((s) => ({ id: s.code, label: s.label, to: routeOf(s.code) })),
-}))
+/** 메인은 그룹에서 빼 최상단 단독 메뉴로 둔다. 공통 그룹(로그인·세션 등)은 시스템관리 바로 위 */
+const MAIN = 'SP-CMN-050P'
+
+export const SB_MENU: MenuItem[] = [
+  { id: MAIN, label: screenOf(MAIN)?.label ?? '메인', to: routeOf(MAIN), icon: 'grid' },
+  ...GROUPS.map((g) => ({
+    id: `sb-${g}`, label: g, icon: ICON[g],
+    children: SCREENS.filter((s) => s.menu[0] === g && s.code !== MAIN).map((s) => ({ id: s.code, label: s.label, to: routeOf(s.code) })),
+  })),
+]
 
 export const SB_FOOT: MenuItem[] = [
   { id: 'sb-list', label: '화면 목록', to: '/sb', icon: 'map' },
