@@ -22,6 +22,7 @@ const ARRAYS = ['requirements', 'functions', 'scenarios']
 
 const problems = []
 const rows = []
+const labelWarn = []
 if (codes.length !== 77) problems.push(`레지스트리 화면 수 ${codes.length} (77이어야 한다)`)
 if (!roles.length) problems.push('src/sb/roles.ts에서 역할을 읽지 못했다')
 
@@ -52,6 +53,12 @@ for (const code of codes) {
     r.page = src.split('\n', 1)[0].includes('SB-DONE') ? 'DONE' : '작업중'
     if (r.page !== 'DONE') r.issues.push('첫 줄 SB-DONE 없음')
     for (const m of spec?.modals ?? []) if (!src.includes(m.code)) r.issues.push(`모달 코드 ${m.code}가 화면에 없음`)
+    // 조회 영역 라벨 길이 — 라벨 칸은 글자에 맞춰 늘어나지만 8자를 넘으면 입력 칸이 좁아진다(경고만)
+    const sh = src.match(/<WsSearch[\s\S]*?<\/WsSearch>/)?.[0] ?? ''
+    for (const [, t] of sh.matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)) {
+      const label = t.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
+      if ([...label.replace(/\s/g, '')].length > 8) labelWarn.push(`${code} '${label}'`)
+    }
   } else r.issues.push('화면 파일 없음')
   rows.push(r)
 }
@@ -88,6 +95,7 @@ console.log(`${w('화면', 14)}${w('명세', 10)}${w('화면', 8)}문제`)
 for (const r of rows) console.log(`${w(r.code, 14)}${w(r.spec, 10)}${w(r.page, 8)}${r.issues.join(' · ') || 'OK'}`)
 const bad = rows.filter((r) => r.issues.length)
 console.log(`\n화면 ${rows.length} · 통과 ${rows.length - bad.length} · 문제 ${bad.length} · 금지어 ${banHits.length}`)
+if (labelWarn.length) console.log('경고 — 조회 라벨 8자 초과(약칭 또는 배치 검토):\n  ' + labelWarn.join('\n  '))
 if (banHits.length) console.log('금지어:\n  ' + banHits.join('\n  '))
 if (problems.length) console.log('전체:\n  ' + problems.join('\n  '))
 process.exit(bad.length || banHits.length || problems.length ? 1 : 0)

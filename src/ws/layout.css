@@ -73,7 +73,7 @@
 .ws-sh__fold[aria-expanded='true']::after { top: -2px; border-top-color: transparent; border-bottom-color: var(--ws-text-muted); }
 
 /* 조회 영역 안의 표는 선이 없다 — 라벨이 입력 앞에 붙는 한 줄 폼이다 */
-.ws-sh .ws-tb { border-top: 0; }
+.ws-sh .ws-tb { border-top: 0; table-layout: auto; } /* 라벨 칸이 글자에 맞춰 늘어나야 한다 — WsSearch colStyles */
 .ws-sh .ws-tb th, .ws-sh .ws-tb td { height: var(--ws-search-row-h); border: 0; background: transparent; vertical-align: middle; }
 .ws-sh .ws-tb th { padding: 0 19px 0 0; font-weight: 500; white-space: nowrap; }
 .ws-sh .ws-tb th:not(:first-child) { padding-left: 60px; } /* 원본 .shbox .tb th{padding:0 19px 0 60px} */
