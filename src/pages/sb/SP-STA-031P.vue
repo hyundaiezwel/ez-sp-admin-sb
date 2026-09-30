@@ -1,37 +1,46 @@
 <!-- SB-DONE -->
 <script setup lang="ts">
 /** SP-STA-031P 이용통계 이용실적통계 — 명세 src/specs/SP-STA-031P.json */
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import Select from 'primevue/select'
 import Button from 'primevue/button'
 import PageHead from '../../app/PageHead.vue'
 import QueryState from '../../app/QueryState.vue'
 import EzChart from '../../app/EzChart.vue'
+import WsSearch from '../../ws/WsSearch.vue'
 import { notify } from '../../ws/notify'
 import { periodError, presetRange, PRESETS, type Range } from '../../ws/period'
 import WsPeriod from '../../ws/WsPeriod.vue'
-import { YEARS, BIZ, CO_FG } from '../../sp/codes'
-import { ctx } from '../../sp/context'
+import { YEARS, CO_FG, bizLabel } from '../../sp/codes'
+import { ctx, ctxKey } from '../../sp/context'
 import SbCan from '../../sb/SbCan.vue'
 import { USAGE_DAILY, USAGE_MONTHLY, USAGE_YEARLY, USAGE_BY_TYPE } from '@fixtures/sb/B8'
 
 const CODE = 'SP-STA-031P'
-const year = ref(ctx.year)
-const biz = ref(ctx.biz)
-const coFg = ref('')
-const useType = ref('')
+const coFg = ref('ALL')
+const useType = ref('ALL')
 const unit = ref<'일별' | '월별' | '연도별'>('월별')
-const range = ref(presetRange(PRESETS[3]) as Range)
+const defaultRange = () => presetRange(PRESETS[3]) as Range
+const range = ref(defaultRange())
+/** 연도별 추이는 여러 해를 한눈에 봐야 하는 통계라 전역 참여년도 대신 비교 연도(시작~끝)를 쓴다 */
+const yearFrom = ref(2023)
+const yearTo = ref(ctx.year)
 const simFail = ref(false)
 const won = (n: number) => n.toLocaleString('ko-KR')
 
-const rowsOf = computed(() => (unit.value === '일별' ? USAGE_DAILY : unit.value === '월별' ? USAGE_MONTHLY : USAGE_YEARLY))
+const rowsOf = computed(() => {
+  if (unit.value === '일별') return USAGE_DAILY
+  if (unit.value === '월별') return USAGE_MONTHLY
+  return USAGE_YEARLY.filter((r) => +r.period >= yearFrom.value && +r.period <= yearTo.value)
+})
 const totalAmt = computed(() => rowsOf.value.reduce((s: number, r: any) => s + r.amount, 0))
 
 function search() {
   if (unit.value === '일별' && periodError(range.value, { maxYears: 1 })) return notify('일별은 12개월까지 볼 수 있습니다. 월별로 바꿔 주세요.', 'danger')
   notify('조건에 맞춰 이용실적을 다시 집계했습니다.', 'success')
 }
+function reset() { coFg.value = 'ALL'; useType.value = 'ALL'; unit.value = '월별'; range.value = defaultRange(); yearFrom.value = 2023; yearTo.value = ctx.year; search() }
+watch(ctxKey, search)
 
 const trendOption = computed(() => ({
   legend: { bottom: 0 },
@@ -51,32 +60,42 @@ const typeOption = {
 <template>
   <div class="ws-page ws-page--canvas">
     <PageHead />
-    <section class="ws-sec ws-card">
-      <div class="ws-tit"><div class="ws-tit__l"><h2 class="ws-tit__h">조회 조건</h2></div></div>
-      <div class="cond">
-        <label for="y-y" class="ws-req">참여년도</label>
-        <Select v-model="year" input-id="y-y" :options="YEARS" style="width:110px" />
-        <label for="y-b">사업</label>
-        <Select v-model="biz" input-id="y-b" :options="[{ l: '전체', v: '' }, ...BIZ.map((b) => ({ l: b.label, v: b.code }))]" option-label="l" option-value="v" style="width:190px" />
-        <label for="y-c">기업구분</label>
-        <Select v-model="coFg" input-id="y-c" :options="[{ l: '전체', v: '' }, ...CO_FG.map((f) => ({ l: f.label, v: f.code }))]" option-label="l" option-value="v" style="width:170px" />
-        <label for="y-t">이용유형</label>
-        <Select v-model="useType" input-id="y-t" :options="[{ l: '전체', v: '' }, ...USAGE_BY_TYPE.map((t) => ({ l: t.type, v: t.type }))]" option-label="l" option-value="v" style="width:150px" />
-      </div>
-      <div class="cond" style="margin-top:8px">
-        <label for="y-u" class="ws-req">집계 단위</label>
-        <Select v-model="unit" input-id="y-u" :options="['일별', '월별', '연도별']" style="width:110px" />
-        <template v-if="unit === '일별'"><label for="y-p">기간</label><WsPeriod id="y-p" v-model="range" :limit="{ maxYears: 1 }" /></template>
-        <Button label="조회" @click="search" />
-        <Button label="원천 조회 실패 시연" size="small" severity="secondary" outlined class="ws-line" @click="simFail = !simFail" />
-      </div>
-    </section>
+    <WsSearch :cols="['104px', '', '132px', '']" @search="search" @reset="reset">
+      <tr>
+        <th scope="row"><label for="y-c">기업구분</label></th>
+        <td><Select v-model="coFg" input-id="y-c" :options="[{ l: '전체', v: 'ALL' }, ...CO_FG.map((f) => ({ l: f.label, v: f.code }))]" option-label="l" option-value="v" fluid /></td>
+        <th scope="row"><label for="y-t">이용유형</label></th>
+        <td><Select v-model="useType" input-id="y-t" :options="[{ l: '전체', v: 'ALL' }, ...USAGE_BY_TYPE.map((t) => ({ l: t.type, v: t.type }))]" option-label="l" option-value="v" fluid /></td>
+      </tr>
+      <tr>
+        <th scope="row"><label for="y-u">집계 단위</label></th>
+        <td><Select v-model="unit" input-id="y-u" :options="['일별', '월별', '연도별']" fluid /></td>
+        <template v-if="unit === '일별'">
+          <th scope="row"><label for="y-p">기간</label></th>
+          <td><WsPeriod id="y-p" v-model="range" :limit="{ maxYears: 1 }" /></td>
+        </template>
+        <template v-else-if="unit === '연도별'">
+          <th scope="row"><label for="y-fy">비교 연도</label></th>
+          <td>
+            <span class="yr">
+              <Select v-model="yearFrom" input-id="y-fy" :options="YEARS" aria-label="비교 연도 시작" class="yr__s" />
+              <span aria-hidden="true">~</span>
+              <Select v-model="yearTo" :options="YEARS" aria-label="비교 연도 종료" class="yr__s" />
+            </span>
+          </td>
+        </template>
+      </tr>
+    </WsSearch>
+    <p class="ws-desc" style="margin:8px 0 0">참여년도 {{ ctx.year }} · {{ bizLabel(ctx.biz) || '전체' }} 기준(연도별 추이는 비교 연도 기준)</p>
 
     <QueryState :loading="false" :error="simFail ? '실적을 불러오지 못했습니다' : ''" :empty="false" @retry="simFail = false">
       <section class="ws-sec ws-card">
         <div class="ws-tit">
           <div class="ws-tit__l"><h2 class="ws-tit__h">{{ unit }} 실적표</h2><span class="ws-desc">합계 이용금액 {{ won(totalAmt) }}원</span></div>
-          <div class="ws-tit__r"><SbCan action="download"><Button label="엑셀 다운로드" size="small" severity="secondary" outlined class="ws-line" @click="notify('기간별 실적표를 내려받기를 요청했습니다.', 'success')" /></SbCan></div>
+          <div class="ws-tit__r">
+            <Button label="원천 조회 실패 시연" size="small" severity="secondary" outlined class="ws-line" @click="simFail = !simFail" />
+            <SbCan action="download"><Button label="엑셀 다운로드" size="small" severity="secondary" outlined class="ws-line" @click="notify('기간별 실적표를 내려받기를 요청했습니다.', 'success')" /></SbCan>
+          </div>
         </div>
         <EzChart :option="trendOption" height="240px" />
         <table class="ws-gtb" style="margin-top:10px">
@@ -103,5 +122,6 @@ const typeOption = {
 </template>
 
 <style scoped>
-.cond { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.yr { display: flex; align-items: center; gap: 8px; }
+.yr__s { width: 120px; }
 </style>

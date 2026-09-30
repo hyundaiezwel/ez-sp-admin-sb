@@ -1,31 +1,33 @@
 <!-- SB-DONE -->
 <script setup lang="ts">
 /** SP-STA-010P 사업운영통계 신청·승인통계 — 명세 src/specs/SP-STA-010P.json */
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import DatePicker from 'primevue/datepicker'
-import Select from 'primevue/select'
 import Button from 'primevue/button'
 import PageHead from '../../app/PageHead.vue'
 import EzChart from '../../app/EzChart.vue'
+import WsSearch from '../../ws/WsSearch.vue'
 import WsDownload from '../../ws/WsDownload.vue'
 import { notify } from '../../ws/notify'
-import { YEARS, BIZ, bizLabel, coFgLabel } from '../../sp/codes'
-import { ctx } from '../../sp/context'
+import { bizLabel, coFgLabel } from '../../sp/codes'
+import { ctx, ctxKey } from '../../sp/context'
 import SbCan from '../../sb/SbCan.vue'
 import { can, denyTip } from '../../sb/context'
 import { APPLY_REPORT, APPLY_CO_LIST } from '@fixtures/sb/B8'
 
 const CODE = 'SP-STA-010P'
-const year = ref(ctx.year)
-const biz = ref(ctx.biz)
-const reportDate = ref(new Date(2026, 8, 30))
+const defaultDate = () => new Date(2026, 8, 30)
+const reportDate = ref(defaultDate())
 const made = ref(true)
 
 function generate() {
-  if (reportDate.value.getFullYear() !== year.value) return notify('참여년도와 보고일자의 연도가 다릅니다.', 'danger')
+  if (reportDate.value.getFullYear() !== ctx.year) return notify('참여년도와 보고일자의 연도가 다릅니다.', 'danger')
   made.value = true
   notify('선택한 보고일자 기준으로 리포트를 다시 만들었습니다.', 'success')
 }
+function reset() { reportDate.value = defaultDate(); generate() }
+watch(ctxKey, generate)
+
 const won = (n: number) => n.toLocaleString('ko-KR')
 const ymd = (d: Date) => `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`
 
@@ -53,24 +55,18 @@ const recruitOption = {
   <div class="ws-page ws-page--canvas">
     <PageHead />
 
-    <section class="ws-sec ws-card">
-      <div class="ws-tit"><div class="ws-tit__l"><h2 class="ws-tit__h">조회 조건</h2></div></div>
-      <div class="cond">
-        <label for="y-y" class="ws-req">참여년도</label>
-        <Select v-model="year" input-id="y-y" :options="YEARS" style="width:120px" />
-        <label for="y-b">사업</label>
-        <Select v-model="biz" input-id="y-b" :options="[{ l: '전체', v: '' }, ...BIZ.map((b) => ({ l: b.label, v: b.code }))]" option-label="l" option-value="v" style="width:220px" />
-        <label for="y-d" class="ws-req">보고일자</label>
-        <DatePicker v-model="reportDate" input-id="y-d" date-format="yy.mm.dd" show-icon icon-display="input" style="width:150px" />
-        <Button label="리포트 생성" @click="generate" />
-      </div>
-      <p class="ws-desc" style="margin-top:8px">마지막 집계 {{ APPLY_REPORT.reportedAt }} · 배치로 집계한 값이라 실시간 조회와 다를 수 있습니다.</p>
-    </section>
+    <WsSearch :cols="['110px', '']" @search="generate" @reset="reset">
+      <tr>
+        <th scope="row"><label for="y-d">보고일자</label></th>
+        <td><DatePicker v-model="reportDate" input-id="y-d" date-format="yy.mm.dd" show-icon icon-display="input" fluid /></td>
+      </tr>
+    </WsSearch>
+    <p class="ws-desc" style="margin:8px 0 0">참여년도 {{ ctx.year }} · {{ bizLabel(ctx.biz) || '전체' }} 기준 · 마지막 집계 {{ APPLY_REPORT.reportedAt }} · 배치로 집계한 값이라 실시간 조회와 다를 수 있습니다.</p>
 
     <template v-if="made">
       <div class="ws-split ws-split--21">
         <section class="ws-sec ws-card">
-          <div class="ws-tit"><div class="ws-tit__l"><h2 class="ws-tit__h">신청 · 확정 현황</h2><span class="ws-desc">{{ bizLabel(biz) || '전체' }}</span></div></div>
+          <div class="ws-tit"><div class="ws-tit__l"><h2 class="ws-tit__h">신청 · 확정 현황</h2><span class="ws-desc">{{ bizLabel(ctx.biz) || '전체' }}</span></div></div>
           <table class="ws-tb ws-tb--view">
             <thead><tr><th scope="col"></th><th scope="col">신청인원(기업)</th><th scope="col">확정인원(기업)</th><th scope="col">확정률</th></tr></thead>
             <tbody>
@@ -144,7 +140,6 @@ const recruitOption = {
 </template>
 
 <style scoped>
-.cond { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
 .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--ws-gap-inter); }
 .kpi { display: flex; flex-direction: column; gap: 6px; }
 .kpi__label { color: var(--ws-text-sub); }

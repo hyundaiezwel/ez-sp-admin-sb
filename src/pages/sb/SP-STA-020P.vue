@@ -1,25 +1,32 @@
 <!-- SB-DONE -->
 <script setup lang="ts">
 /** SP-STA-020P 사업참여통계 참여기업통계 — 명세 src/specs/SP-STA-020P.json */
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import Select from 'primevue/select'
 import Button from 'primevue/button'
 import PageHead from '../../app/PageHead.vue'
 import EzChart from '../../app/EzChart.vue'
+import WsSearch from '../../ws/WsSearch.vue'
 import WsDownload from '../../ws/WsDownload.vue'
 import { notify } from '../../ws/notify'
-import { YEARS, BIZ, CO_FG, coFgLabel } from '../../sp/codes'
-import { ctx } from '../../sp/context'
+import { YEARS, CO_FG, coFgLabel, bizLabel } from '../../sp/codes'
+import { ctx, ctxKey } from '../../sp/context'
 import SbCan from '../../sb/SbCan.vue'
 import { can, denyTip } from '../../sb/context'
 import { CO_FG_TABLE, PARTICIPATION_TYPE, REJOIN_COUNT, REJOIN_RATE, PARTNER_CO_LIST } from '@fixtures/sb/B8'
 
 const CODE = 'SP-STA-020P'
-const year = ref(ctx.year)
-const biz = ref(ctx.biz)
-const coFg = ref('')
-const type = ref('')
+/** 재참여율은 여러 해를 한눈에 봐야 하는 통계라 전역 참여년도 대신 비교 연도(시작~끝)를 따로 둔다 */
+const MIN_YEAR = Math.min(...YEARS)
+const coFg = ref('ALL')
+const type = ref('ALL')
+const yearFrom = ref(MIN_YEAR)
+const yearTo = ref(ctx.year)
 const picked = ref<string | null>(null)
+
+function search() { notify('조건에 맞춰 다시 집계했습니다.', 'success') }
+function reset() { coFg.value = 'ALL'; type.value = 'ALL'; yearFrom.value = MIN_YEAR; yearTo.value = ctx.year; search() }
+watch(ctxKey, search)
 
 const won = (n: number) => n.toLocaleString('ko-KR')
 const totalCo = computed(() => CO_FG_TABLE.reduce((s, r) => s + r.co, 0))
@@ -27,36 +34,42 @@ const totalWorker = computed(() => CO_FG_TABLE.reduce((s, r) => s + r.worker, 0)
 const totalAmt = computed(() => CO_FG_TABLE.reduce((s, r) => s + r.amount, 0))
 
 const filteredList = computed(() => (picked.value ? PARTNER_CO_LIST.filter((c) => c.coFg === picked.value) : PARTNER_CO_LIST))
+const rejoinRate = computed(() => REJOIN_RATE.filter((r) => r.year >= yearFrom.value && r.year <= yearTo.value))
 
 const countOption = {
   xAxis: { type: 'category', data: REJOIN_COUNT.map((r) => `${r.times}회`) },
   yAxis: { type: 'value' },
   series: [{ type: 'bar', data: REJOIN_COUNT.map((r) => r.co) }],
 }
-const rateOption = {
-  xAxis: { type: 'category', data: REJOIN_RATE.map((r) => r.year) },
+const rateOption = computed(() => ({
+  xAxis: { type: 'category', data: rejoinRate.value.map((r) => r.year) },
   yAxis: { type: 'value', axisLabel: { formatter: '{value}%' } },
-  series: [{ type: 'line', data: REJOIN_RATE.map((r) => r.rate) }],
-}
+  series: [{ type: 'line', data: rejoinRate.value.map((r) => r.rate) }],
+}))
 </script>
 
 <template>
   <div class="ws-page ws-page--canvas">
     <PageHead />
-    <section class="ws-sec ws-card">
-      <div class="ws-tit"><div class="ws-tit__l"><h2 class="ws-tit__h">조회 조건</h2></div></div>
-      <div class="cond">
-        <label for="y-y" class="ws-req">참여년도</label>
-        <Select v-model="year" input-id="y-y" :options="YEARS" style="width:120px" />
-        <label for="y-b">사업</label>
-        <Select v-model="biz" input-id="y-b" :options="[{ l: '전체', v: '' }, ...BIZ.map((b) => ({ l: b.label, v: b.code }))]" option-label="l" option-value="v" style="width:200px" />
-        <label for="y-c">기업구분</label>
-        <Select v-model="coFg" input-id="y-c" :options="[{ l: '전체', v: '' }, ...CO_FG.map((f) => ({ l: f.label, v: f.code }))]" option-label="l" option-value="v" style="width:180px" />
-        <label for="y-t">참여유형</label>
-        <Select v-model="type" input-id="y-t" :options="[{ l: '전체', v: '' }, { l: '일반', v: '일반' }, { l: '발전모델', v: '발전모델' }, { l: '동반성장', v: '동반성장' }]" option-label="l" option-value="v" style="width:150px" />
-        <Button label="조회" @click="notify('조건에 맞춰 다시 집계했습니다.', 'success')" />
-      </div>
-    </section>
+    <WsSearch :cols="['104px', '', '132px', '']" @search="search" @reset="reset">
+      <tr>
+        <th scope="row"><label for="y-c">기업구분</label></th>
+        <td><Select v-model="coFg" input-id="y-c" :options="[{ l: '전체', v: 'ALL' }, ...CO_FG.map((f) => ({ l: f.label, v: f.code }))]" option-label="l" option-value="v" fluid /></td>
+        <th scope="row"><label for="y-t">참여유형</label></th>
+        <td><Select v-model="type" input-id="y-t" :options="[{ l: '전체', v: 'ALL' }, { l: '일반', v: '일반' }, { l: '발전모델', v: '발전모델' }, { l: '동반성장', v: '동반성장' }]" option-label="l" option-value="v" fluid /></td>
+      </tr>
+      <tr>
+        <th scope="row"><label for="y-fy">비교 연도</label></th>
+        <td colspan="3">
+          <span class="yr">
+            <Select v-model="yearFrom" input-id="y-fy" :options="YEARS" aria-label="비교 연도 시작" class="yr__s" />
+            <span aria-hidden="true">~</span>
+            <Select v-model="yearTo" :options="YEARS" aria-label="비교 연도 종료" class="yr__s" />
+          </span>
+        </td>
+      </tr>
+    </WsSearch>
+    <p class="ws-desc" style="margin:8px 0 0">참여년도 {{ ctx.year }} · {{ bizLabel(ctx.biz) || '전체' }} 기준(재참여율은 비교 연도 기준)</p>
 
     <section class="ws-sec ws-card">
       <div class="ws-tit">
@@ -88,9 +101,9 @@ const rateOption = {
     </div>
 
     <section class="ws-sec ws-card">
-      <div class="ws-tit"><div class="ws-tit__l"><h2 class="ws-tit__h">연도별 재참여율</h2><span class="ws-desc">이관 전 연도는 점을 찍지 않는다</span></div></div>
+      <div class="ws-tit"><div class="ws-tit__l"><h2 class="ws-tit__h">연도별 재참여율</h2><span class="ws-desc">비교 연도 {{ yearFrom }}~{{ yearTo }} · 이관 전 연도는 점을 찍지 않는다</span></div></div>
       <EzChart :option="rateOption" height="220px" />
-      <p class="ws-desc" style="margin-top:6px">이관 전: {{ REJOIN_RATE.filter((r) => r.rate === null).map((r) => r.year).join(', ') }}</p>
+      <p class="ws-desc" style="margin-top:6px">이관 전: {{ rejoinRate.filter((r) => r.rate === null).map((r) => r.year).join(', ') }}</p>
     </section>
 
     <section class="ws-sec ws-card">
@@ -115,8 +128,9 @@ const rateOption = {
 </template>
 
 <style scoped>
-.cond { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
 .rowbtn { cursor: pointer; }
 .rowbtn:hover { background: var(--ws-surface-alt); }
 .rowbtn.active { background: var(--ws-surface-alt); font-weight: 600; }
+.yr { display: flex; align-items: center; gap: 8px; }
+.yr__s { width: 120px; }
 </style>

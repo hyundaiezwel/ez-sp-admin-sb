@@ -1,26 +1,24 @@
 <!-- SB-DONE -->
 <script setup lang="ts">
 /** SP-STA-011P 사업운영통계 이용정지통계 — 명세 src/specs/SP-STA-011P.json */
-import { computed, ref } from 'vue'
-import DatePicker from 'primevue/datepicker'
-import Select from 'primevue/select'
+import { computed, ref, watch } from 'vue'
 import Button from 'primevue/button'
 import PageHead from '../../app/PageHead.vue'
 import EzChart from '../../app/EzChart.vue'
+import WsSearch from '../../ws/WsSearch.vue'
 import { notify } from '../../ws/notify'
 import { periodError, presetRange, PRESETS, type Range } from '../../ws/period'
 import WsPeriod from '../../ws/WsPeriod.vue'
-import { YEARS, BIZ, CO_FG } from '../../sp/codes'
-import { ctx } from '../../sp/context'
+import { CO_FG, bizLabel } from '../../sp/codes'
+import { ctx, ctxKey } from '../../sp/context'
 import SbCan from '../../sb/SbCan.vue'
 import { STOP_MATRIX, STOP_WITHDRAWN } from '@fixtures/sb/B8'
 
 const CODE = 'SP-STA-011P'
 const REASONS = ['퇴사(이직)', '개인사유', '신분변경', '기업경영악화', '복지제도 변경', '동반성장모델 지원 기한 종료', '기타']
 
-const year = ref(ctx.year)
-const biz = ref(ctx.biz)
-const range = ref(presetRange(PRESETS[4]) as Range)
+const defaultRange = () => presetRange(PRESETS[4]) as Range
+const range = ref(defaultRange())
 const total = computed(() => STOP_MATRIX.flat().reduce((s, n) => s + n, 0))
 const rowSum = (i: number) => STOP_MATRIX[i].reduce((s, n) => s + n, 0)
 const colSum = (j: number) => STOP_MATRIX.reduce((s, row) => s + row[j], 0)
@@ -29,6 +27,8 @@ function search() {
   if (periodError(range.value, { maxYears: 1 })) return notify('이용정지 기한을 확인하세요 — 최대 12개월까지 조회할 수 있습니다.', 'danger')
   notify('조건에 맞춰 이용정지 교차표를 다시 집계했습니다.', 'success')
 }
+function reset() { range.value = defaultRange(); search() }
+watch(ctxKey, search)
 
 const reasonOption = computed(() => ({
   tooltip: { trigger: 'item' },
@@ -43,21 +43,13 @@ function download() {
 <template>
   <div class="ws-page ws-page--canvas">
     <PageHead />
-    <section class="ws-sec ws-card">
-      <div class="ws-tit"><div class="ws-tit__l"><h2 class="ws-tit__h">조회 조건</h2></div></div>
-      <div class="cond">
-        <label for="y-y" class="ws-req">참여년도</label>
-        <Select v-model="year" input-id="y-y" :options="YEARS" style="width:120px" />
-        <label for="y-b">사업</label>
-        <Select v-model="biz" input-id="y-b" :options="[{ l: '전체', v: '' }, ...BIZ.map((b) => ({ l: b.label, v: b.code }))]" option-label="l" option-value="v" style="width:220px" />
-      </div>
-      <div class="cond" style="margin-top:8px">
-        <label for="y-p" class="ws-req">이용정지 기한</label>
-        <WsPeriod id="y-p" v-model="range" :limit="{ maxYears: 1 }" />
-        <Button label="조회" @click="search" />
-      </div>
-      <p class="ws-desc" style="margin-top:8px">마지막 집계 2026.09.30 00:12</p>
-    </section>
+    <WsSearch :cols="['110px', '']" @search="search" @reset="reset">
+      <tr>
+        <th scope="row"><label for="y-p">이용정지 기한</label></th>
+        <td><WsPeriod id="y-p" v-model="range" :limit="{ maxYears: 1 }" /></td>
+      </tr>
+    </WsSearch>
+    <p class="ws-desc" style="margin:8px 0 0">참여년도 {{ ctx.year }} · {{ bizLabel(ctx.biz) || '전체' }} 기준 · 마지막 집계 2026.09.30 00:12</p>
 
     <div class="ws-split ws-split--21">
       <section class="ws-sec ws-card">
@@ -90,7 +82,3 @@ function download() {
     <div class="ws-msg"><p class="ws-msg__tit">안내</p><ul><li>교차표는 건수만 — 노동자 식별 정보를 내보내지 않는다.</li><li>0인 칸도 늘 같은 순서로 표시한다.</li></ul></div>
   </div>
 </template>
-
-<style scoped>
-.cond { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
-</style>

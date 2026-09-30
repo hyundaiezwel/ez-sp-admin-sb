@@ -1,36 +1,34 @@
 <!-- SB-DONE -->
 <script setup lang="ts">
 /** SP-STA-021P 사업참여통계 참여노동자통계 — 명세 src/specs/SP-STA-021P.json */
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import DatePicker from 'primevue/datepicker'
 import Select from 'primevue/select'
 import InputText from 'primevue/inputtext'
-import Button from 'primevue/button'
 import PageHead from '../../app/PageHead.vue'
 import QueryState from '../../app/QueryState.vue'
 import TabGrid from '../../grid/TabGrid.vue'
+import WsSearch from '../../ws/WsSearch.vue'
 import WsPager from '../../ws/WsPager.vue'
 import WsDownload from '../../ws/WsDownload.vue'
 import { usePaged } from '../../app/usePaged'
 import { mask } from '../../ws/mask'
-import { notify } from '../../ws/notify'
-import { YEARS, BIZ } from '../../sp/codes'
-import { ctx } from '../../sp/context'
+import { bizLabel } from '../../sp/codes'
+import { ctx, ctxKey } from '../../sp/context'
 import SbCan from '../../sb/SbCan.vue'
 import { can, denyTip } from '../../sb/context'
 import { WORKER_LIST, WORKER_SUMMARY, type StaWorkerRow } from '@fixtures/sb/B8'
 
 const CODE = 'SP-STA-021P'
-const year = ref(ctx.year)
-const biz = ref(ctx.biz)
-const reportDate = ref(new Date(2026, 8, 30))
-const round = ref('')
+const defaultDate = () => new Date(2026, 8, 30)
+const reportDate = ref(defaultDate())
+const round = ref('ALL')
 const kw = ref('')
 const kwType = ref<'이름' | '사번' | '생년월일'>('이름')
 const joinSts = ref('')
 
 const hit = (r: StaWorkerRow) => {
-  if (round.value && r.round !== round.value) return false
+  if (round.value !== 'ALL' && r.round !== round.value) return false
   if (joinSts.value && r.joinSts !== joinSts.value) return false
   if (kw.value.trim()) {
     const q = kw.value.trim()
@@ -41,8 +39,9 @@ const hit = (r: StaWorkerRow) => {
 }
 const { rows, loading, error, reload, first, size, total, search: requery } = usePaged(() => WORKER_LIST.filter(hit), { size: 10 })
 onMounted(reload)
+watch(ctxKey, () => requery())
 function search() { requery() }
-function reset() { round.value = ''; kw.value = ''; joinSts.value = ''; search() }
+function reset() { round.value = 'ALL'; kw.value = ''; kwType.value = '이름'; reportDate.value = defaultDate(); joinSts.value = ''; search() }
 function byCard(sts: string) { joinSts.value = sts; search() }
 
 const columns = computed(() => [
@@ -63,26 +62,24 @@ const fmt = (n: number) => n.toLocaleString('ko-KR')
 <template>
   <div class="ws-page">
     <PageHead />
-    <section class="ws-sec ws-card">
-      <div class="ws-tit"><div class="ws-tit__l"><h2 class="ws-tit__h">조회 조건</h2></div></div>
-      <div class="cond">
-        <label for="y-y" class="ws-req">참여년도</label>
-        <Select v-model="year" input-id="y-y" :options="YEARS" style="width:110px" />
-        <label for="y-b">사업</label>
-        <Select v-model="biz" input-id="y-b" :options="[{ l: '전체', v: '' }, ...BIZ.map((b) => ({ l: b.label, v: b.code }))]" option-label="l" option-value="v" style="width:190px" />
-        <label for="y-r">차수</label>
-        <Select v-model="round" input-id="y-r" :options="[{ l: '전체', v: '' }, { l: '1차', v: '1차' }, { l: '2차', v: '2차' }, { l: '3차', v: '3차' }]" option-label="l" option-value="v" style="width:110px" />
-        <label for="y-d">보고일자</label>
-        <DatePicker v-model="reportDate" input-id="y-d" date-format="yy.mm.dd" show-icon icon-display="input" style="width:150px" />
-      </div>
-      <div class="cond" style="margin-top:8px">
-        <label for="y-kt">검색어</label>
-        <Select v-model="kwType" input-id="y-kt" :options="['이름', '사번', '생년월일']" style="width:100px" />
-        <InputText v-model="kw" placeholder="검색어" style="width:180px" />
-        <Button label="조회" @click="search" />
-        <Button label="초기화" severity="secondary" outlined @click="reset" />
-      </div>
-    </section>
+    <WsSearch :cols="['72px', '', '132px', '']" @search="search" @reset="reset">
+      <tr>
+        <th scope="row"><label for="y-r">차수</label></th>
+        <td><Select v-model="round" input-id="y-r" :options="[{ l: '전체', v: 'ALL' }, { l: '1차', v: '1차' }, { l: '2차', v: '2차' }, { l: '3차', v: '3차' }]" option-label="l" option-value="v" fluid /></td>
+        <th scope="row"><label for="y-d">보고일자</label></th>
+        <td><DatePicker v-model="reportDate" input-id="y-d" date-format="yy.mm.dd" show-icon icon-display="input" fluid /></td>
+      </tr>
+      <tr>
+        <th scope="row"><label for="y-kw">검색어</label></th>
+        <td colspan="3">
+          <span class="kwrow">
+            <Select v-model="kwType" :options="['이름', '사번', '생년월일']" aria-label="검색어 종류" class="kwrow__t" />
+            <InputText id="y-kw" v-model="kw" fluid placeholder="검색어" />
+          </span>
+        </td>
+      </tr>
+    </WsSearch>
+    <p class="ws-desc" style="margin:8px 0 0">참여년도 {{ ctx.year }} · {{ bizLabel(ctx.biz) || '전체' }} 기준</p>
 
     <ul class="kpis">
       <li class="kpi ws-card"><span class="kpi__label">확정인원</span><span class="kpi__value">{{ fmt(WORKER_SUMMARY.confirmed) }}<small>명</small></span></li>
@@ -106,7 +103,8 @@ const fmt = (n: number) => n.toLocaleString('ko-KR')
 </template>
 
 <style scoped>
-.cond { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.kwrow { display: flex; gap: 8px; }
+.kwrow__t { width: 110px; flex: none; }
 .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--ws-gap-inter); }
 .kpi { display: flex; flex-direction: column; gap: 6px; }
 .kpi__label { color: var(--ws-text-sub); }

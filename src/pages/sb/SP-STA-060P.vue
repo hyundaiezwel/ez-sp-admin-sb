@@ -1,59 +1,74 @@
 <!-- SB-DONE -->
 <script setup lang="ts">
 /** SP-STA-060P 국회요구자료 통계리포트 — 명세 src/specs/SP-STA-060P.json */
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import Tabs from 'primevue/tabs'
 import TabList from 'primevue/tablist'
 import Tab from 'primevue/tab'
 import TabPanels from 'primevue/tabpanels'
 import TabPanel from 'primevue/tabpanel'
-import Select from 'primevue/select'
 import RadioButton from 'primevue/radiobutton'
 import DatePicker from 'primevue/datepicker'
+import Select from 'primevue/select'
 import Button from 'primevue/button'
 import PageHead from '../../app/PageHead.vue'
+import WsSearch from '../../ws/WsSearch.vue'
 import { notify } from '../../ws/notify'
-import { YEARS } from '../../sp/codes'
-import { ctx } from '../../sp/context'
+import { YEARS, bizLabel } from '../../sp/codes'
+import { ctx, ctxKey } from '../../sp/context'
 import SbCan from '../../sb/SbCan.vue'
 import { NA_TEMPLATES, NA_T1, NA_T6, NA_T7, NA_T8, NA_T9 } from '@fixtures/sb/B8'
 
 const CODE = 'SP-STA-060P'
-const year = ref(ctx.year)
 const cond = ref<'전체(내평)' | '정평'>('전체(내평)')
-const reportDate = ref(new Date(2026, 8, 21))
+const defaultDate = () => new Date(2026, 8, 21)
+const reportDate = ref(defaultDate())
+/** 국회요구자료는 여러 해를 한 번에 묶어 보는 요청이 흔해 전역 참여년도 대신 비교 연도(시작~끝)를 쓴다 */
+const yearFrom = ref(ctx.year)
+const yearTo = ref(ctx.year)
 const made = ref(true)
 const tab = ref('T1')
 const won = (n: number) => n.toLocaleString('ko-KR')
 
 function generate() {
-  if (reportDate.value.getFullYear() !== year.value) return notify('참여년도와 보고일자의 연도가 다릅니다.', 'danger')
-  if (year.value < 2019) { made.value = false; return notify('이관 전 연도입니다.', 'danger') }
+  if (reportDate.value.getFullYear() < yearFrom.value || reportDate.value.getFullYear() > yearTo.value) return notify('보고일자가 비교 연도 범위를 벗어났습니다.', 'danger')
+  if (yearFrom.value < 2019) { made.value = false; return notify('이관 전 연도입니다.', 'danger') }
   made.value = true
   notify('선택한 조건으로 9개 템플릿을 다시 집계했습니다.', 'success')
 }
+function reset() { cond.value = '전체(내평)'; reportDate.value = defaultDate(); yearFrom.value = ctx.year; yearTo.value = ctx.year; generate() }
+watch(ctxKey, generate)
+
 function download() { notify(`'${NA_TEMPLATES.find((t) => t.id === tab.value)?.name}' 리포트를 내려받기를 요청했습니다.`, 'success') }
 </script>
 
 <template>
   <div class="ws-page ws-page--canvas">
     <PageHead />
-    <section class="ws-sec ws-card">
-      <div class="ws-tit"><div class="ws-tit__l"><h2 class="ws-tit__h">리포트 조건</h2></div></div>
-      <div class="cond">
-        <label for="y-y" class="ws-req">참여년도</label>
-        <Select v-model="year" input-id="y-y" :options="YEARS" style="width:110px" />
-        <fieldset style="display:flex; gap:10px; margin:0; padding:0; border:0">
-          <legend class="ws-req" style="float:left; margin-right:8px">검색조건</legend>
-          <div class="ws-radio"><RadioButton v-model="cond" input-id="c1" name="cond" value="전체(내평)" /><label for="c1">전체(내평)</label></div>
-          <div class="ws-radio"><RadioButton v-model="cond" input-id="c2" name="cond" value="정평" /><label for="c2">정평</label></div>
-        </fieldset>
-        <label for="y-d" class="ws-req">보고일자</label>
-        <DatePicker v-model="reportDate" input-id="y-d" date-format="yy.mm.dd" show-icon icon-display="input" style="width:150px" />
-        <Button label="리포트 생성" @click="generate" />
-      </div>
-      <p class="ws-desc" style="margin-top:8px">마지막 집계 2026.09.30 00:12 · 배치로 집계한 값이라 실시간 조회와 다를 수 있습니다.</p>
-    </section>
+    <WsSearch :cols="['104px', '', '132px', '']" @search="generate" @reset="reset">
+      <tr>
+        <th scope="row"><label for="y-fy">비교 연도</label></th>
+        <td>
+          <span class="yr">
+            <Select v-model="yearFrom" input-id="y-fy" :options="YEARS" aria-label="비교 연도 시작" class="yr__s" />
+            <span aria-hidden="true">~</span>
+            <Select v-model="yearTo" :options="YEARS" aria-label="비교 연도 종료" class="yr__s" />
+          </span>
+        </td>
+        <th scope="row"><label for="y-d">보고일자</label></th>
+        <td><DatePicker v-model="reportDate" input-id="y-d" date-format="yy.mm.dd" show-icon icon-display="input" fluid /></td>
+      </tr>
+      <tr>
+        <th scope="row">검색조건</th>
+        <td colspan="3">
+          <div class="ws-choices" role="radiogroup" aria-label="검색조건">
+            <div class="ws-radio"><RadioButton v-model="cond" input-id="c1" name="cond" value="전체(내평)" /><label for="c1">전체(내평)</label></div>
+            <div class="ws-radio"><RadioButton v-model="cond" input-id="c2" name="cond" value="정평" /><label for="c2">정평</label></div>
+          </div>
+        </td>
+      </tr>
+    </WsSearch>
+    <p class="ws-desc" style="margin:8px 0 0">참여년도 {{ ctx.year }} · {{ bizLabel(ctx.biz) || '전체' }} 기준(리포트는 비교 연도 기준) · 마지막 집계 2026.09.30 00:12 · 배치로 집계한 값이라 실시간 조회와 다를 수 있습니다.</p>
 
     <section v-if="made" class="ws-sec ws-card">
       <div class="ws-tit">
@@ -105,5 +120,6 @@ function download() { notify(`'${NA_TEMPLATES.find((t) => t.id === tab.value)?.n
 </template>
 
 <style scoped>
-.cond { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.yr { display: flex; align-items: center; gap: 8px; }
+.yr__s { width: 120px; }
 </style>

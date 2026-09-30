@@ -1,32 +1,35 @@
 <!-- SB-DONE -->
 <script setup lang="ts">
 /** SP-STA-050P CS통계 — 명세 src/specs/SP-STA-050P.json */
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import MultiSelect from 'primevue/multiselect'
-import Select from 'primevue/select'
 import Button from 'primevue/button'
 import PageHead from '../../app/PageHead.vue'
 import EzChart from '../../app/EzChart.vue'
+import WsSearch from '../../ws/WsSearch.vue'
 import { notify } from '../../ws/notify'
 import { periodError, presetRange, PRESETS, type Range } from '../../ws/period'
 import WsPeriod from '../../ws/WsPeriod.vue'
-import { BIZ } from '../../sp/codes'
-import { ctx } from '../../sp/context'
+import { bizLabel } from '../../sp/codes'
+import { ctx, ctxKey } from '../../sp/context'
 import { routeOf } from '../../sb/screens'
 import SbCan from '../../sb/SbCan.vue'
 import { CS_CHANNEL, CS_DAILY, CS_TYPE_CROSS } from '@fixtures/sb/B8'
 
 const CODE = 'SP-STA-050P'
 const router = useRouter()
-const biz = ref(ctx.biz)
 const channel = ref<string[]>([])
-const range = ref(presetRange(PRESETS[2]) as Range)
+const defaultRange = () => presetRange(PRESETS[2]) as Range
+const range = ref(defaultRange())
 
 function search() {
   if (periodError(range.value, { maxYears: 1 })) return notify('최대 12개월 이내로 설정해 주세요.', 'danger')
   notify('조건에 맞춰 CS통계를 다시 집계했습니다.', 'success')
 }
+function reset() { channel.value = []; range.value = defaultRange(); search() }
+watch(ctxKey, search)
+
 function gotoPending(ch: string) {
   if (ch === '누리집 문의') router.push(routeOf('SP-OPS-020L'))
   else if (ch === '기업 업무요청') router.push(routeOf('SP-OPS-010L'))
@@ -43,18 +46,15 @@ const dailyOption = {
 <template>
   <div class="ws-page ws-page--canvas">
     <PageHead />
-    <section class="ws-sec ws-card">
-      <div class="ws-tit"><div class="ws-tit__l"><h2 class="ws-tit__h">조회 조건</h2></div></div>
-      <div class="cond">
-        <label for="y-b">사업</label>
-        <Select v-model="biz" input-id="y-b" :options="[{ l: '전체', v: '' }, ...BIZ.map((b) => ({ l: b.label, v: b.code }))]" option-label="l" option-value="v" style="width:190px" />
-        <label for="y-ch">문의채널</label>
-        <MultiSelect v-model="channel" input-id="y-ch" :options="CS_CHANNEL.map((c) => c.channel)" display="chip" placeholder="전체" style="min-width:220px" />
-        <label for="y-p2" class="ws-req">기간</label>
-        <WsPeriod id="y-p2" v-model="range" :limit="{ maxYears: 1 }" />
-        <Button label="조회" @click="search" />
-      </div>
-    </section>
+    <WsSearch :cols="['104px', '', '132px', '']" @search="search" @reset="reset">
+      <tr>
+        <th scope="row"><label for="y-ch">문의채널</label></th>
+        <td><MultiSelect v-model="channel" input-id="y-ch" :options="CS_CHANNEL.map((c) => c.channel)" display="chip" placeholder="전체" fluid /></td>
+        <th scope="row"><label for="y-p">기간</label></th>
+        <td><WsPeriod id="y-p" v-model="range" :limit="{ maxYears: 1 }" /></td>
+      </tr>
+    </WsSearch>
+    <p class="ws-desc" style="margin:8px 0 0">참여년도 {{ ctx.year }} · {{ bizLabel(ctx.biz) || '전체' }} 기준</p>
 
     <ul class="kpis">
       <li v-for="c in CS_CHANNEL" :key="c.channel" class="kpi ws-card" :class="{ mute: !c.linked }">
@@ -88,7 +88,6 @@ const dailyOption = {
 </template>
 
 <style scoped>
-.cond { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
 .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--ws-gap-inter); }
 .kpi { display: flex; flex-direction: column; gap: 6px; }
 .kpi.mute { opacity: 0.6; }
