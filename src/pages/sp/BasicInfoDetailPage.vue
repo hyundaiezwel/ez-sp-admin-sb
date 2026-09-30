@@ -92,7 +92,7 @@ function addMemo() {
         <dl class="hd__kv">
           <div><dt>상태</dt><dd><SpStatus :code="row.sts" /></dd></div>
           <div><dt>사업</dt><dd>{{ bizLabel(ctx.biz) }}</dd></div>
-          <div><dt>접수번호</dt><dd>{{ row.joinSeq }}</dd></div>
+          <div><dt>접수번호</dt><dd>{{ row.receiptNo }}</dd></div>
           <div><dt>차수</dt><dd>{{ row.round }}차</dd></div>
           <div><dt>입금기한</dt><dd>{{ row.due }}</dd></div>
         </dl>
@@ -181,7 +181,7 @@ function addMemo() {
         </thead>
         <tbody>
           <tr>
-            <td>지정은행 391-910{{ row.joinSeq.slice(-6) }}</td>
+            <td>지정은행 391-910{{ row.receiptNo.slice(-6) }}</td>
             <td class="ws-num g">{{ won(share.ci) }}원</td>
             <td class="ws-num">{{ won(share.org) }}원</td>
             <td class="g">{{ row.due }}</td>

@@ -27,7 +27,7 @@ import { memo, basicStore } from '../../sp/stores'
 import { makeIntake, makeBasic } from '@fixtures/sp'
 
 /** `src`는 원본 행 — 실행하면 원본 상태가 바뀌어 같은 조건으로 다시 조회해도 나오지 않는다 */
-interface Target { id: string; name: string; joinSeq: string; bizNo: string; coFg: string; at: string; sts: string; src: { sts: string } }
+interface Target { id: string; name: string; receiptNo: string; bizNo: string; coFg: string; at: string; sts: string; src: { sts: string } }
 
 const CONDS = [
   { code: '130', label: '보완필요 — 기한 안에 보완하지 않은 기업' },
@@ -47,8 +47,8 @@ const result = ref<{ open: boolean; ok: number; fails: ResultItem[] }>({ open: f
 function query() {
   const key = ctxKey()
   const src: Target[] = cond.value === '510'
-    ? basicStore(key, () => makeBasic(key, ctx.year)).filter((r) => r.sts === '510').map((r) => ({ id: r.id, name: r.name, joinSeq: r.joinSeq, bizNo: r.bizNo, coFg: r.coFg, at: r.appliedAt, sts: r.sts, src: r }))
-    : memo('intake', key, () => makeIntake(key, ctx.year)).filter((r) => r.sts === cond.value).map((r) => ({ id: r.id, name: r.name, joinSeq: r.joinSeq, bizNo: r.bizNo, coFg: r.coFg, at: r.joinedAt, sts: r.sts, src: r }))
+    ? basicStore(key, () => makeBasic(key, ctx.year)).filter((r) => r.sts === '510').map((r) => ({ id: r.id, name: r.name, receiptNo: r.receiptNo, bizNo: r.bizNo, coFg: r.coFg, at: r.appliedAt, sts: r.sts, src: r }))
+    : memo('intake', key, () => makeIntake(key, ctx.year)).filter((r) => r.sts === cond.value).map((r) => ({ id: r.id, name: r.name, receiptNo: r.receiptNo, bizNo: r.bizNo, coFg: r.coFg, at: r.joinedAt, sts: r.sts, src: r }))
   targets.value = src
   except.value = []
   snapAt.value = new Date().toTimeString().slice(0, 8)
@@ -60,7 +60,7 @@ const selected = ref(0)
 const pool = computed(() => targets.value.filter((t) => !except.value.includes(t)))
 const columns = [
   { title: '기업명', field: 'name', minWidth: 180 },
-  { title: '접수번호', field: 'joinSeq', width: 124, hozAlign: 'center', headerHozAlign: 'center' },
+  { title: '접수번호', field: 'receiptNo', width: 124, hozAlign: 'center', headerHozAlign: 'center' },
   { title: '사업자번호', field: 'bizNo', width: 124, hozAlign: 'center', headerHozAlign: 'center' },
   { title: '기업구분', field: 'coFg', width: 120, formatter: (c: any) => coFgLabel(c.getValue()) },
   { title: '접수일', field: 'at', width: 104, hozAlign: 'center', headerHozAlign: 'center' },

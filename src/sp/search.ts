@@ -20,8 +20,8 @@ export function searchData(q: string): SearchHit[] {
   const co = basic.filter((r) => r.name.includes(k) || r.bizNo.replace(/-/g, '').includes(k.replace(/-/g, ''))).slice(0, 5)
   co.forEach((r) => out.push({ group: '기업', label: r.name, sub: r.bizNo, to: `/sp/basic-info/${r.id}` }))
   if (/^\d{4,}$/.test(k)) {
-    basic.filter((r) => r.joinSeq.startsWith(k)).slice(0, 5)
-      .forEach((r) => out.push({ group: '접수번호', label: r.joinSeq, sub: r.name, to: `/sp/basic-info/${r.id}` }))
+    basic.filter((r) => r.receiptNo.startsWith(k)).slice(0, 5)
+      .forEach((r) => out.push({ group: '접수번호', label: r.receiptNo, sub: r.name, to: `/sp/basic-info/${r.id}` }))
   }
   if (k.length >= 2 && !/\d/.test(k)) {
     const members = memo('member', key, () => makeMembers(key, ctx.year))

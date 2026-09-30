@@ -47,7 +47,7 @@ const pipeline = computed(() => makePipeline(ctxKey(), BIZ.map((b) => b.code)))
 const hit = (r: IntakeRow) => {
   const a = applied.value
   const k = a.kw.trim()
-  const field = { 기업명: r.name, 접수번호: r.joinSeq, 사업자번호: r.bizNo, 심사담당자: r.judge, 소재지: r.region, 참여경로: r.channel }[a.kwType] ?? ''
+  const field = { 기업명: r.name, 접수번호: r.receiptNo, 사업자번호: r.bizNo, 심사담당자: r.judge, 소재지: r.region, 참여경로: r.channel }[a.kwType] ?? ''
   const d = parseDate(r.joinedAt)
   return (!a.sts || r.sts === a.sts) && (!a.coFg || r.coFg === a.coFg) && (!a.growth || (a.growth === 'Y') === r.growth) &&
     (!a.disabled || (a.disabled === 'Y') === r.disabled) && (!k || field.includes(k)) &&
@@ -84,7 +84,7 @@ const columns = [
   { title: '번호', field: 'no', width: 72, hozAlign: 'right', headerHozAlign: 'center' },
   { title: '기업명', field: 'name', minWidth: 170 },
   { title: '사업자번호', field: 'bizNo', width: 124, hozAlign: 'center', headerHozAlign: 'center' },
-  { title: '접수번호', field: 'joinSeq', width: 124, hozAlign: 'center', headerHozAlign: 'center' },
+  { title: '접수번호', field: 'receiptNo', width: 124, hozAlign: 'center', headerHozAlign: 'center' },
   { title: '발전모델', field: 'growth', width: 84, hozAlign: 'center', headerHozAlign: 'center', formatter: (c: any) => (c.getValue() ? '대상' : '비대상') },
   { title: '기업구분', field: 'coFg', width: 120, formatter: (c: any) => coFgLabel(c.getValue()) },
   { title: '접수일', field: 'joinedAt', width: 104, hozAlign: 'center', headerHozAlign: 'center' },
@@ -285,7 +285,7 @@ const BASIC_COLS = ['입금대기', '입금완료', '참여개시', '참여취�
 
     <WsActionDialog
       v-model:visible="changeOpen" header="자격심사 상태 변경"
-      :target="current ? `${current.name} (${current.joinSeq}) — 지금 ${labelOf(current.sts)}` : ''"
+      :target="current ? `${current.name} (${current.receiptNo}) — 지금 ${labelOf(current.sts)}` : ''"
       :reason="{ label: '바꿀 상태', options: CHANGE_TO.map(labelOf) }"
       notice="보완필요 · 선정완료로 바꾸면 기업담당자에게 LMS 및 E-Mail이 발송됩니다."
       confirm-label="변경" @confirm="doChange"

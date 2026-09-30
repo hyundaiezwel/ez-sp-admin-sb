@@ -39,7 +39,7 @@ function submit() {
 <template>
   <div class="lg" :style="{ backgroundImage: `url(${base}img/login_bg.svg)` }">
     <div class="lg__box">
-      <img class="lg__logo" :src="`${base}img/login_logo.svg`" alt="현대이지웰" width="200" height="29" />
+      <img class="lg__logo" :src="`${base}img/login_logo.svg`" alt="운영사" width="200" height="29" />
       <form class="lg__card" novalidate @submit.prevent="submit">
         <h1 class="lg__tit">지원 사업 관리 로그인</h1>
         <ul class="lg__fields">

@@ -43,7 +43,7 @@ const all = computed(() => basicStore(ctxKey(), () => makeBasic(ctxKey(), ctx.ye
 const hit = (r: BasicRow) => {
   const a = applied.value
   const k = a.kw.trim()
-  const field = a.kwType === '기업명' ? r.name : a.kwType === '사업자번호' ? r.bizNo : r.joinSeq
+  const field = a.kwType === '기업명' ? r.name : a.kwType === '사업자번호' ? r.bizNo : r.receiptNo
   const d = parseDate(r.appliedAt)
   return (!a.sts || r.sts === a.sts) && (!a.coFg || r.coFg === a.coFg) && (!a.growth || (a.growth === 'Y') === r.growth) &&
     (!k || field.includes(k)) && (!a.range[0] || !d || d >= a.range[0]) && (!a.range[1] || !d || d <= a.range[1])

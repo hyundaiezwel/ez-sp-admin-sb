@@ -10,7 +10,7 @@ import { contrast } from './fix-contrast.mjs'
  * 의미 없는 실패가 섞여 진짜 실패가 묻힌다.
  *
  * 차트는 경고로만 찍는다. 참조 팔레트를 톤 그대로 쓰기로 한 결정의 대가라서
- * 막지는 않되 지우지도 않는다(@ezwel/ui v1.6.1과 같은 처리).
+ * 막지는 않되 지우지도 않는다(사내 UI 라이브러리 v1.6.1과 같은 처리).
  */
 const css = readFileSync(fileURLToPath(new URL('../src/ws/tokens.css', import.meta.url)), 'utf8')
 /* 블록을 갈라 읽는다. 파일 전체를 한 번에 긁으면 다크 값이 라이트를 덮어 라이트를 못 잰다 */

@@ -46,7 +46,7 @@ function company(r: () => number, i: number): SpCompany {
 }
 
 /* --- 접수·자격심사 ----------------------------------------------------- */
-export interface IntakeRow extends SpCompany { no: number; joinSeq: string; joinedAt: string; sts: string; disabled: boolean; judge: string; docs: number }
+export interface IntakeRow extends SpCompany { no: number; receiptNo: string; joinedAt: string; sts: string; disabled: boolean; judge: string; docs: number }
 const SCREEN_W: [string, number][] = [['220', 40], ['130', 26], ['210', 8], ['120', 10], ['110', 9], ['139', 5], ['131', 2]]
 const weighted = (r: () => number, w: [string, number][]) => {
   let x = r() * w.reduce((s, [, n]) => s + n, 0)
@@ -60,7 +60,7 @@ export function makeIntake(key: string, year: number, n = 1240): IntakeRow[] {
     const d = day(year, r)
     return {
       ...c, no: n - i,
-      joinSeq: `${d.getFullYear()}${pad(d.getMonth() + 1, 2)}${pad(d.getDate(), 2)}${pad(1 + Math.floor(r() * 400), 4)}`,
+      receiptNo: `${d.getFullYear()}${pad(d.getMonth() + 1, 2)}${pad(d.getDate(), 2)}${pad(1 + Math.floor(r() * 400), 4)}`,
       joinedAt: ymd(d), sts: weighted(r, SCREEN_W), disabled: r() < 0.12, judge: pick(r, JUDGES), docs: 2 + Math.floor(r() * 3),
     }
   })
@@ -89,7 +89,7 @@ export function makePipeline(key: string, bizCodes: string[]): Pipeline[] {
 
 /* --- 기초정보 심사 ----------------------------------------------------- */
 export interface BasicRow extends SpCompany {
-  no: number; joinSeq: string; round: number; first: number; added: number; final: number
+  no: number; receiptNo: string; round: number; first: number; added: number; final: number
   sts: string; appliedAt: string; appliedLast: string; due: string; memo: string
   /** 참여 근로자 중 참여불가회원으로 등재된 수 — 승인 흐름에서 경고가 뜬다 */
   banned: number
@@ -104,7 +104,7 @@ export function makeBasic(key: string, year: number, n = 860): BasicRow[] {
     const added = r() < 0.25 ? Math.floor(r() * 20) : 0
     const due = new Date(d); due.setDate(due.getDate() + 14)
     return {
-      ...c, no: n - i, joinSeq: `${year}${pad(d.getMonth() + 1, 2)}${pad(d.getDate(), 2)}${pad(1 + Math.floor(r() * 400), 4)}`,
+      ...c, no: n - i, receiptNo: `${year}${pad(d.getMonth() + 1, 2)}${pad(d.getDate(), 2)}${pad(1 + Math.floor(r() * 400), 4)}`,
       round: 1 + Math.floor(r() * r() * 3), first, added, final: first + added,
       sts: weighted(r, BASIC_W), appliedAt: ymd(d), appliedLast: added ? ymd(day(year, r, 200, 60)) : '',
       due: ymd(due), memo: r() < 0.15 ? pick(r, ['재직증빙 재요청', '담당자 통화 완료', '인원 조정 요청', '서류 보완 대기']) : '',

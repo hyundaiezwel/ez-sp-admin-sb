@@ -204,7 +204,7 @@
   --ws-crumb: #5e5e5e;
   --ws-crumb-last: #171717;
 
-  /* --- 차트 — Figma 기본 팔레트(@ezwel/ui v1.6.1과 같다. 사용자 결정) ----- */
+  /* --- 차트 — Figma 기본 팔레트(사내 UI 라이브러리 v1.6.1과 같다. 사용자 결정) ----- */
   --ws-chart-1: #2f80ed;
   --ws-chart-2: #f2994a;
   --ws-chart-3: #6fcf97;
