@@ -104,13 +104,13 @@ const quickList = computed(() => picked.value.map((c) => SCREENS.find((s) => s.c
       </section>
     </div>
 
-    <div class="ws-split ws-split--12">
+    <div class="ws-split">
       <section class="ws-sec ws-card">
         <div class="ws-tit"><div class="ws-tit__l"><h2 class="ws-tit__h">최근 업무요청</h2></div><div class="ws-tit__r"><RouterLink :to="routeOf('SP-OPS-010L')" class="ws-desc">전체 보기</RouterLink></div></div>
-        <table class="ws-gtb">
+        <table class="ws-gtb req">
           <thead><tr><th>번호</th><th>제목</th><th>기업</th><th>일시</th></tr></thead>
           <tbody>
-            <tr v-for="r in REQUESTS" :key="r.id"><td>{{ r.id }}</td><td>{{ r.title }}</td><td>{{ r.company }}</td><td>{{ r.at }}</td></tr>
+            <tr v-for="r in REQUESTS" :key="r.id"><td>{{ r.id }}</td><td class="req__t"><span class="trunc">{{ r.title }}</span></td><td>{{ r.company }}</td><td :title="r.at">{{ r.at.slice(5) }}</td></tr>
           </tbody>
         </table>
       </section>
@@ -167,5 +167,11 @@ const quickList = computed(() => picked.value.map((c) => SCREENS.find((s) => s.c
 .quick-opts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 16px; max-height: 320px; overflow: auto; }
 .notice { display: grid; gap: 2px; list-style: none; padding: 0; margin: 0; }
 .notice li { display: flex; justify-content: space-between; gap: 10px; padding: 8px 4px; border-bottom: 1px dashed var(--ws-border); }
+/* 반반 배치라 칸이 좁다 — 번호·기업·일시는 한 줄, 제목만 말줄임 */
+.req { table-layout: fixed; width: 100%; }
+.req td, .req th { white-space: nowrap; }
+.req th:nth-child(1) { width: 132px; } .req th:nth-child(3) { width: 104px; } .req th:nth-child(4) { width: 112px; }
+.req__t .trunc { display: block; }
+.req td { overflow: hidden; text-overflow: ellipsis; }
 .trunc { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 </style>
