@@ -13,20 +13,26 @@
  * 테마 버튼을 따로 둔다 — 사용자 메뉴 안에만 있을 때 다크 전환을 찾지 못했다.
  */
 import { computed, defineAsyncComponent, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import Menu from 'primevue/menu'
 import type { MenuItem as PvItem } from 'primevue/menuitem'
 import Popover from 'primevue/popover'
 import AppIcon from './AppIcon.vue'
 import GlobalSearch from './GlobalSearch.vue'
-import { PENDING, SYSTEM as sys } from './menu'
+import { PENDING, SYSTEMS, systemOf } from './menu'
 import { prefs, type Theme } from './theme'
 import { previewExpiry } from './session'
 // 늦게 싣는다 — 정적으로 물면 Select · Popover가 첫 로드에 실린다
 const SpContext = defineAsyncComponent(() => import('../sp/SpContext.vue'))
+const SbRole = defineAsyncComponent(() => import('../sb/SbRoleSwitch.vue'))
 
 const rail = defineModel<boolean>('rail', { required: true })
 const router = useRouter()
+const route = useRoute()
+const sys = computed(() => systemOf(route.path))
+/* 시스템 전환 — SB 목업 ↔ AS-IS 기반 미리보기 */
+const sw = ref<InstanceType<typeof Menu> | null>(null)
+const swItems = computed<PvItem[]>(() => SYSTEMS.map((s) => ({ label: s.label, icon: s.id === sys.value.id ? 'ws-check' : 'ws-blank', command: () => router.push(s.home) })))
 const base = import.meta.env.BASE_URL
 
 /* 테마 — 버튼은 라이트 ↔ 다크만 뒤집는다. "시스템 따르기"는 사용자 메뉴에 */
@@ -60,12 +66,19 @@ const meItems = computed<PvItem[]>(() => [
       <img class="tp__mark" :src="`${base}favicon.svg`" alt="" width="28" height="28" />
       <span class="tp__name">{{ sys.label }}</span>
     </RouterLink>
+    <button type="button" class="tp__ib tp__sw" aria-haspopup="menu" aria-label="시스템 전환" v-tooltip.bottom="'시스템 전환'" @click="(e) => sw?.toggle(e)">
+      <AppIcon name="chevron" :size="16" />
+    </button>
+    <Menu ref="sw" :model="swItems" popup>
+      <template #itemicon="{ item }"><span class="me-ic" aria-hidden="true">{{ item.icon === 'ws-check' ? '✓' : '' }}</span></template>
+    </Menu>
 
     <GlobalSearch class="tp__search" />
 
     <div class="tp__r">
       <!-- SpContext는 칩 + 팝오버 두 뿌리라 class가 붙지 않는다 — 감싸서 아래 :deep 보정이 걸리게 한다 -->
-      <div class="tp__ctx"><SpContext /></div>
+      <div class="tp__ctx"><SpContext :hide-role="sys.id === 'sb'" /></div>
+      <div v-if="sys.id === 'sb'" class="tp__ctx"><SbRole /></div>
       <button type="button" class="tp__ib" :aria-label="dark ? '라이트 테마로' : '다크 테마로'" v-tooltip.bottom="dark ? '라이트 테마로' : '다크 테마로'" @click="flipTheme">
         <AppIcon :name="dark ? 'sun' : 'moon'" :size="18" />
       </button>
@@ -108,13 +121,14 @@ const meItems = computed<PvItem[]>(() => [
 .tp__ib:hover, .tp__brand:hover, .tp__me:hover { background: var(--ws-top-hover); }
 .tp__ib:focus-visible, .tp__brand:focus-visible, .tp__me:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--ws-top-fg); }
 .tp__brand {
-  flex: none; display: flex; align-items: center; gap: 10px; height: 36px; padding: 0 8px; margin-right: 16px; border: 0; border-radius: var(--ws-radius);
+  flex: none; display: flex; align-items: center; gap: 10px; height: 36px; padding: 0 8px; border: 0; border-radius: var(--ws-radius);
   background: none; color: var(--ws-top-fg); font: inherit; text-decoration: none;
 }
 .tp__brand:hover { text-decoration: none; }
 /* 쉼표 그림은 32 격자 가운데 15폭이라 상자 오른쪽이 빈다 — 글자와 틈을 13 안팎으로 */
 .tp__mark { flex: none; display: block; margin-right: -4px; }
 .tp__name { font-size: 15px; font-weight: 700; white-space: nowrap; }
+.tp__sw { width: 28px; margin: 0 12px 0 -6px; }
 .tp__r { margin-left: auto; display: flex; align-items: center; gap: 4px; }
 .tp__ctx { margin-right: 8px; }
 .tp__dot {

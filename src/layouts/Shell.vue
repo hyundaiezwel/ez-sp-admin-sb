@@ -11,9 +11,9 @@
  * 접으면 64px 레일(240 ÷ 3.75). 라벨을 자르지 않고 하위는 펼침 메뉴로 낸다. 색은 원본 레일(#2a403d),
  * 상단바는 한 단 짙게(#1f2d2b) — 두 테마 모두 어둡다.
  */
-import { defineAsyncComponent, ref, watch } from 'vue'
+import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { SYSTEM as sys, groupCount, type MenuItem } from '../app/menu'
+import { systemOf, isRoot, groupCount, type MenuItem } from '../app/menu'
 import TopBar from '../app/TopBar.vue'
 import { open as openTab } from '../app/tabs'
 import AppIcon from '../app/AppIcon.vue'
@@ -28,7 +28,7 @@ const KEY = 'ds3-rail'
 const rail = ref((() => { try { return localStorage.getItem(KEY) === '1' } catch { return false } })())
 watch(rail, (v) => { try { localStorage.setItem(KEY, v ? '1' : '0') } catch { /* 이번 방문만 */ } })
 
-const MENU_ = sys.menu
+const sys = computed(() => systemOf(route.path))
 
 const expanded = ref<Set<string>>(new Set())
 const flyout = ref<string | null>(null)
@@ -37,7 +37,7 @@ watch(
   () => route.path,
   (p) => {
     openTab(p)
-    const top = sys.menu.find((m) => m.children?.some((c) => c.to === p || p.startsWith(c.to + '/')))
+    const top = systemOf(p).menu.find((m) => m.children?.some((c) => c.to === p || p.startsWith(c.to + '/')))
     if (top) expanded.value = new Set([...expanded.value, top.id])
     flyout.value = null
   },
@@ -46,7 +46,7 @@ watch(
 
 const isActive = (m: MenuItem) => m.to === route.path
 /** 상세 화면(`/sp/basic-info/C-0001`)에 있어도 부모 메뉴가 켜져 있어야 한다 */
-const isOn = (c: MenuItem) => c.to === route.path || (!!c.to && c.to !== '/sp' && route.path.startsWith(c.to + '/'))
+const isOn = (c: MenuItem) => c.to === route.path || (!!c.to && !isRoot(c.to) && route.path.startsWith(c.to + '/'))
 const within = (m: MenuItem) => m.children?.some(isOn) ?? false
 function toggle(m: MenuItem) {
   const s = new Set(expanded.value)
@@ -68,7 +68,7 @@ const fmt = (n: number) => (n > 999 ? '999+' : String(n))
       <!-- 주 메뉴 — 남는 공간을 전부 먹는다. 넘치면 여기만 스크롤 -->
       <div class="sd__nav">
         <ul class="sd__list">
-          <li v-for="m in MENU_" :key="m.id" class="sd__g" @mouseleave="flyout = null">
+          <li v-for="m in sys.menu" :key="m.id" class="sd__g" @mouseleave="flyout = null">
             <RouterLink
               v-if="m.to"
               class="sd__row" :class="{ 'is-on': isOn(m) }" :to="m.to"

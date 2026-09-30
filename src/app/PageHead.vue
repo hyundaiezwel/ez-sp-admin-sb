@@ -5,7 +5,9 @@
  * 제목·경로는 메뉴 트리에서 뽑는다 — 화면이 제목 문자열을 따로 들면 메뉴 이름을 바꿀 때
  * 어긋난다. 오른쪽 경로는 원본대로 **제목 반대편**에 둔다(EZ 셸과 반대다).
  */
-import { computed, ref } from 'vue'
+import { computed, inject, ref } from 'vue'
+import Button from 'primevue/button'
+import { SB_FRAME } from '../sb/frame'
 import { useRoute } from 'vue-router'
 import { trail } from './menu'
 
@@ -15,6 +17,9 @@ const route = useRoute()
 const t = computed(() => trail(route.path))
 const menuTitle = computed(() => t.value?.leaf?.label ?? t.value?.top.label ?? '화면')
 const title = computed(() => props.title ?? menuTitle.value)
+
+/** SB 화면이면 오른쪽 끝에 '명세' 버튼 — SbFrame이 내려준다 */
+const sbFrame = inject(SB_FRAME, null)
 
 // 원본의 "마이메뉴 등록" · "화면 잠금" 칩. 목업이라 상태만 뒤집는다
 const fav = ref(false)
@@ -40,5 +45,6 @@ const locked = ref(false)
       <li v-if="t?.detail">{{ menuTitle }}</li>
       <li aria-current="page">{{ title }}</li>
     </ol>
+    <Button v-if="sbFrame" label="명세" size="small" severity="secondary" outlined aria-keyshortcuts="Shift+/" v-tooltip.bottom="'화면 명세 (?)'" @click="sbFrame.openSpec()" />
   </div>
 </template>

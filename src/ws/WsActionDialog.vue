@@ -16,6 +16,7 @@ import Button from 'primevue/button'
 import Textarea from 'primevue/textarea'
 import RadioButton from 'primevue/radiobutton'
 import DatePicker from 'primevue/datepicker'
+import SbCode from '../sb/SbCode.vue'
 
 export interface ActionPayload { option: string | null; text: string; date: Date | null }
 
@@ -31,6 +32,8 @@ const props = defineProps<{
   date?: { label: string }
   confirmLabel?: string
   danger?: boolean
+  /** SB 모달 코드 — 주면 푸터 왼쪽에 표시(`SP-XXX-010L-M1`) */
+  code?: string
 }>()
 const visible = defineModel<boolean>('visible', { required: true })
 const emit = defineEmits<{ confirm: [payload: ActionPayload] }>()
@@ -97,6 +100,7 @@ function confirm() {
       <p v-if="notice" class="ad__notice"><b>대외 통지</b>{{ notice }}</p>
     </div>
     <template #footer>
+      <SbCode v-if="code" :code="code" />
       <Button label="취소" severity="secondary" outlined @click="visible = false" />
       <Button :label="confirmLabel ?? '확인'" :severity="danger ? 'danger' : undefined" @click="confirm" />
     </template>

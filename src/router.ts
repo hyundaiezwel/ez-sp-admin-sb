@@ -4,7 +4,7 @@ import { titleOf } from './app/menu'
 
 /**
  * 해시 히스토리 — GitHub Pages는 정적 호스팅이라 깊은 주소를 새로고침하면 404가 난다.
- * 시스템은 지원 사업 관리 하나다. 2026-09-28 관리자 센터(DS1과 같은 샘플 열 장)를 없애고
+ * 시스템은 둘이다 — SB(기본, `/sb`)와 AS-IS 기반 미리보기(`/sp`). 2026-09-28 관리자 센터(DS1과 같은 샘플 열 장)를 없애고
  * 대시보드 · 통계 · 공통코드 · 카탈로그만 `/sp` 아래로 옮겼다. 샘플 열 장은 태그 `ds3-admin-center`에 있다.
  */
 const routes: RouteRecordRaw[] = [
@@ -13,7 +13,13 @@ const routes: RouteRecordRaw[] = [
     path: '/',
     component: Shell,
     children: [
-      { path: '', redirect: '/sp/home' },
+      { path: '', redirect: '/sb' },
+      // SB — TO-BE IA 77화면 정본 목업. 화면은 src/pages/sb/<CODE>.vue 파일만 더하면 SbFrame이 찾는다
+      { path: 'sb', component: () => import('./sb/pages/SbIndexPage.vue') },
+      { path: 'sb/roles', component: () => import('./sb/pages/SbRolesPage.vue') },
+      { path: 'sb/questions', component: () => import('./sb/pages/SbQuestionsPage.vue') },
+      { path: 'sb/effort', component: () => import('./sb/pages/SbEffortPage.vue') },
+      { path: 'sb/s/:code', component: () => import('./sb/SbFrame.vue') },
       // 지원 사업 관리 — IA 확정 전 미리보기. 제안 메뉴는 src/sp/menu.ts
       { path: 'sp', component: () => import('./pages/sp/IaPage.vue') },
       { path: 'sp/home', component: () => import('./pages/sp/HomePage.vue') },
@@ -40,7 +46,7 @@ const routes: RouteRecordRaw[] = [
       { path: 'sp/p/:id', component: () => import('./pages/sp/PendingPage.vue') },
     ],
   },
-  { path: '/:pathMatch(.*)*', redirect: '/sp/home' },
+  { path: '/:pathMatch(.*)*', redirect: '/sb' },
 ]
 
 export const router = createRouter({ history: createWebHashHistory(), routes, scrollBehavior: () => ({ top: 0 }) })

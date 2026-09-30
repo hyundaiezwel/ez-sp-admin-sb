@@ -10,7 +10,7 @@
  */
 import { computed, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { SYSTEM as sys } from './menu'
+import { SYSTEMS } from './menu'
 import AppIcon from './AppIcon.vue'
 
 export interface SearchHit { group: string; label: string; sub?: string; to: string; before?: () => void }
@@ -25,9 +25,9 @@ const dataSearch = shallowRef<((q: string) => SearchHit[]) | null>(null)
 const menuHits = computed<SearchHit[]>(() => {
   const k = q.value.trim()
   if (!k) return []
-  return [...sys.menu, ...sys.foot]
+  return SYSTEMS.flatMap((s) => [...s.menu, ...s.foot])
     .flatMap((m) => (m.children ?? [m]).filter((c) => c.to && c.label.includes(k)).map((c) => ({ group: '메뉴', label: c.label, sub: m.children ? m.label : undefined, to: c.to! })))
-    .slice(0, 6)
+    .slice(0, 8)
 })
 const hits = computed<SearchHit[]>(() => [...menuHits.value, ...(q.value.trim() && dataSearch.value ? dataSearch.value(q.value) : [])])
 const groups = computed(() => [...new Set(hits.value.map((h) => h.group))].map((g) => ({ g, items: hits.value.filter((h) => h.group === g) })))
@@ -55,7 +55,7 @@ function key(e: KeyboardEvent) {
 function global(e: KeyboardEvent) {
   const t = e.target as HTMLElement | null
   const typing = !!t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))
-  if ((e.key === 'k' && (e.metaKey || e.ctrlKey)) || (e.key === '/' && !typing)) { e.preventDefault(); input.value?.focus(); input.value?.select() }
+  if ((e.key === 'k' && (e.metaKey || e.ctrlKey)) || (e.key === '/' && !e.shiftKey && !typing)) { e.preventDefault(); input.value?.focus(); input.value?.select() }
 }
 onMounted(() => window.addEventListener('keydown', global))
 onBeforeUnmount(() => window.removeEventListener('keydown', global))

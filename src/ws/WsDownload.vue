@@ -16,7 +16,8 @@ import InputText from 'primevue/inputtext'
 import WsActionDialog, { type ActionPayload } from './WsActionDialog.vue'
 import { notify } from './notify'
 
-const props = withDefaults(defineProps<{ total: number; limit?: number; label?: string }>(), { limit: 10_000, label: '엑셀 다운로드' })
+/** modalCode — SB 사유 모달 코드(푸터 왼쪽에 표시). 공통 사유 모달은 SP-CMN-040D, 화면 명세의 모달이면 `<CODE>-M1` */
+const props = withDefaults(defineProps<{ total: number; limit?: number; label?: string; modalCode?: string }>(), { limit: 10_000, label: '엑셀 다운로드' })
 
 /** 재인증은 세션 단위 — 모듈 상태로 둔다(화면을 옮겨도 다시 묻지 않는다) */
 const authed = ref(sessionAuthed)
@@ -63,6 +64,7 @@ let sessionAuthed = false
   <WsActionDialog
     v-model:visible="reasonOpen"
     header="개인정보 다운로드 사유 등록"
+    :code="modalCode"
     :target="`${total.toLocaleString('ko-KR')}건 — 사유는 반출 기록에 남습니다`"
     :reason="{ label: '다운로드 사유', options: ['고객사관리자 업무요청', '내부 업무(정산·통계·CS)', '협력사 제공', '직접 입력'], other: '직접 입력', min: 10, max: 200, placeholder: '10자 이상' }"
     confirm-label="등록 후 내려받기"
