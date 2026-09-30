@@ -309,19 +309,19 @@
     "spec": {
       "minutes": 2.0,
       "tokens": {
-        "input": 3,
-        "output": 1892,
-        "cacheRead": 229152,
-        "cacheWrite": 10659
+        "input": 11,
+        "output": 6384,
+        "cacheRead": 773115,
+        "cacheWrite": 35964
       }
     },
     "build": {
-      "minutes": 6.4,
+      "minutes": 0.0,
       "tokens": {
-        "input": 8,
-        "output": 4551,
-        "cacheRead": 703533,
-        "cacheWrite": 14735
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheWrite": 0
       }
     }
   }

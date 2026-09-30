@@ -326,10 +326,10 @@
     "spec": {
       "minutes": 0.9,
       "tokens": {
-        "input": 8,
-        "output": 4908,
-        "cacheRead": 582536,
-        "cacheWrite": 15832
+        "input": 6,
+        "output": 3978,
+        "cacheRead": 472186,
+        "cacheWrite": 12833
       }
     },
     "build": {

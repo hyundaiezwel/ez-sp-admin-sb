@@ -601,30 +601,30 @@
   ],
   "effort": {
     "spec": {
-      "minutes": 1.5,
+      "minutes": 5.1,
       "tokens": {
-        "input": 12,
-        "output": 7905,
-        "cacheRead": 1024911,
-        "cacheWrite": 30644
+        "input": 34,
+        "output": 21077,
+        "cacheRead": 2732583,
+        "cacheWrite": 81702
       }
     },
     "build": {
-      "minutes": 2.8,
+      "minutes": 0.0,
       "tokens": {
-        "input": 5,
-        "output": 3055,
-        "cacheRead": 449825,
-        "cacheWrite": 9295
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheWrite": 0
       }
     },
     "fix": {
-      "minutes": 0.2,
+      "minutes": 0.0,
       "tokens": {
-        "input": 2,
-        "output": 318,
-        "cacheRead": 125156,
-        "cacheWrite": 7805
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheWrite": 0
       }
     }
   }

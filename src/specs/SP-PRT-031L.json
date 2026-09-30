@@ -398,28 +398,28 @@
     "spec": {
       "minutes": 1.4,
       "tokens": {
-        "input": 12,
-        "output": 7639,
-        "cacheRead": 990363,
-        "cacheWrite": 29611
+        "input": 9,
+        "output": 5928,
+        "cacheRead": 768520,
+        "cacheWrite": 22978
       }
     },
     "build": {
-      "minutes": 3.8,
+      "minutes": 0.0,
       "tokens": {
-        "input": 8,
-        "output": 4214,
-        "cacheRead": 620541,
-        "cacheWrite": 12823
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheWrite": 0
       }
     },
     "fix": {
-      "minutes": 0.2,
+      "minutes": 0.0,
       "tokens": {
-        "input": 2,
-        "output": 318,
-        "cacheRead": 125156,
-        "cacheWrite": 7805
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheWrite": 0
       }
     }
   }
