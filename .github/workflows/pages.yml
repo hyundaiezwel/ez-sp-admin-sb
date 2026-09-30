@@ -27,7 +27,7 @@ jobs:
       # 대비 검사가 빌드 안에 있다 — 교정 값이 원본으로 되돌아가면 배포가 멈춘다
       - run: npm run build
         env:
-          PAGES_BASE: /ez-admin-design-system-2/
+          PAGES_BASE: /ez-sp-admin-sb/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
