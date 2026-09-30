@@ -666,21 +666,21 @@
   ],
   "effort": {
     "spec": {
-      "minutes": 5.3,
+      "minutes": 5.0,
       "tokens": {
-        "input": 35,
-        "output": 22057,
-        "cacheRead": 2773292,
-        "cacheWrite": 93294
+        "input": 30,
+        "output": 19149,
+        "cacheRead": 2407570,
+        "cacheWrite": 80991
       }
     },
     "build": {
-      "minutes": 2.5,
+      "minutes": 0.6,
       "tokens": {
-        "input": 30,
-        "output": 16685,
-        "cacheRead": 3138994,
-        "cacheWrite": 70348
+        "input": 6,
+        "output": 3631,
+        "cacheRead": 683166,
+        "cacheWrite": 15310
       }
     }
   }

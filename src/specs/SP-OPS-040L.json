@@ -304,30 +304,30 @@
   ],
   "effort": {
     "spec": {
-      "minutes": 0.0,
+      "minutes": 0.9,
       "tokens": {
-        "input": 0,
-        "output": 0,
-        "cacheRead": 0,
-        "cacheWrite": 0
+        "input": 5,
+        "output": 2870,
+        "cacheRead": 347612,
+        "cacheWrite": 16170
       }
     },
     "build": {
-      "minutes": 0.0,
+      "minutes": 0.5,
       "tokens": {
-        "input": 0,
-        "output": 0,
-        "cacheRead": 0,
-        "cacheWrite": 0
+        "input": 5,
+        "output": 3149,
+        "cacheRead": 486807,
+        "cacheWrite": 10196
       }
     },
     "fix": {
-      "minutes": 0.0,
+      "minutes": 1.3,
       "tokens": {
-        "input": 0,
-        "output": 0,
-        "cacheRead": 0,
-        "cacheWrite": 0
+        "input": 15,
+        "output": 1626,
+        "cacheRead": 918725,
+        "cacheWrite": 29785
       }
     }
   }

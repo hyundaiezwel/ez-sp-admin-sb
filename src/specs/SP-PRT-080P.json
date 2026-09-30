@@ -443,19 +443,19 @@
     "spec": {
       "minutes": 1.3,
       "tokens": {
-        "input": 8,
-        "output": 5431,
-        "cacheRead": 682848,
-        "cacheWrite": 22971
+        "input": 7,
+        "output": 4934,
+        "cacheRead": 620343,
+        "cacheWrite": 20868
       }
     },
     "build": {
-      "minutes": 0.8,
+      "minutes": 0.6,
       "tokens": {
-        "input": 10,
-        "output": 5719,
-        "cacheRead": 1075959,
-        "cacheWrite": 24113
+        "input": 6,
+        "output": 3484,
+        "cacheRead": 655470,
+        "cacheWrite": 14689
       }
     }
   }

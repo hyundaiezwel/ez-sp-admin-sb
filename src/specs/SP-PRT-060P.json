@@ -350,21 +350,21 @@
   ],
   "effort": {
     "spec": {
-      "minutes": 1.3,
+      "minutes": 1.5,
       "tokens": {
-        "input": 8,
-        "output": 5431,
-        "cacheRead": 682848,
-        "cacheWrite": 22971
+        "input": 9,
+        "output": 5822,
+        "cacheRead": 732045,
+        "cacheWrite": 24626
       }
     },
     "build": {
       "minutes": 0.6,
       "tokens": {
-        "input": 7,
-        "output": 4149,
-        "cacheRead": 780597,
-        "cacheWrite": 17494
+        "input": 6,
+        "output": 3484,
+        "cacheRead": 655470,
+        "cacheWrite": 14689
       }
     }
   }

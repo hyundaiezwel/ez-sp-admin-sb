@@ -387,18 +387,18 @@
       "minutes": 1.0,
       "tokens": {
         "input": 7,
-        "output": 3635,
-        "cacheRead": 492315,
-        "cacheWrite": 18152
+        "output": 3736,
+        "cacheRead": 506073,
+        "cacheWrite": 18660
       }
     },
     "build": {
-      "minutes": 1.4,
+      "minutes": 1.2,
       "tokens": {
-        "input": 18,
-        "output": 8827,
-        "cacheRead": 1597593,
-        "cacheWrite": 38798
+        "input": 13,
+        "output": 6738,
+        "cacheRead": 1219592,
+        "cacheWrite": 29618
       }
     }
   }
