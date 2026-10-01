@@ -107,7 +107,23 @@ router.push({ path: routeOf('SP-XXX-010D'), query: { id: row.id } })
 - 시드 고정 난수: `rand('<배치ID>-<무엇>')`(common.ts) — 새로고침해도 같은 값.
 - 배치 파일끼리 import 하지 않는다. 같이 봐야 하면 common.ts에 있는 것을 쓰고, 없으면 보고한다.
 
-## 8. 하지 않는 것
+## 8. 일괄 처리 화면 규격
+
+업로드 · 조건 조회로 여러 건을 한 번에 처리하는 화면(엑셀 일괄 등록, 일괄 취소 등)은 아래 틀을 따른다.
+본보기: `src/pages/sp/UploadPage.vue`(엑셀 일괄 등록), `src/pages/sp/BulkCancelPage.vue`(일괄 참여 취소) —
+먼저 읽고 구성을 그대로 따른다. SB 쪽 적용 예는 `src/pages/sb/SP-PRT-070P.vue` · `SP-PRT-080P.vue`.
+
+1. 맨 위 단계 표시 `WsStepTrack`(예: 양식 · 조건 → 올리기 → 검증 결과 → 등록 결과 / 일괄취소는 조건 → 대상 확인 → 예외 지정 → 실행 결과).
+2. 조건은 입력 표 `<table class="ws-tb">` + `<colgroup>`(라벨 칸 고정 폭) + `th.req`로 필수 표시. `Select`는 `fluid`로 칸을 채운다 — 인라인 `style="width: …"` 금지.
+3. 양식 내려받기 같은 보조 동작은 구획 제목줄(`ws-tit`) 오른쪽 버튼(`ws-tit__r`)에 둔다.
+4. 파일은 `src/ws/WsUpload.vue`로 받는다(`:accept="['xlsx', 'xls']"` 등, 제약 문구를 자동으로 보여 준다). 날 `<input type="file">` 금지.
+5. 검증 결과 · 대상 목록은 기존 표/그리드(`ws-gtb`) + 건수(`ws-total`)로 보이고, 행별 오류 · 예외는 행 안에 표시한다.
+6. 실행 버튼은 하단 `ws-btnbox` > `ws-btnbox__c`(가운데 정렬)에 둔다. 비가역 처리(등록 확정 · 일괄 취소 실행)는 확인 모달(`WsActionDialog` 또는 직접 만든 `Dialog`)과 결과 모달(`WsResultDialog`)을 거친다 — 모달 코드(`SbCode`/`code`/`modal-code`, 명세 `modals[].code`)는 그대로 유지한다.
+7. 안내 문구는 `ws-msg` 상자에 둔다.
+
+금지: 인라인 `style="width: …"`로 Select · 영역 폭 고정, 날 `<input type="file">`, 정의되지 않은 `ws-form`/`ws-form__row`/`ws-form__l`(라벨 · 칸 정렬이 없다 — 대신 `ws-tb`를 쓴다).
+
+## 9. 하지 않는 것
 
 - push · 원격 · 배포 · commit, 새 의존성(`npm install`).
 - 공통 파일 수정, 다른 배치의 파일 수정.
