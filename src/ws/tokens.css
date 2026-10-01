@@ -294,3 +294,6 @@
   --ws-card-shadow: none;
   --ws-card-border: #2b3237;
 }
+
+/* 1280 미만 — 페이지 여백을 줄인다(좌우 48 → 24). 메뉴 자동 레일과 짝이다 */
+@media (max-width: 1279px) { :root { --ws-page-pad: 24px 24px 20px; } }

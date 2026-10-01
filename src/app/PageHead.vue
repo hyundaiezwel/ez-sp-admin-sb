@@ -30,12 +30,12 @@ const locked = ref(false)
   <div class="ws-pgt">
     <h1 class="ws-pgt__tit">{{ title }}</h1>
     <div class="ws-pgt__tools">
-      <button type="button" class="ws-chip" :aria-pressed="fav" @click="fav = !fav">
-        마이메뉴 등록
+      <button type="button" class="ws-chip" :aria-pressed="fav" @click="fav = !fav" v-tooltip.bottom="'마이메뉴 등록'">
+        <span class="ws-chip__t">마이메뉴 등록</span>
         <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true" :fill="fav ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z" /></svg>
       </button>
-      <button type="button" class="ws-chip" :aria-pressed="locked" @click="locked = !locked">
-        화면 잠금
+      <button type="button" class="ws-chip" :aria-pressed="locked" @click="locked = !locked" v-tooltip.bottom="'화면 잠금'">
+        <span class="ws-chip__t">화면 잠금</span>
         <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2" /><path :d="locked ? 'M8 11V7a4 4 0 0 1 8 0v4' : 'M8 11V7a4 4 0 0 1 7.5-2'" /></svg>
       </button>
     </div>

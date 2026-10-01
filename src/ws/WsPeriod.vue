@@ -53,11 +53,11 @@ const setTo = (d: Date | Date[] | (Date | null)[] | null | undefined) => { range
 <style scoped>
 .pd__row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .pd__basis { width: 104px; }
-.pd__d { width: 136px; }
-.pd__pre { display: inline-flex; margin-left: 6px; border: 1px solid var(--ws-field-border); border-radius: var(--ws-radius); overflow: hidden; }
+.pd__d { width: 136px; flex: none; }
+.pd__pre { flex: none; display: inline-flex; margin-left: 6px; border: 1px solid var(--ws-field-border); border-radius: var(--ws-radius); overflow: hidden; }
 .pd__p {
   height: 30px; padding: 0 10px; border: 0; background: var(--ws-surface); color: var(--ws-text-sub);
-  font: inherit; font-size: var(--ws-font-size-md); cursor: pointer;
+  font: inherit; font-size: var(--ws-font-size-md); cursor: pointer; white-space: nowrap;
 }
 .pd__p + .pd__p { border-left: 1px solid var(--ws-border); }
 .pd__p:hover { background: var(--ws-surface-hover); color: var(--ws-text); }

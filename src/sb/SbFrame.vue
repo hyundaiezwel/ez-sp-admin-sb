@@ -46,7 +46,7 @@ onMounted(on); onActivated(on); onDeactivated(off); onUnmounted(off)
 .sbf { display: flex; flex-direction: column; min-height: 100%; }
 .sbf > :first-child { flex: 1 0 auto; }
 /* 본문 스크롤 영역의 좌하단에 붙는다 — sticky(높이 0) 안에서 절대 위치로 띄운다 */
-.sbf__code { position: sticky; bottom: 0; height: 0; z-index: 5; }
+.sbf__code { position: sticky; bottom: 0; left: 0; width: 0; height: 0; z-index: 5; } /* 가로 스크롤해도 좌하단에 남는다 */
 .sbf__code :deep(.sb-code) { position: absolute; left: 8px; bottom: 8px; opacity: 0.85; }
 .sbf__code :deep(.sb-code:hover) { opacity: 1; }
 </style>

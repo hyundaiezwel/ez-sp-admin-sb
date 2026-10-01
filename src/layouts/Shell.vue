@@ -25,8 +25,13 @@ const SessionGuard = defineAsyncComponent(() => import('../app/SessionGuard.vue'
 const route = useRoute()
 
 const KEY = 'ds3-rail'
-const rail = ref((() => { try { return localStorage.getItem(KEY) === '1' } catch { return false } })())
-watch(rail, (v) => { try { localStorage.setItem(KEY, v ? '1' : '0') } catch { /* 이번 방문만 */ } })
+const saved = () => { try { return localStorage.getItem(KEY) === '1' } catch { return false } }
+/* 창이 1280보다 좁으면 메뉴를 레일로 접는다 — 1024에서 메뉴 240px이면 본문이 688px만 남는다.
+   좁을 때 사용자가 펼친 것은 저장하지 않는다. 넓어지면 저장해 둔 선택으로 돌아간다 */
+const narrowMq = window.matchMedia('(max-width: 1279px)')
+const rail = ref(narrowMq.matches || saved())
+narrowMq.addEventListener('change', (e) => { rail.value = e.matches || saved() })
+watch(rail, (v) => { if (narrowMq.matches) return; try { localStorage.setItem(KEY, v ? '1' : '0') } catch { /* 이번 방문만 */ } })
 
 const sys = computed(() => systemOf(route.path))
 

@@ -8,7 +8,8 @@
     "build": "npm run check:contrast && vue-tsc --noEmit && vite build",
     "typecheck": "vue-tsc --noEmit",
     "check:contrast": "node scripts/check-contrast.mjs",
-    "check:sb": "node scripts/check-sb.mjs"
+    "check:sb": "node scripts/check-sb.mjs",
+    "check:responsive": "node scripts/check-responsive.mjs"
   },
   "dependencies": {
     "@primevue/themes": "^4.5.4",

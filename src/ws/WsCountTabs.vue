@@ -33,8 +33,8 @@ const fmt = (n: number) => n.toLocaleString('ko-KR')
 
 <style scoped>
 .ct { display: grid; gap: 8px; }
-.ct__main { display: flex; border-bottom: 1px solid var(--ws-border); }
-.ct__t {
+.ct__main { display: flex; border-bottom: 1px solid var(--ws-border); overflow-x: auto; scrollbar-width: thin; }
+.ct__t { flex: none; white-space: nowrap;
   display: flex; align-items: baseline; gap: 6px; height: 40px; padding: 0 16px; margin-bottom: -1px;
   border: 0; border-bottom: 2px solid transparent; background: none; color: var(--ws-text-sub); font: inherit; cursor: pointer;
 }
