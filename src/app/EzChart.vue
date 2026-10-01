@@ -115,7 +115,8 @@ const merged = computed(() => {
     },
     // 범례는 위가 기본이다(grid top 28이 그 자리). 아래에 두려면 화면이 bottom을 준다
     legend: { textStyle: { color: muted, fontSize: 11 }, icon: 'roundRect', ...(props.option.legend?.bottom == null ? { top: 0 } : {}), ...(props.option.legend ?? {}) },
-    grid: { left: 48, right: 16, top: 28, bottom: 28, ...(props.option.grid ?? {}) },
+    // 범례를 아래에 두면 축 라벨과 범례 두 줄이 들어갈 자리(56)를 기본으로 준다 — 28이면 겹친다(UI-19)
+    grid: { left: 48, right: 16, top: 28, bottom: props.option.legend?.bottom == null ? 28 : 56, ...(props.option.grid ?? {}) },
     series: withSeparators(props.option.series, surface),
     xAxis: withAxis(props.option.xAxis),
     yAxis: withAxis(props.option.yAxis),

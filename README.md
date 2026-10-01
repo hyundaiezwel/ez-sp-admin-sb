@@ -16,6 +16,12 @@ npm run check:sb     # 77화면 명세 · 화면 파일 · 모달 코드 점검
 - `#/sb` 화면 목록 · `#/sb/roles` 역할 × 동작 권한 매트릭스 · `#/sb/questions` 미결 질문 모음 · `#/sb/effort` 소요 집계
 - 화면 하나는 `#/sb/s/<CODE>`. 상세는 같은 주소에 `?id=`로 건을 넘긴다
 
+## UI/UX 규약
+
+화면을 만들거나 고칠 때는 [docs/ui-conventions.md](docs/ui-conventions.md)를 따른다. 검토 지적을 화면 하나의 수정이 아니라 번호 붙은 공통 규칙(`UI-nn`)으로 남긴 문서다.
+- 정적 검사: `SB_BANNED_FILE=<금지어 파일> npm run check:sb` — 조회 영역 · 전역 조건 · '전체' 값 · 파일 첨부 · 표 칸 flex 규칙
+- 폭 검사: `npm run dev` 후 `SB_URL=http://localhost:5320 npm run check:responsive` — 77화면을 1280 · 1024 폭으로 연다(playwright-core 필요, 없으면 `PLAYWRIGHT_CORE=<경로>`)
+
 ## 화면 코드 규칙
 
 `SP-<메뉴>-<번호><유형>` — 예 `SP-PRT-010L`.

@@ -53,6 +53,17 @@ for (const code of codes) {
     r.page = src.split('\n', 1)[0].includes('SB-DONE') ? 'DONE' : '작업중'
     if (r.page !== 'DONE') r.issues.push('첫 줄 SB-DONE 없음')
     for (const m of spec?.modals ?? []) if (!src.includes(m.code)) r.issues.push(`모달 코드 ${m.code}가 화면에 없음`)
+    // UI 규약 검사 — docs/ui-conventions.md 의 규칙 번호. 어기면 실패
+    const style = [...src.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map((m) => m[1]).join('\n')
+    const flexCls = new Set([...style.matchAll(/\.([\w-]+)\s*\{[^}]*display:\s*flex/g)].map((m) => m[1]))
+    const rule = (id, msg) => r.issues.push(`${id} ${msg}`)
+    if (/class="cond"/.test(src) || /<h2[^>]*>조회 조건<\/h2>/.test(src)) rule('UI-01', '조회 영역은 WsSearch')
+    if (/const\s+(year|biz)\s*=\s*ref\(ctx\.(year|biz)\)/.test(src)) rule('UI-03', '참여년도·사업은 상단 전역 조건(화면에 복사 금지)')
+    if (/(l|label):\s*'전체',\s*(v|value):\s*''/.test(src)) rule('UI-04', "'전체' 선택지 값은 'ALL'")
+    if (/<input[^>]*type="file"/.test(src)) rule('UI-17', '파일은 WsUpload')
+    const shBlock = src.match(/<WsSearch[\s\S]*?<\/WsSearch>/)?.[0] ?? ''
+    if (/style="[^"]*width/.test(shBlock)) rule('UI-02', '조회 영역 인라인 폭 금지(cols 로)')
+    if ([...src.matchAll(/<t[dh]\b[^>]*class="([^"]+)"/g)].some((m) => m[1].split(/\s+/).some((c) => flexCls.has(c))) || /\bt[dh]\b[^{,]*\{[^}]*display:\s*flex/.test(style)) rule('UI-07', '표 칸(td·th)에 flex 금지 — 안쪽 div 에')
     // 조회 영역 라벨 길이 — 라벨 칸은 글자에 맞춰 늘어나지만 8자를 넘으면 입력 칸이 좁아진다(경고만)
     const sh = src.match(/<WsSearch[\s\S]*?<\/WsSearch>/)?.[0] ?? ''
     for (const [, t] of sh.matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)) {
