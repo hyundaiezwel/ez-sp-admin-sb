@@ -258,3 +258,8 @@
 /* 카드 안 HTML 표 — 머리칸은 줄바꿈하지 않는다. 넘치면 .ws-xscroll 틀이 가로 스크롤한다 */
 .ws-gtb thead th { white-space: nowrap; }
 .ws-xscroll { max-width: 100%; overflow-x: auto; }
+
+/* 검색어 묶음 — '검색어 구분' 선택 + 입력을 한 칸에 둔다. 구분 선택만 폭을 고정하고 입력이 나머지를 채운다(UI-02) */
+.ws-kw { display: flex; align-items: center; gap: var(--ws-gap-adjacent); min-width: 0; }
+.ws-kw__type { flex: none; width: 120px; }
+.ws-kw > :not(.ws-kw__type) { flex: 1; min-width: 0; }
