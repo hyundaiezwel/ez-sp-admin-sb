@@ -29,16 +29,16 @@ const router = useRouter()
 const AFFILIATES = [...new Set(allUsage().map((u) => u.affiliate))].sort()
 const CHANNELS = ['기본차감', '온라인', '복지카드 전체', '복지카드', '복지카드(비복지)', '영수증']
 
-const blank = () => ({ range: presetRange(PRESETS[2]) as Range, companyId: '', affiliate: '', channel: '', age: '', gender: '', q: '' })
+const blank = () => ({ range: presetRange(PRESETS[2]) as Range, companyId: 'ALL', affiliate: 'ALL', channel: 'ALL', age: 'ALL', gender: 'ALL', q: '' })
 const f = ref(blank())
 const applied = ref(blank())
 const day = (s: string) => new Date(+s.slice(0, 4), +s.slice(5, 7) - 1, +s.slice(8, 10))
 const hit = (r: UsageRow) => {
   const a = applied.value
   const d = day(r.appliedAt)
-  return (!a.companyId || r.companyId === a.companyId) && (!a.affiliate || r.affiliate === a.affiliate) &&
-    (!a.channel || r.channel === a.channel || (a.channel === '복지카드 전체' && r.channel === '복지카드')) &&
-    (!a.age || r.ageBand === a.age) && (!a.gender || r.gender === a.gender) &&
+  return (a.companyId === 'ALL' || r.companyId === a.companyId) && (a.affiliate === 'ALL' || r.affiliate === a.affiliate) &&
+    (a.channel === 'ALL' || r.channel === a.channel || (a.channel === '복지카드 전체' && r.channel === '복지카드')) &&
+    (a.age === 'ALL' || r.ageBand === a.age) && (a.gender === 'ALL' || r.gender === a.gender) &&
     (!a.q.trim() || r.name.includes(a.q.trim()) || r.empNo.includes(a.q.trim())) &&
     a.range[0] && a.range[1] && d >= a.range[0] && d <= a.range[1]
 }
@@ -91,17 +91,17 @@ const fmt = (n: number) => n.toLocaleString('ko-KR')
       </tr>
       <tr>
         <th scope="row"><label for="u-co">기업</label></th>
-        <td><Select v-model="f.companyId" input-id="u-co" :options="[{ label: '전체', value: '' }, ...COMPANIES.map((c) => ({ label: c.name, value: c.id }))]" option-label="label" option-value="value" filter fluid /></td>
+        <td><Select v-model="f.companyId" input-id="u-co" :options="[{ label: '전체', value: 'ALL' }, ...COMPANIES.map((c) => ({ label: c.name, value: c.id }))]" option-label="label" option-value="value" filter fluid /></td>
         <th scope="row"><label for="u-aff">제휴사</label></th>
-        <td><Select v-model="f.affiliate" input-id="u-aff" :options="[{ l: '전체', v: '' }, ...AFFILIATES.map((a) => ({ l: a, v: a }))]" option-label="l" option-value="v" filter fluid /></td>
+        <td><Select v-model="f.affiliate" input-id="u-aff" :options="[{ l: '전체', v: 'ALL' }, ...AFFILIATES.map((a) => ({ l: a, v: a }))]" option-label="l" option-value="v" filter fluid /></td>
       </tr>
       <tr>
         <th scope="row"><label for="u-ch">사용 구분</label></th>
-        <td><Select v-model="f.channel" input-id="u-ch" :options="[{ l: '전체', v: '' }, ...CHANNELS.map((c) => ({ l: c, v: c }))]" option-label="l" option-value="v" fluid /></td>
+        <td><Select v-model="f.channel" input-id="u-ch" :options="[{ l: '전체', v: 'ALL' }, ...CHANNELS.map((c) => ({ l: c, v: c }))]" option-label="l" option-value="v" fluid /></td>
         <th scope="row"><label for="u-age">연령대 · 성별</label></th>
         <td style="display:flex; gap:8px">
-          <Select v-model="f.age" input-id="u-age" :options="[{ l: '전체', v: '' }, { l: '20대', v: '20대' }, { l: '30대', v: '30대' }, { l: '40대', v: '40대' }, { l: '50대', v: '50대' }, { l: '60대 이상', v: '60대 이상' }]" option-label="l" option-value="v" fluid />
-          <Select v-model="f.gender" :options="[{ l: '전체', v: '' }, { l: '남', v: '남' }, { l: '여', v: '여' }]" option-label="l" option-value="v" fluid />
+          <Select v-model="f.age" input-id="u-age" :options="[{ l: '전체', v: 'ALL' }, { l: '20대', v: '20대' }, { l: '30대', v: '30대' }, { l: '40대', v: '40대' }, { l: '50대', v: '50대' }, { l: '60대 이상', v: '60대 이상' }]" option-label="l" option-value="v" fluid />
+          <Select v-model="f.gender" :options="[{ l: '전체', v: 'ALL' }, { l: '남', v: '남' }, { l: '여', v: '여' }]" option-label="l" option-value="v" fluid />
         </td>
       </tr>
       <tr>

@@ -24,13 +24,13 @@ const router = useRouter()
 const rows = ref(MATERIALS)
 
 /* --- 조회 ----------------------------------------------------------------- */
-const f = reactive({ title: '', status: '', category: '' })
+const f = reactive({ title: '', status: 'ALL', category: 'ALL' })
 const applied = reactive({ ...f })
 function search() { Object.assign(applied, f) }
-function reset() { f.title = ''; f.status = ''; f.category = ''; Object.assign(applied, f) }
+function reset() { f.title = ''; f.status = 'ALL'; f.category = 'ALL'; Object.assign(applied, f) }
 const filtered = computed(() =>
   rows.value
-    .filter((m) => (!applied.title.trim() || m.title.includes(applied.title.trim())) && (!applied.status || m.displayStatus === applied.status) && (!applied.category || m.category === applied.category))
+    .filter((m) => (!applied.title.trim() || m.title.includes(applied.title.trim())) && (applied.status === 'ALL' || m.displayStatus === applied.status) && (applied.category === 'ALL' || m.category === applied.category))
     .sort((a, b) => a.order - b.order),
 )
 
@@ -75,12 +75,12 @@ const openDetail = (m: CntMaterial) => router.push({ path: routeOf('SP-CNT-010D'
             <th scope="row"><label for="m-t">제목</label></th>
             <td><InputText id="m-t" v-model="f.title" fluid maxlength="25" placeholder="제목 일부" /></td>
             <th scope="row"><label for="m-c">자료 분류</label></th>
-            <td><Select v-model="f.category" input-id="m-c" :options="[{ l: '전체', v: '' }, ...CNT_CATEGORIES.map((c) => ({ l: c, v: c }))]" option-label="l" option-value="v" placeholder="전체" fluid /></td>
+            <td><Select v-model="f.category" input-id="m-c" :options="[{ l: '전체', v: 'ALL' }, ...CNT_CATEGORIES.map((c) => ({ l: c, v: c }))]" option-label="l" option-value="v" placeholder="전체" fluid /></td>
           </tr>
           <tr>
             <th scope="row"><label for="m-s">전시상태</label></th>
             <td>
-              <Select v-model="f.status" input-id="m-s" :options="[{ l: '전체', v: '' }, { l: '전시', v: '전시' }, { l: '미전시', v: '미전시' }]" option-label="l" option-value="v" placeholder="전체" fluid />
+              <Select v-model="f.status" input-id="m-s" :options="[{ l: '전체', v: 'ALL' }, { l: '전시', v: '전시' }, { l: '미전시', v: '미전시' }]" option-label="l" option-value="v" placeholder="전체" fluid />
             </td>
             <td colspan="2" />
           </tr>

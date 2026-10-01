@@ -33,7 +33,7 @@ import { PII_LOGS, type SbPiiLog, type PiiAction } from '@fixtures/sb/B1'
 const CODE = 'SP-SYS-021P'
 const ACTIONS: PiiAction[] = ['조회', '가림 해제', '다운로드']
 
-const blank = () => ({ range: presetRange(PRESETS[2]) as Range, name: '', action: '', flaggedOnly: false })
+const blank = () => ({ range: presetRange(PRESETS[2]) as Range, name: '', action: 'ALL', flaggedOnly: false })
 const f = ref(blank())
 const applied = ref(blank())
 const day = (s: string) => new Date(+s.slice(0, 4), +s.slice(5, 7) - 1, +s.slice(8, 10))
@@ -41,7 +41,7 @@ const hit = (r: SbPiiLog) => {
   const a = applied.value
   const d = day(r.at)
   return (!a.name.trim() || r.adminName.includes(a.name.trim()) || r.screen.includes(a.name.trim())) &&
-    (!a.action || r.action === a.action) && (!a.flaggedOnly || r.flagged) &&
+    (a.action === 'ALL' || r.action === a.action) && (!a.flaggedOnly || r.flagged) &&
     (!a.range[0] || d >= a.range[0]) && (!a.range[1] || d <= a.range[1])
 }
 const { rows, loading, error, reload, first, size, total, search: requery } = usePaged(() => PII_LOGS.filter(hit), {
@@ -111,7 +111,7 @@ const fmt = (n: number) => n.toLocaleString('ko-KR')
         <th scope="row"><label for="p-name">사용자 · 화면</label></th>
         <td><InputText id="p-name" v-model="f.name" fluid /></td>
         <th scope="row"><label for="p-act">행위</label></th>
-        <td><Select v-model="f.action" input-id="p-act" :options="[{ l: '전체', v: '' }, ...ACTIONS.map((a) => ({ l: a, v: a }))]" option-label="l" option-value="v" fluid /></td>
+        <td><Select v-model="f.action" input-id="p-act" :options="[{ l: '전체', v: 'ALL' }, ...ACTIONS.map((a) => ({ l: a, v: a }))]" option-label="l" option-value="v" fluid /></td>
       </tr>
       <tr>
         <th scope="row"><label for="p-flag">사유 확인 대상</label></th>

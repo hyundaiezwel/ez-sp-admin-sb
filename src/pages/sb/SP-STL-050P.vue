@@ -9,6 +9,7 @@ import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
 import DatePicker from 'primevue/datepicker'
 import PageHead from '../../app/PageHead.vue'
+import WsSearch from '../../ws/WsSearch.vue'
 import { notify } from '../../ws/notify'
 import SbCan from '../../sb/SbCan.vue'
 import { can, denyTip } from '../../sb/context'
@@ -35,6 +36,7 @@ function search() {
   applied.value = failed.value ? null : at.value
   if (failed.value) notify('조회에 실패했습니다.', 'danger')
 }
+function reset() { at.value = yesterday; search() }
 function goStats() { if (applied.value) router.push({ path: routeOf('SP-STA-031P'), query: { date: ymd(applied.value) } }) }
 function download() {
   if (!can(CODE, 'download')) return notify(denyTip(CODE, 'download'), 'danger')
@@ -46,15 +48,13 @@ function download() {
   <div class="ws-page ws-page--canvas">
     <PageHead />
 
-    <section class="ws-sec ws-card">
-      <div class="ws-tit"><div class="ws-tit__l"><h2 class="ws-tit__h">조회 조건</h2></div></div>
-      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap">
-        <label for="ds-at">조회일자</label>
-        <DatePicker v-model="at" input-id="ds-at" date-format="yy.mm.dd" show-icon icon-display="input" :max-date="new Date()" style="width:160px" />
-        <Button label="조회" @click="search" />
-      </div>
-      <p class="ws-desc" style="margin-top:8px">일별 이용유형별 매출 집계는 이용실적통계(SP-STA-031P)의 일별 보기로 옮긴다 — 이 화면은 이관 전까지 하루 합계와 연결만 둔다.</p>
-    </section>
+    <WsSearch :cols="['72px', '', '132px', '']" @search="search" @reset="reset">
+      <tr>
+        <th scope="row"><label for="ds-at">조회일자</label></th>
+        <td colspan="3"><DatePicker v-model="at" input-id="ds-at" date-format="yy.mm.dd" show-icon icon-display="input" :max-date="new Date()" fluid /></td>
+      </tr>
+    </WsSearch>
+    <p class="ws-desc" style="margin:8px 0 0">일별 이용유형별 매출 집계는 이용실적통계(SP-STA-031P)의 일별 보기로 옮긴다 — 이 화면은 이관 전까지 하루 합계와 연결만 둔다.</p>
 
     <section v-if="failed" class="ws-sec ws-card"><div class="ws-empty"><p>조회에 실패했습니다.</p><Button label="다시 조회" severity="secondary" outlined @click="search" /></div></section>
 

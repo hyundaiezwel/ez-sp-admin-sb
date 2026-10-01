@@ -26,14 +26,14 @@ import { fraudReports, type FraudReport, type AnsSts } from '@fixtures/sb/B6'
 const CODE = 'SP-OPS-050L'
 const router = useRouter()
 
-const blank = () => ({ range: presetRange(PRESETS[2]) as Range, kw: '', sts: '' as string })
+const blank = () => ({ range: presetRange(PRESETS[2]) as Range, kw: '', sts: 'ALL' as string })
 const f = ref(blank())
 const applied = ref(blank())
 const day = (s: string) => new Date(+s.slice(0, 4), +s.slice(5, 7) - 1, +s.slice(8, 10))
 const hit = (r: FraudReport) => {
   const a = applied.value
   const d = day(r.regAt)
-  return (!a.sts || r.ansSts === a.sts) && (!a.kw.trim() || r.title.includes(a.kw.trim()) || r.email.includes(a.kw.trim())) &&
+  return (a.sts === 'ALL' || r.ansSts === a.sts) && (!a.kw.trim() || r.title.includes(a.kw.trim()) || r.email.includes(a.kw.trim())) &&
     (!a.range[0] || d >= a.range[0]) && (!a.range[1] || d <= a.range[1])
 }
 const { rows, loading, error, reload, first, size, total, search: requery } = usePaged(() => fraudReports.filter(hit), { failIf: () => applied.value.kw.includes(ERROR_KEYWORD) })
@@ -46,7 +46,7 @@ function search() {
 function reset() { f.value = blank(); search() }
 
 const counts = computed(() => (['미답변', '답변완료'] as AnsSts[]).map((s) => ({ id: s, label: s, count: fraudReports.filter((r) => r.ansSts === s).length })))
-function chip(s: string) { f.value.sts = f.value.sts === s ? '' : s; search() }
+function chip(s: string) { f.value.sts = f.value.sts === s ? 'ALL' : s; search() }
 
 const resendOpen = ref(false)
 const resendTarget = ref<FraudReport | null>(null)
@@ -90,7 +90,7 @@ const fmt = (n: number) => n.toLocaleString('ko-KR')
         <th scope="row"><label for="q-kw">검색어</label></th>
         <td><InputText id="q-kw" v-model="f.kw" fluid placeholder="제목 · 이메일" /></td>
         <th scope="row"><label for="q-sts">답변상태</label></th>
-        <td><Select v-model="f.sts" input-id="q-sts" :options="[{ l: '전체', v: '' }, { l: '미답변', v: '미답변' }, { l: '답변완료', v: '답변완료' }]" option-label="l" option-value="v" placeholder="전체" fluid /></td>
+        <td><Select v-model="f.sts" input-id="q-sts" :options="[{ l: '전체', v: 'ALL' }, { l: '미답변', v: '미답변' }, { l: '답변완료', v: '답변완료' }]" option-label="l" option-value="v" placeholder="전체" fluid /></td>
       </tr>
     </WsSearch>
     <section class="ws-sec">

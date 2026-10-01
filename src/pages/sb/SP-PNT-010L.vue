@@ -30,7 +30,7 @@ const router = useRouter()
 const won = (n: number) => n.toLocaleString('ko-KR') + '원'
 
 /* --- 조회 ------------------------------------------------------------- */
-const f = ref({ companyId: '', dev: '', kinds: [...POINT_KINDS] as PointKind[], sts: '', q: '' })
+const f = ref({ companyId: '', dev: 'ALL', kinds: [...POINT_KINDS] as PointKind[], sts: 'ALL', q: '' })
 const applied = ref({ ...f.value, kinds: [...POINT_KINDS] as PointKind[] })
 const companyOptions = computed(() => COMPANIES.map((c) => ({ label: `${c.name} (${c.bizNo})`, value: c.id })))
 const isDev = (idx: number) => idx % 5 === 0
@@ -50,8 +50,8 @@ const workerRows = computed(() => {
   })
 })
 const filtered = computed(() => workerRows.value.filter((r) =>
-  (!applied.value.dev || (applied.value.dev === 'Y' ? r.dev : !r.dev)) &&
-  (!applied.value.sts || r.sts === applied.value.sts) &&
+  (applied.value.dev === 'ALL' || (applied.value.dev === 'Y' ? r.dev : !r.dev)) &&
+  (applied.value.sts === 'ALL' || r.sts === applied.value.sts) &&
   (!applied.value.q.trim() || r.name.includes(applied.value.q.trim()) || r.empNo.includes(applied.value.q.trim()) || r.birth.includes(applied.value.q.trim())),
 ))
 const failed = ref(false)
@@ -69,7 +69,7 @@ function search() {
   first.value = 0
   reload()
 }
-function reset() { f.value = { companyId: '', dev: '', kinds: [...POINT_KINDS], sts: '', q: '' } }
+function reset() { f.value = { companyId: '', dev: 'ALL', kinds: [...POINT_KINDS], sts: 'ALL', q: '' } }
 
 /* --- 합계 영역 ---------------------------------------------------------- */
 const totals = computed(() => filtered.value.reduce((s, r) => ({
@@ -108,9 +108,9 @@ const fmt = (n: number) => n.toLocaleString('ko-KR')
       </tr>
       <tr>
         <th scope="row"><label for="p-dev">발전모델 대상</label></th>
-        <td><Select v-model="f.dev" input-id="p-dev" :options="[{ l: '전체', v: '' }, { l: '대상', v: 'Y' }, { l: '비대상', v: 'N' }]" option-label="l" option-value="v" fluid /></td>
+        <td><Select v-model="f.dev" input-id="p-dev" :options="[{ l: '전체', v: 'ALL' }, { l: '대상', v: 'Y' }, { l: '비대상', v: 'N' }]" option-label="l" option-value="v" fluid /></td>
         <th scope="row"><label for="p-sts">재직 상태</label></th>
-        <td><Select v-model="f.sts" input-id="p-sts" :options="[{ l: '전체', v: '' }, { l: '이용중', v: '이용중' }, { l: '이용정지', v: '이용정지' }, { l: '환불요청', v: '환불요청' }, { l: '환불완료', v: '환불완료' }]" option-label="l" option-value="v" fluid /></td>
+        <td><Select v-model="f.sts" input-id="p-sts" :options="[{ l: '전체', v: 'ALL' }, { l: '이용중', v: '이용중' }, { l: '이용정지', v: '이용정지' }, { l: '환불요청', v: '환불요청' }, { l: '환불완료', v: '환불완료' }]" option-label="l" option-value="v" fluid /></td>
       </tr>
       <tr>
         <th scope="row"><label for="p-kind">포인트 구분</label></th>

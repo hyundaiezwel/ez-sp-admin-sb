@@ -23,7 +23,7 @@ const router = useRouter()
 
 const STATUS_TONE: Record<BizStatus, string> = { 준비: 'mute', 모집중: 'brand', 심사중: 'info', 발표: 'warning', 운영: 'success', 종료: 'mute' }
 
-const blank = () => ({ year: 2026, type: '', growth: '', status: '', name: '' })
+const blank = () => ({ year: 2026, type: '', growth: '', status: 'ALL', name: '' })
 const f = ref(blank())
 const applied = ref(blank())
 const loading = ref(false)
@@ -35,7 +35,7 @@ const filtered = computed(() => {
     b.year === a.year &&
     (!a.type || b.type === a.type) &&
     (!a.growth || (a.growth === 'Y' ? !!b.growthModelId : !b.growthModelId)) &&
-    (!a.status || b.status === a.status) &&
+    (a.status === 'ALL' || b.status === a.status) &&
     (!a.name.trim() || b.name.includes(a.name.trim())),
   ).sort((x, y) => x.round - y.round)
 })
@@ -94,7 +94,7 @@ function openCreate() {
           </div>
         </td>
         <th scope="row"><label for="b-sts">진행상태</label></th>
-        <td><Select v-model="f.status" input-id="b-sts" :options="[{ l: '전체', v: '' }, ...(['준비', '모집중', '심사중', '발표', '운영', '종료'].map((s) => ({ l: s, v: s })))]" option-label="l" option-value="v" fluid /></td>
+        <td><Select v-model="f.status" input-id="b-sts" :options="[{ l: '전체', v: 'ALL' }, ...(['준비', '모집중', '심사중', '발표', '운영', '종료'].map((s) => ({ l: s, v: s })))]" option-label="l" option-value="v" fluid /></td>
       </tr>
       <tr>
         <th scope="row"><label for="b-name">사업명</label></th>

@@ -23,16 +23,16 @@ const CODE = 'SP-CNT-020L'
 const router = useRouter()
 const rows = ref(POPUPS)
 
-const f = reactive({ phase: '', type: '', status: '', range: presetRange(PRESETS[3]) as Range })
+const f = reactive({ phase: 'ALL', type: 'ALL', status: 'ALL', range: presetRange(PRESETS[3]) as Range })
 const applied = reactive({ ...f })
 function search() { Object.assign(applied, f) }
-function reset() { f.phase = ''; f.type = ''; f.status = ''; f.range = presetRange(PRESETS[3]); Object.assign(applied, f) }
+function reset() { f.phase = 'ALL'; f.type = 'ALL'; f.status = 'ALL'; f.range = presetRange(PRESETS[3]); Object.assign(applied, f) }
 const filtered = computed(() =>
   rows.value.filter((p) => {
     const phase = popupPhase(p)
     const [from, to] = applied.range
     const inRange = !from || !to || (p.startDate <= fmtDate(to) && p.endDate >= fmtDate(from))
-    return (!applied.phase || phase === applied.phase) && (!applied.type || p.type === applied.type) && (!applied.status || p.displayStatus === applied.status) && inRange
+    return (applied.phase === 'ALL' || phase === applied.phase) && (applied.type === 'ALL' || p.type === applied.type) && (applied.status === 'ALL' || p.displayStatus === applied.status) && inRange
   }).sort((a, b) => a.startDate.localeCompare(b.startDate)),
 )
 
@@ -65,13 +65,13 @@ const liveNow = computed(() => rows.value.filter(popupLive).sort((a, b) => b.ran
         <tbody>
           <tr>
             <th scope="row"><label for="p-ph">진행상태</label></th>
-            <td><Select v-model="f.phase" input-id="p-ph" :options="[{ l: '전체', v: '' }, ...['대기중', '진행중', '종료'].map((v) => ({ l: v, v }))]" option-label="l" option-value="v" fluid /></td>
+            <td><Select v-model="f.phase" input-id="p-ph" :options="[{ l: '전체', v: 'ALL' }, ...['대기중', '진행중', '종료'].map((v) => ({ l: v, v }))]" option-label="l" option-value="v" fluid /></td>
             <th scope="row"><label for="p-ty">팝업 유형</label></th>
-            <td><Select v-model="f.type" input-id="p-ty" :options="[{ l: '전체', v: '' }, { l: '상단배너', v: '상단배너' }, { l: '레이어팝업', v: '레이어팝업' }]" option-label="l" option-value="v" fluid /></td>
+            <td><Select v-model="f.type" input-id="p-ty" :options="[{ l: '전체', v: 'ALL' }, { l: '상단배너', v: '상단배너' }, { l: '레이어팝업', v: '레이어팝업' }]" option-label="l" option-value="v" fluid /></td>
           </tr>
           <tr>
             <th scope="row"><label for="p-st">전시상태</label></th>
-            <td><Select v-model="f.status" input-id="p-st" :options="[{ l: '전체', v: '' }, { l: '전시', v: '전시' }, { l: '미전시', v: '미전시' }]" option-label="l" option-value="v" fluid /></td>
+            <td><Select v-model="f.status" input-id="p-st" :options="[{ l: '전체', v: 'ALL' }, { l: '전시', v: '전시' }, { l: '미전시', v: '미전시' }]" option-label="l" option-value="v" fluid /></td>
             <th scope="row"><label for="p-rg">전시기간</label></th>
             <td><WsPeriod id="p-rg" v-model="f.range" /></td>
           </tr>

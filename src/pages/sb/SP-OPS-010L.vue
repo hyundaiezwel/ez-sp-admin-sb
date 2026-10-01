@@ -27,7 +27,7 @@ const router = useRouter()
 const STS: ReqSts[] = ['접수', '처리중', '처리완료']
 const TYPES = ['참여신청 문의', '포인트사용 문의', '기초정보 정정', '계정 문의', '기타']
 
-const blank = () => ({ range: presetRange(PRESETS[2]) as Range, kw: '', sts: '' as string, type: '' })
+const blank = () => ({ range: presetRange(PRESETS[2]) as Range, kw: '', sts: 'ALL' as string, type: 'ALL' })
 const f = ref(blank())
 const applied = ref(blank())
 
@@ -35,7 +35,7 @@ const day = (s: string) => new Date(+s.slice(0, 4), +s.slice(5, 7) - 1, +s.slice
 const hit = (r: OpsRequest) => {
   const a = applied.value
   const d = day(r.requestedAt)
-  return (!a.sts || r.sts === a.sts) && (!a.type || r.type === a.type) &&
+  return (a.sts === 'ALL' || r.sts === a.sts) && (a.type === 'ALL' || r.type === a.type) &&
     (!a.kw.trim() || r.title.includes(a.kw.trim()) || r.requester.includes(a.kw.trim()) || r.company.includes(a.kw.trim())) &&
     (!a.range[0] || d >= a.range[0]) && (!a.range[1] || d <= a.range[1])
 }
@@ -52,7 +52,7 @@ function search() {
 function reset() { f.value = blank(); search() }
 
 const counts = computed(() => STS.map((s) => ({ id: s, label: s, count: opsRequests.filter((r) => r.sts === s).length })))
-function filterByChip(s: string) { f.value.sts = f.value.sts === s ? '' : s; search() }
+function filterByChip(s: string) { f.value.sts = f.value.sts === s ? 'ALL' : s; search() }
 
 const NOW_DAYS = (r: OpsRequest) => Math.floor((Date.now() - day(r.requestedAt).getTime()) / 86_400_000)
 const columns = computed(() => [
@@ -88,7 +88,7 @@ const fmt = (n: number) => n.toLocaleString('ko-KR')
         <th scope="row"><label for="q-kw">검색어</label></th>
         <td><InputText id="q-kw" v-model="f.kw" fluid placeholder="제목 · 요청자 · 답변자 · 기업명" /></td>
         <th scope="row"><label for="q-type">요청유형</label></th>
-        <td><Select v-model="f.type" input-id="q-type" :options="[{ l: '전체', v: '' }, ...TYPES.map((t) => ({ l: t, v: t }))]" option-label="l" option-value="v" placeholder="전체" fluid /></td>
+        <td><Select v-model="f.type" input-id="q-type" :options="[{ l: '전체', v: 'ALL' }, ...TYPES.map((t) => ({ l: t, v: t }))]" option-label="l" option-value="v" placeholder="전체" fluid /></td>
       </tr>
     </WsSearch>
 

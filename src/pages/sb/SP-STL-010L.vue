@@ -28,12 +28,12 @@ const CODE = 'SP-STL-010L'
 const router = useRouter()
 const won = (n: number) => n.toLocaleString('ko-KR') + '원'
 
-const f = ref({ year: 2026, approved: '' })
+const f = ref({ year: 2026, approved: 'ALL' })
 const applied = ref({ ...f.value })
 function search() { applied.value = { ...f.value } }
-function reset() { f.value = { year: 2026, approved: '' } }
+function reset() { f.value = { year: 2026, approved: 'ALL' } }
 const rows = computed(() => BILLS.filter((b) =>
-  (!applied.value.approved || (applied.value.approved === 'Y' ? b.status === '승인' : b.status !== '승인')),
+  (applied.value.approved === 'ALL' || (applied.value.approved === 'Y' ? b.status === '승인' : b.status !== '승인')),
 ))
 
 const downloadRow = (b: BillDoc) => {
@@ -102,7 +102,7 @@ function bulkApprove() {
         <th scope="row"><label for="b-year">청구연도</label></th>
         <td><Select v-model="f.year" input-id="b-year" :options="YEARS" fluid /></td>
         <th scope="row"><label for="b-appr">승인 여부</label></th>
-        <td><Select v-model="f.approved" input-id="b-appr" :options="[{ l: '전체', v: '' }, { l: '승인', v: 'Y' }, { l: '미승인', v: 'N' }]" option-label="l" option-value="v" fluid /></td>
+        <td><Select v-model="f.approved" input-id="b-appr" :options="[{ l: '전체', v: 'ALL' }, { l: '승인', v: 'Y' }, { l: '미승인', v: 'N' }]" option-label="l" option-value="v" fluid /></td>
       </tr>
     </WsSearch>
 

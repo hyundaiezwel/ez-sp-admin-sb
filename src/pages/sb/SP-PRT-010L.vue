@@ -43,7 +43,7 @@ const STS = ['110', '130', '120', '220', '131', '139', '210']
 const labelOf = (c: string) => stateOf(c)?.label ?? c
 
 /* --- 조회 --------------------------------------------------------------- */
-const blank = () => ({ range: presetRange(PRESETS[4]) as Range, name: '', bizNo: '', coFg: '', sts: '' })
+const blank = () => ({ range: presetRange(PRESETS[4]) as Range, name: '', bizNo: '', coFg: '', sts: 'ALL' })
 const f = ref(blank())
 const applied = ref(blank())
 const all = computed(() => applications(ctx.biz))
@@ -52,7 +52,7 @@ const day = (s: string) => new Date(+s.slice(0, 4), +s.slice(5, 7) - 1, +s.slice
 const hit = (r: SbApplication) => {
   const a = applied.value
   const d = day(r.appliedAt)
-  return (!a.sts || r.sts === a.sts) && (!a.coFg || r.coFg === a.coFg) &&
+  return (a.sts === 'ALL' || r.sts === a.sts) && (!a.coFg || r.coFg === a.coFg) &&
     (!a.name.trim() || r.name.includes(a.name.trim())) && (!a.bizNo.trim() || r.bizNo.replace(/-/g, '').includes(a.bizNo.replace(/-/g, '').trim())) &&
     (!a.range[0] || d >= a.range[0]) && (!a.range[1] || d <= a.range[1])
 }
@@ -137,7 +137,7 @@ const fmt = (n: number) => n.toLocaleString('ko-KR')
       </tr>
       <tr>
         <th scope="row"><label for="a-sts">신청상태</label></th>
-        <td><Select v-model="f.sts" input-id="a-sts" :options="[{ l: '전체', v: '' }, ...STS.map((c) => ({ l: labelOf(c), v: c }))]" option-label="l" option-value="v" placeholder="전체" fluid /></td>
+        <td><Select v-model="f.sts" input-id="a-sts" :options="[{ l: '전체', v: 'ALL' }, ...STS.map((c) => ({ l: labelOf(c), v: c }))]" option-label="l" option-value="v" placeholder="전체" fluid /></td>
         <th scope="row"><label for="a-cofg">기업구분</label></th>
         <td><Select v-model="f.coFg" input-id="a-cofg" :options="[{ label: '전체', code: '' }, ...CO_FG]" option-label="label" option-value="code" placeholder="전체" fluid /></td>
       </tr>

@@ -42,7 +42,7 @@ const rows0 = computed(() => REFUND_ROUNDS.map((rr) => {
   }
 }))
 
-const blank = () => ({ year: 2026, month: '09', round: '1', dev: '', result: '', q: '' })
+const blank = () => ({ year: 2026, month: '09', round: '1', dev: 'ALL', result: 'ALL', q: '' })
 const f = ref(blank())
 const applied = ref(blank())
 function search() {
@@ -55,7 +55,7 @@ function reset() { f.value = blank() }
 const qn = (s: string) => s.replace(/-/g, '')
 const rows = computed(() => rows0.value.filter((r) => {
   const ymMatch = applied.value.month === '전체' ? r.ym.startsWith(String(applied.value.year)) : r.ym === `${applied.value.year}.${applied.value.month}`
-  const resultMatch = !applied.value.result || (applied.value.result === '실패' ? r.failCount > 0 : r.doneCount > 0)
+  const resultMatch = applied.value.result === 'ALL' || (applied.value.result === '실패' ? r.failCount > 0 : r.doneCount > 0)
   return ymMatch && resultMatch &&
     (!applied.value.q.trim() || r.name.includes(applied.value.q.trim()) || qn(r.bizNo).includes(qn(applied.value.q.trim())) || qn(r.acctNo).includes(qn(applied.value.q.trim())))
 }))
@@ -88,16 +88,16 @@ const openDetail = (r: any) => router.push({ path: routeOf('SP-STL-040D'), query
       <tr>
         <th scope="row"><label for="rf-year">환불청구연월</label></th>
         <td style="display:flex; gap:8px">
-          <Select v-model="f.year" :options="[2026, 2025]" style="width:90px" />
-          <Select v-model="f.month" input-id="rf-year" :options="['전체', '01', '02', '03', '04', '05', '06', '07', '08', '09']" style="width:90px" />
-          <Select v-if="f.month !== '전체'" v-model="f.round" :options="[{ l: '1차', v: '1' }, { l: '2차', v: '2' }]" option-label="l" option-value="v" style="width:90px" />
+          <Select v-model="f.year" :options="[2026, 2025]" fluid />
+          <Select v-model="f.month" input-id="rf-year" :options="['전체', '01', '02', '03', '04', '05', '06', '07', '08', '09']" fluid />
+          <Select v-if="f.month !== '전체'" v-model="f.round" :options="[{ l: '1차', v: '1' }, { l: '2차', v: '2' }]" option-label="l" option-value="v" fluid />
         </td>
         <th scope="row"><label for="rf-dev">발전모델 대상</label></th>
-        <td><Select v-model="f.dev" input-id="rf-dev" :options="[{ l: '전체', v: '' }, { l: '대상', v: 'Y' }, { l: '비대상', v: 'N' }]" option-label="l" option-value="v" fluid /></td>
+        <td><Select v-model="f.dev" input-id="rf-dev" :options="[{ l: '전체', v: 'ALL' }, { l: '대상', v: 'Y' }, { l: '비대상', v: 'N' }]" option-label="l" option-value="v" fluid /></td>
       </tr>
       <tr>
         <th scope="row"><label for="rf-res">환불 결과</label></th>
-        <td><Select v-model="f.result" input-id="rf-res" :options="[{ l: '전체', v: '' }, { l: '완료 있음', v: '완료' }, { l: '실패 있음', v: '실패' }]" option-label="l" option-value="v" fluid /></td>
+        <td><Select v-model="f.result" input-id="rf-res" :options="[{ l: '전체', v: 'ALL' }, { l: '완료 있음', v: '완료' }, { l: '실패 있음', v: '실패' }]" option-label="l" option-value="v" fluid /></td>
         <th scope="row"><label for="rf-q">검색어</label></th>
         <td><InputText id="rf-q" v-model="f.q" maxlength="25" fluid placeholder="기업명 · 사업자등록번호 · 기업계좌번호" /></td>
       </tr>

@@ -30,7 +30,7 @@ const TONE: Record<LoginResult, 'success' | 'danger' | 'warning' | 'mute'> = {
 }
 const RESULTS: LoginResult[] = ['로그인 성공', '비밀번호 실패', '2차 인증 실패', '잠금 전환', '수동 로그아웃', '자동 로그아웃', '중복 로그인 종료', '계정 사용중지 로그아웃']
 
-const blank = () => ({ range: presetRange(PRESETS[2]) as Range, name: '', result: '', anomaly: false })
+const blank = () => ({ range: presetRange(PRESETS[2]) as Range, name: '', result: 'ALL', anomaly: false })
 const f = ref(blank())
 const applied = ref(blank())
 onMounted(() => { if (route.query.admin) { const a = ACCESS_LOGS.find((x) => x.adminId === route.query.admin); if (a) { f.value.name = a.adminName; applied.value.name = a.adminName } } })
@@ -40,7 +40,7 @@ const hit = (r: SbAccessLog) => {
   const a = applied.value
   const d = day(r.at)
   return (!a.name.trim() || r.adminName.includes(a.name.trim()) || r.adminId.includes(a.name.trim())) &&
-    (!a.result || r.result === a.result) && (!a.anomaly || r.anomaly) &&
+    (a.result === 'ALL' || r.result === a.result) && (!a.anomaly || r.anomaly) &&
     (!a.range[0] || d >= a.range[0]) && (!a.range[1] || d <= a.range[1])
 }
 const { rows, loading, error, reload, first, size, total, search: requery } = usePaged(() => ACCESS_LOGS.filter(hit), {
@@ -75,7 +75,7 @@ const fmt = (n: number) => n.toLocaleString('ko-KR')
         <th scope="row"><label for="l-name">아이디 · 이름</label></th>
         <td><InputText id="l-name" v-model="f.name" fluid /></td>
         <th scope="row"><label for="l-result">결과</label></th>
-        <td><Select v-model="f.result" input-id="l-result" :options="[{ l: '전체', v: '' }, ...RESULTS.map((r) => ({ l: r, v: r }))]" option-label="l" option-value="v" fluid /></td>
+        <td><Select v-model="f.result" input-id="l-result" :options="[{ l: '전체', v: 'ALL' }, ...RESULTS.map((r) => ({ l: r, v: r }))]" option-label="l" option-value="v" fluid /></td>
       </tr>
       <tr>
         <th scope="row"><label for="l-anom">이상 징후</label></th>

@@ -26,12 +26,12 @@ const router = useRouter()
 const rows = ref(BANNERS)
 const pos = ref<BannerPosition>('메인 비주얼')
 
-const f = ref({ name: '', status: '' })
-function reset() { f.value = { name: '', status: '' } }
+const f = ref({ name: '', status: 'ALL' })
+function reset() { f.value = { name: '', status: 'ALL' } }
 const inTab = computed(() =>
   rows.value
     .filter((b) => b.position === pos.value)
-    .filter((b) => (!f.value.name.trim() || b.name.includes(f.value.name.trim())) && (!f.value.status || b.displayStatus === f.value.status))
+    .filter((b) => (!f.value.name.trim() || b.name.includes(f.value.name.trim())) && (f.value.status === 'ALL' || b.displayStatus === f.value.status))
     .sort((a, b) => a.order - b.order),
 )
 const liveCount = computed(() => rows.value.filter((b) => b.position === pos.value && bannerLive(b)).length)
@@ -85,7 +85,7 @@ const openNew = () => router.push({ path: routeOf('SP-CNT-030D'), query: { posit
             <th scope="row"><label for="b-n">배너명</label></th>
             <td><InputText id="b-n" v-model="f.name" fluid placeholder="배너명 일부" /></td>
             <th scope="row"><label for="b-s">전시상태</label></th>
-            <td><Select v-model="f.status" input-id="b-s" :options="[{ l: '전체', v: '' }, { l: '전시', v: '전시' }, { l: '미전시', v: '미전시' }]" option-label="l" option-value="v" fluid /></td>
+            <td><Select v-model="f.status" input-id="b-s" :options="[{ l: '전체', v: 'ALL' }, { l: '전시', v: '전시' }, { l: '미전시', v: '미전시' }]" option-label="l" option-value="v" fluid /></td>
           </tr>
         </tbody>
       </table>
@@ -124,9 +124,11 @@ const openNew = () => router.push({ path: routeOf('SP-CNT-030D'), query: { posit
               </div>
             </td>
             <td><span class="th" :style="{ background: `linear-gradient(135deg, ${b.tint}, color-mix(in srgb, ${b.tint} 45%, white))` }" aria-hidden="true" /></td>
-            <td class="ttl">
-              <button type="button" class="ws-linklike" :title="pos === 'SNS 링크' ? b.channel : b.name" @click="openDetail(b)">{{ pos === 'SNS 링크' ? b.channel : b.name }}</button>
-              <span v-if="bannerLive(b)" :class="badgeClass('brand')">노출 중</span>
+            <td>
+              <div class="ttl">
+                <button type="button" class="ws-linklike" :title="pos === 'SNS 링크' ? b.channel : b.name" @click="openDetail(b)">{{ pos === 'SNS 링크' ? b.channel : b.name }}</button>
+                <span v-if="bannerLive(b)" :class="badgeClass('brand')">노출 중</span>
+              </div>
             </td>
             <td style="text-align: center">{{ b.startDate }}</td>
             <td style="text-align: center">{{ b.endDate }}</td>

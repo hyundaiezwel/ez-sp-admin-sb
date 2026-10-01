@@ -25,12 +25,12 @@ import { shopProducts, PARTNER_OPTIONS, type ShopProduct, type ShopType } from '
 const CODE = 'SP-OPS-070P'
 const SHOP_TYPE: ShopType[] = ['숙박', '여행', '레저입장권', '교통편의']
 
-const blank = () => ({ kw: '', type: '', partner: '' })
+const blank = () => ({ kw: '', type: 'ALL', partner: '' })
 const f = ref(blank())
 const applied = ref(blank())
 const hit = (r: ShopProduct) => {
   const a = applied.value
-  return (!a.type || r.type === a.type) && (!a.partner || r.partner === a.partner) &&
+  return (a.type === 'ALL' || r.type === a.type) && (!a.partner || r.partner === a.partner) &&
     (!a.kw.trim() || r.name.includes(a.kw.trim()) || r.keyword.includes(a.kw.trim()) || r.code.includes(a.kw.trim()))
 }
 const { rows, loading, error, reload, first, size, total, search: requery } = usePaged(() => shopProducts.filter(hit), { size: 10, failIf: () => applied.value.kw.includes(ERROR_KEYWORD) })
@@ -95,13 +95,13 @@ const fmt = (n: number) => n.toLocaleString('ko-KR')
         <th scope="row"><label for="q-kw">검색어</label></th>
         <td><InputText id="q-kw" v-model="f.kw" fluid maxlength="30" placeholder="상품명 · 부적합 키워드 · 상품코드" /></td>
         <th scope="row"><label for="q-type">상품유형</label></th>
-        <td><Select v-model="f.type" input-id="q-type" :options="[{ l: '전체', v: '' }, ...SHOP_TYPE.map((t) => ({ l: t, v: t }))]" option-label="l" option-value="v" placeholder="전체" fluid /></td>
+        <td><Select v-model="f.type" input-id="q-type" :options="[{ l: '전체', v: 'ALL' }, ...SHOP_TYPE.map((t) => ({ l: t, v: t }))]" option-label="l" option-value="v" placeholder="전체" fluid /></td>
       </tr>
       <tr>
         <th scope="row"><label for="q-partner">제휴사</label></th>
         <td colspan="3">
           <span style="display:flex; gap:8px; align-items:center">
-            <InputText id="q-partner" :model-value="f.partner" readonly fluid placeholder="찾기로 선택" style="max-width:220px" @click="partnerOpen = true" />
+            <InputText id="q-partner" :model-value="f.partner" readonly fluid placeholder="찾기로 선택" @click="partnerOpen = true" />
             <Button type="button" label="제휴사 검색" severity="secondary" outlined @click="partnerOpen = true" />
             <Button v-if="f.partner" type="button" label="선택취소" severity="secondary" text @click="f.partner = ''" />
           </span>

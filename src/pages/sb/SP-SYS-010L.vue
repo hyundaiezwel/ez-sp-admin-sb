@@ -27,15 +27,15 @@ const CODE = 'SP-SYS-010L'
 const router = useRouter()
 
 const TONE: Record<AcctStatus, 'success' | 'warning' | 'danger' | 'mute'> = { 사용: 'success', '임시 비밀번호': 'warning', 휴면: 'mute', 잠금: 'danger', 사용중지: 'danger' }
-const ORG = [{ label: '전체', v: '' }, { label: '지원기관', v: '지원기관' }, { label: '운영사', v: '운영사' }]
-const STS = [{ label: '전체', v: '' }, { label: '사용', v: '사용' }, { label: '임시 비밀번호', v: '임시 비밀번호' }, { label: '휴면', v: '휴면' }, { label: '잠금', v: '잠금' }, { label: '사용중지', v: '사용중지' }]
+const ORG = [{ label: '전체', v: 'ALL' }, { label: '지원기관', v: '지원기관' }, { label: '운영사', v: '운영사' }]
+const STS = [{ label: '전체', v: 'ALL' }, { label: '사용', v: '사용' }, { label: '임시 비밀번호', v: '임시 비밀번호' }, { label: '휴면', v: '휴면' }, { label: '잠금', v: '잠금' }, { label: '사용중지', v: '사용중지' }]
 
-const blank = () => ({ name: '', org: '', sts: '' })
+const blank = () => ({ name: '', org: 'ALL', sts: 'ALL' })
 const f = ref(blank())
 const applied = ref(blank())
 const hit = (r: SbAdmin) => {
   const a = applied.value
-  return (!a.org || r.org === a.org) && (!a.sts || r.status === a.sts) &&
+  return (a.org === 'ALL' || r.org === a.org) && (a.sts === 'ALL' || r.status === a.sts) &&
     (!a.name.trim() || r.name.includes(a.name.trim()) || r.loginId.includes(a.name.trim()))
 }
 const { rows, loading, error, reload, first, size, total, search: requery } = usePaged(() => ADMINS.filter(hit), {

@@ -25,14 +25,14 @@ import { SITES, HANDLE, REPORT } from '../../sp/codes'
 const CODE = 'SP-OPS-060L'
 const router = useRouter()
 
-const blank = () => ({ range: presetRange(PRESETS[2]) as Range, basis: '등록일', handle: '', site: '', report: '' })
+const blank = () => ({ range: presetRange(PRESETS[2]) as Range, basis: '등록일', handle: '', site: 'ALL', report: 'ALL' })
 const f = ref(blank())
 const applied = ref(blank())
 const day = (s: string) => { const [y, m, d] = s.split('.').map(Number); return new Date(y, m - 1, d) }
 const hit = (r: FraudCase) => {
   const a = applied.value
   const d = day(a.basis === '실행일' ? r.runAt : r.regAt)
-  return (!a.handle || r.handle === a.handle) && (!a.site || r.site === a.site) && (!a.report || r.report === a.report) &&
+  return (!a.handle || r.handle === a.handle) && (a.site === 'ALL' || r.site === a.site) && (a.report === 'ALL' || r.report === a.report) &&
     (!a.range[0] || d >= a.range[0]) && (!a.range[1] || d <= a.range[1])
 }
 const { rows, loading, error, reload, first, size, total, search: requery } = usePaged(() => fraudCases.filter(hit), { failIf: () => false })
@@ -49,7 +49,7 @@ const periodOnly = computed(() => fraudCases.filter((r) => { const d = day(appli
 const matrix = computed(() => HANDLE.map((h) => ({ handle: h, label: h.label, cells: [...SITES, '미상'].map((s) => periodOnly.value.filter((r) => r.handle === h.code && (s === '미상' ? !SITES.includes(r.site) : r.site === s)).length) })))
 function cellClick(handleCode: string, site: string) {
   f.value.handle = handleCode
-  f.value.site = site === '미상' ? '' : site
+  f.value.site = site === '미상' ? 'ALL' : site
   search()
 }
 
@@ -82,9 +82,9 @@ const lastRun = '2026.09.30 06:00'
       </tr>
       <tr>
         <th scope="row"><label for="q-site">거래사이트</label></th>
-        <td><Select v-model="f.site" input-id="q-site" :options="[{ l: '전체', v: '' }, ...SITES.map((s) => ({ l: s, v: s }))]" option-label="l" option-value="v" placeholder="전체" fluid /></td>
+        <td><Select v-model="f.site" input-id="q-site" :options="[{ l: '전체', v: 'ALL' }, ...SITES.map((s) => ({ l: s, v: s }))]" option-label="l" option-value="v" placeholder="전체" fluid /></td>
         <th scope="row"><label for="q-report">소명서 제출여부</label></th>
-        <td><Select v-model="f.report" input-id="q-report" :options="[{ l: '전체', v: '' }, ...REPORT.map((r) => ({ l: r.label, v: r.code }))]" option-label="l" option-value="v" placeholder="전체" fluid /></td>
+        <td><Select v-model="f.report" input-id="q-report" :options="[{ l: '전체', v: 'ALL' }, ...REPORT.map((r) => ({ l: r.label, v: r.code }))]" option-label="l" option-value="v" placeholder="전체" fluid /></td>
       </tr>
     </WsSearch>
 

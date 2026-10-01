@@ -22,12 +22,12 @@ import WsActionDialog, { type ActionPayload } from '../../ws/WsActionDialog.vue'
 const CODE = 'SP-OPS-030L'
 const router = useRouter()
 
-const blank = () => ({ cat: '', display: '' as string, kw: '' })
+const blank = () => ({ cat: 'ALL', display: 'ALL' as string, kw: '' })
 const f = ref(blank())
 const applied = ref(blank())
 const hit = (r: Faq) => {
   const a = applied.value
-  return (!a.cat || r.category === a.cat) && (!a.display || r.display === a.display) && (!a.kw.trim() || r.question.includes(a.kw.trim()))
+  return (a.cat === 'ALL' || r.category === a.cat) && (a.display === 'ALL' || r.display === a.display) && (!a.kw.trim() || r.question.includes(a.kw.trim()))
 }
 const sorted = computed(() => [...faqs].sort((a, b) => (a.category === b.category ? a.order - b.order : FAQ_CATEGORY.indexOf(a.category) - FAQ_CATEGORY.indexOf(b.category))))
 const { rows, loading, error, reload, total, search: requery } = usePaged(() => sorted.value.filter(hit), { size: 500, failIf: () => applied.value.kw.includes(ERROR_KEYWORD) })
@@ -80,9 +80,9 @@ const fmt = (n: number) => n.toLocaleString('ko-KR')
     <WsSearch :cols="['112px', '', '132px', '']" @search="search" @reset="reset">
       <tr>
         <th scope="row"><label for="q-cat">질문 분류</label></th>
-        <td><Select v-model="f.cat" input-id="q-cat" :options="[{ l: '전체', v: '' }, ...FAQ_CATEGORY.map((t) => ({ l: t, v: t }))]" option-label="l" option-value="v" placeholder="전체" fluid /></td>
+        <td><Select v-model="f.cat" input-id="q-cat" :options="[{ l: '전체', v: 'ALL' }, ...FAQ_CATEGORY.map((t) => ({ l: t, v: t }))]" option-label="l" option-value="v" placeholder="전체" fluid /></td>
         <th scope="row"><label for="q-disp">전시상태</label></th>
-        <td><Select v-model="f.display" input-id="q-disp" :options="[{ l: '전체', v: '' }, { l: '전시', v: '전시' }, { l: '미전시', v: '미전시' }]" option-label="l" option-value="v" placeholder="전체" fluid /></td>
+        <td><Select v-model="f.display" input-id="q-disp" :options="[{ l: '전체', v: 'ALL' }, { l: '전시', v: '전시' }, { l: '미전시', v: '미전시' }]" option-label="l" option-value="v" placeholder="전체" fluid /></td>
       </tr>
       <tr>
         <th scope="row"><label for="q-kw">질문</label></th>

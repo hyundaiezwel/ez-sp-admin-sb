@@ -28,14 +28,14 @@ const router = useRouter()
 const MGR_STATUS = ['등록(가입)', '등록(미가입)', '미등록']
 const mgrStatusOf = (p: SbPartner) => p.managers[0]?.status ?? '미등록'
 
-const blank = () => ({ year: 2026, mgrStatus: '', kw: '' })
+const blank = () => ({ year: 2026, mgrStatus: 'ALL', kw: '' })
 const f = ref(blank())
 const applied = ref(blank())
 
 const all = computed(() => PARTNERS.filter((p) => p.year === applied.value.year))
 const hit = (p: SbPartner) => {
   const a = applied.value
-  return (!a.mgrStatus || mgrStatusOf(p) === a.mgrStatus) && (!a.kw.trim() || p.name.includes(a.kw.trim()) || p.managers.some((m) => m.name.includes(a.kw.trim())))
+  return (a.mgrStatus === 'ALL' || mgrStatusOf(p) === a.mgrStatus) && (!a.kw.trim() || p.name.includes(a.kw.trim()) || p.managers.some((m) => m.name.includes(a.kw.trim())))
 }
 const { rows, loading, error, reload, first, size, total, search: requery } = usePaged(() => all.value.filter(hit))
 onMounted(reload)
@@ -88,7 +88,7 @@ function saveReg() {
         <th scope="row"><label for="pl-year">참여년도</label></th>
         <td><Select v-model="f.year" input-id="pl-year" :options="YEARS.filter((y) => y <= 2027)" fluid /></td>
         <th scope="row"><label for="pl-mgr">담당자 등록상태</label></th>
-        <td><Select v-model="f.mgrStatus" input-id="pl-mgr" :options="[{ l: '전체', v: '' }, ...MGR_STATUS.map((s) => ({ l: s, v: s }))]" option-label="l" option-value="v" fluid /></td>
+        <td><Select v-model="f.mgrStatus" input-id="pl-mgr" :options="[{ l: '전체', v: 'ALL' }, ...MGR_STATUS.map((s) => ({ l: s, v: s }))]" option-label="l" option-value="v" fluid /></td>
       </tr>
       <tr>
         <th scope="row"><label for="pl-kw">검색어</label></th>

@@ -36,14 +36,14 @@ const STS_OPTS = [
 ]
 
 /* --- 조회 --------------------------------------------------------------- */
-const blank = () => ({ q: '', sts: '__ALL__', joined: '' })
+const blank = () => ({ q: '', sts: '__ALL__', joined: 'ALL' })
 const f = ref(blank())
 const applied = ref(blank())
 const all = computed(() => WORKERS_B4.filter((w) => w.biz === ctx.biz))
 const hit = (r: SbWorkerB4) => {
   const a = applied.value
   return (a.sts === '__ALL__' || r.memberSts === a.sts) &&
-    (!a.joined || (a.joined === 'Y') === r.joined) &&
+    (a.joined === 'ALL' || (a.joined === 'Y') === r.joined) &&
     (!a.q.trim() || r.name.includes(a.q.trim()) || r.company.includes(a.q.trim()) || r.bizNo.replace(/-/g, '').includes(a.q.replace(/-/g, '').trim()) || r.empNo.includes(a.q.trim()))
 }
 const { rows, loading, error, reload, first, size, total, search: requery } = usePaged(() => all.value.filter(hit), {
@@ -134,7 +134,7 @@ const fmt = (n: number) => n.toLocaleString('ko-KR')
         <th scope="row"><label for="w-sts">회원 상태</label></th>
         <td><Select v-model="f.sts" input-id="w-sts" :options="[{ l: '전체', v: '__ALL__' }, ...STS_OPTS]" option-label="l" option-value="v" fluid /></td>
         <th scope="row"><label for="w-join">가입 여부</label></th>
-        <td><Select v-model="f.joined" input-id="w-join" :options="[{ l: '전체', v: '' }, { l: '가입', v: 'Y' }, { l: '미가입', v: 'N' }]" option-label="l" option-value="v" fluid /></td>
+        <td><Select v-model="f.joined" input-id="w-join" :options="[{ l: '전체', v: 'ALL' }, { l: '가입', v: 'Y' }, { l: '미가입', v: 'N' }]" option-label="l" option-value="v" fluid /></td>
       </tr>
     </WsSearch>
 

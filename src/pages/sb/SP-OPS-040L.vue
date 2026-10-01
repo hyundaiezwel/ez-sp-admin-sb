@@ -28,7 +28,7 @@ const CODE = 'SP-OPS-040L'
 const router = useRouter()
 const NOTICE_TYPE = ['사업공지', '이벤트공지', '서비스이용공지']
 
-const blank = () => ({ range: presetRange(PRESETS[4]) as Range, title: '', type: '', display: '' as string })
+const blank = () => ({ range: presetRange(PRESETS[4]) as Range, title: '', type: 'ALL', display: 'ALL' as string })
 const f = ref(blank())
 const applied = ref(blank())
 const kind = ref<string>('전체')
@@ -37,7 +37,7 @@ const day = (s: string) => new Date(+s.slice(0, 4), +s.slice(5, 7) - 1, +s.slice
 const hit = (r: Notice) => {
   const a = applied.value
   const d = day(r.createdAt.slice(0, 10))
-  return (kind.value === '전체' || r.kind === kind.value) && (!a.type || r.type === a.type) && (!a.display || r.display === a.display) &&
+  return (kind.value === '전체' || r.kind === kind.value) && (a.type === 'ALL' || r.type === a.type) && (a.display === 'ALL' || r.display === a.display) &&
     (!a.title.trim() || r.title.includes(a.title.trim())) && (!a.range[0] || d >= a.range[0]) && (!a.range[1] || d <= a.range[1])
 }
 const sorted = computed(() => [...notices].sort((x, y) => (Number(y.pinned) - Number(x.pinned)) || y.createdAt.localeCompare(x.createdAt)))
@@ -91,11 +91,11 @@ function openPreview(r: Notice) { preview.value = r; previewTab.value = '누리�
         <th scope="row"><label for="q-title">제목</label></th>
         <td><InputText id="q-title" v-model="f.title" fluid placeholder="제목 일부" /></td>
         <th scope="row"><label for="q-type">공지유형</label></th>
-        <td><Select v-model="f.type" input-id="q-type" :options="[{ l: '전체', v: '' }, ...NOTICE_TYPE.map((t) => ({ l: t, v: t }))]" option-label="l" option-value="v" placeholder="전체" fluid /></td>
+        <td><Select v-model="f.type" input-id="q-type" :options="[{ l: '전체', v: 'ALL' }, ...NOTICE_TYPE.map((t) => ({ l: t, v: t }))]" option-label="l" option-value="v" placeholder="전체" fluid /></td>
       </tr>
       <tr>
         <th scope="row"><label for="q-disp">전시여부</label></th>
-        <td><Select v-model="f.display" input-id="q-disp" :options="[{ l: '전체', v: '' }, { l: '전시', v: '전시' }, { l: '미전시', v: '미전시' }]" option-label="l" option-value="v" placeholder="전체" fluid /></td>
+        <td><Select v-model="f.display" input-id="q-disp" :options="[{ l: '전체', v: 'ALL' }, { l: '전시', v: '전시' }, { l: '미전시', v: '미전시' }]" option-label="l" option-value="v" placeholder="전체" fluid /></td>
         <td colspan="2" />
       </tr>
     </WsSearch>

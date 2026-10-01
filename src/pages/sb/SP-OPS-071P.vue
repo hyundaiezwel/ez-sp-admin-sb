@@ -24,13 +24,13 @@ import { useRouter } from 'vue-router'
 const CODE = 'SP-OPS-071P'
 const router = useRouter()
 
-const blank = () => ({ kw: '', active: '' as string })
+const blank = () => ({ kw: '', active: 'ALL' as string })
 const f = ref(blank())
 const applied = ref(blank())
 const sorted = computed(() => [...badKeywords].sort((a, b) => b.at.localeCompare(a.at)))
 const hit = (r: BadKeyword) => {
   const a = applied.value
-  return (!a.kw.trim() || r.keyword.includes(a.kw.trim())) && (a.active === '' || String(r.active) === a.active)
+  return (!a.kw.trim() || r.keyword.includes(a.kw.trim())) && (a.active === 'ALL' || String(r.active) === a.active)
 }
 const { rows, loading, error, reload, total, search: requery } = usePaged(() => sorted.value.filter(hit), { size: 500, failIf: () => false })
 onMounted(reload)
@@ -78,7 +78,7 @@ const fmt = (n: number) => n.toLocaleString('ko-KR')
         <th scope="row"><label for="q-kw">키워드</label></th>
         <td><InputText id="q-kw" v-model="f.kw" fluid placeholder="키워드 일부" /></td>
         <th scope="row"><label for="q-active">사용여부</label></th>
-        <td><Select v-model="f.active" input-id="q-active" :options="[{ l: '전체', v: '' }, { l: '사용', v: 'true' }, { l: '미사용', v: 'false' }]" option-label="l" option-value="v" placeholder="전체" fluid /></td>
+        <td><Select v-model="f.active" input-id="q-active" :options="[{ l: '전체', v: 'ALL' }, { l: '사용', v: 'true' }, { l: '미사용', v: 'false' }]" option-label="l" option-value="v" placeholder="전체" fluid /></td>
       </tr>
     </WsSearch>
     <section class="ws-sec">
