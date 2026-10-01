@@ -40,6 +40,7 @@ const catOption = {
 }
 const trendOption = {
   legend: { bottom: 0 },
+  grid: { bottom: 56 },
   xAxis: { type: 'category', data: ORDER_TREND.map((d) => d.date.slice(5)) },
   yAxis: { type: 'value' },
   series: [

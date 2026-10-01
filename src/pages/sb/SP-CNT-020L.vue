@@ -88,7 +88,7 @@ const liveNow = computed(() => rows.value.filter(popupLive).sort((a, b) => b.ran
         </div>
       </div>
       <p v-if="overlaps" class="ws-err" role="alert" style="margin-bottom: 8px">노출 순위가 겹치는 팝업이 있습니다.</p>
-      <table class="ws-gtb">
+      <table class="ws-gtb ws-gtb--fixed">
         <thead>
           <tr>
             <th scope="col">팝업명</th>
@@ -104,7 +104,10 @@ const liveNow = computed(() => rows.value.filter(popupLive).sort((a, b) => b.ran
         </thead>
         <tbody>
           <tr v-for="p in filtered" :key="p.id">
-            <td><button type="button" class="ws-linklike" @click="openDetail(p)">{{ p.name }}</button> <span v-if="popupLive(p)" :class="badgeClass('brand')">노출 중</span></td>
+            <td class="ttl">
+              <button type="button" class="ws-linklike" :title="p.name" @click="openDetail(p)">{{ p.name }}</button>
+              <span v-if="popupLive(p)" :class="badgeClass('brand')">노출 중</span>
+            </td>
             <td style="text-align: center">{{ p.type }}</td>
             <td style="text-align: center">{{ p.startDate }}</td>
             <td style="text-align: center">{{ p.endDate }}</td>
@@ -137,7 +140,9 @@ const liveNow = computed(() => rows.value.filter(popupLive).sort((a, b) => b.ran
 </template>
 
 <style scoped>
-.ws-linklike { border: 0; background: none; padding: 0; color: var(--ws-text-link); font: inherit; cursor: pointer; }
+.ws-gtb--fixed { table-layout: fixed; }
+.ttl { display: flex; align-items: center; gap: 4px; min-width: 0; }
+.ws-linklike { min-width: 0; flex: 0 1 auto; overflow: hidden; border: 0; background: none; padding: 0; color: var(--ws-text-link); font: inherit; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
 .ws-linklike:hover { text-decoration: underline; }
 .prev { padding: 8px 10px; border: 1px solid var(--ws-border); border-radius: var(--ws-radius-sm); display: flex; justify-content: space-between; gap: 8px; }
 </style>

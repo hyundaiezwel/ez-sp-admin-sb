@@ -30,5 +30,5 @@ const rows = defineModel<number>('rows', { required: true })
 <style scoped>
 .pg { position: relative; display: flex; justify-content: center; align-items: center; min-height: 32px; margin-top: var(--ws-gap-inter); }
 .pg__size { position: absolute; right: 0; width: 96px; }
-.pg :deep(.p-paginator-page) { font-size: var(--ws-font-size-md); font-variant-numeric: tabular-nums; }
+.pg :deep(.p-paginator-page) { font-size: var(--ws-font-size-md); font-variant-numeric: tabular-nums; width: auto; min-width: 32px; padding-inline: 6px; white-space: nowrap; } /* 두 자리 쪽 번호가 32px 정사각에서 꺾이던 문제 */
 </style>

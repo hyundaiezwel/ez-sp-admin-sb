@@ -37,6 +37,7 @@ function gotoPending(ch: string) {
 
 const dailyOption = {
   legend: { bottom: 0 },
+  grid: { bottom: 56 },
   xAxis: { type: 'category', data: CS_DAILY.map((d) => d.date.slice(5)) },
   yAxis: { type: 'value' },
   series: ['콜센터', '이메일', '누리집문의', '업무요청'].map((k) => ({ name: k, type: 'bar', stack: 'a', data: CS_DAILY.map((d: any) => d[k]) })),

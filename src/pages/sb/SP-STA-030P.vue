@@ -35,6 +35,7 @@ const bucketOption = {
 }
 const trendOption = {
   legend: { bottom: 0 },
+  grid: { bottom: 56 },
   xAxis: { type: 'category', data: DAILY_TREND_30.map((d) => d.date.slice(5)) },
   yAxis: [{ type: 'value', name: '인원' }, { type: 'value', name: '금액' }],
   series: [

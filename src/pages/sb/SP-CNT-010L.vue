@@ -96,7 +96,7 @@ const openDetail = (m: CntMaterial) => router.push({ path: routeOf('SP-CNT-010D'
           <SbCan action="create"><Button label="자료 등록" severity="contrast" @click="router.push(routeOf('SP-CNT-010D'))" /></SbCan>
         </div>
       </div>
-      <table class="ws-gtb">
+      <table class="ws-gtb ws-gtb--fixed">
         <thead>
           <tr>
             <th scope="col" style="width: 84px">순서</th>
@@ -122,7 +122,7 @@ const openDetail = (m: CntMaterial) => router.push({ path: routeOf('SP-CNT-010D'
               {{ m.category }}
               <span v-if="m.category === '운영지침'" class="ws-badge ws-badge--info" style="margin-left: 4px">기업 어드민 출력</span>
             </td>
-            <td><button type="button" class="ws-linklike" @click="openDetail(m)">{{ m.title }}</button></td>
+            <td><button type="button" class="ws-linklike" :title="m.title" @click="openDetail(m)">{{ m.title }}</button></td>
             <td style="text-align: center">{{ m.format }}</td>
             <td style="text-align: center"><span :class="badgeClass(m.displayStatus === '전시' ? 'success' : 'mute')">{{ m.displayStatus }}</span></td>
             <td style="text-align: center">{{ mask(m.registrant, 'name') }}</td>
@@ -155,6 +155,7 @@ const openDetail = (m: CntMaterial) => router.push({ path: routeOf('SP-CNT-010D'
 .od .ws-num { width: 18px; }
 .od .ws-cellbtn { width: 24px; padding: 0; }
 .od .ws-cellbtn:disabled { opacity: 0.4; cursor: default; }
-.ws-linklike { border: 0; background: none; padding: 0; color: var(--ws-text-link); font: inherit; cursor: pointer; text-align: left; }
+.ws-gtb--fixed { table-layout: fixed; }
+.ws-linklike { display: block; width: 100%; overflow: hidden; border: 0; background: none; padding: 0; color: var(--ws-text-link); font: inherit; text-overflow: ellipsis; white-space: nowrap; text-align: left; cursor: pointer; }
 .ws-linklike:hover { text-decoration: underline; }
 </style>

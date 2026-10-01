@@ -76,9 +76,11 @@ function download() { notify(`'${NA_TEMPLATES.find((t) => t.id === tab.value)?.n
         <div class="ws-tit__r"><SbCan action="download"><Button label="이 리포트 내려받기" size="small" severity="secondary" outlined class="ws-line" @click="download" /></SbCan></div>
       </div>
       <Tabs v-model:value="tab">
-        <TabList>
-          <Tab v-for="t in NA_TEMPLATES" :key="t.id" :value="t.id">{{ t.name }}</Tab>
-        </TabList>
+        <div class="ws-xscroll">
+          <TabList>
+            <Tab v-for="t in NA_TEMPLATES" :key="t.id" :value="t.id">{{ t.name }}</Tab>
+          </TabList>
+        </div>
         <TabPanels>
           <TabPanel value="T1">
             <table class="ws-gtb"><thead><tr><th>상품 구분</th><th>사용금액</th></tr></thead>

@@ -106,7 +106,7 @@ const previewOpen = ref(false)
 
     <fieldset :disabled="!canWrite" style="border: 0; margin: 0; padding: 0">
       <table class="ws-tb">
-        <colgroup><col style="width: 140px" /><col /></colgroup>
+        <colgroup><col style="width: 156px" /><col /></colgroup>
         <tbody>
           <tr>
             <th scope="row" class="req">팝업 유형</th>

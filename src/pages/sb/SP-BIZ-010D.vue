@@ -132,7 +132,7 @@ const won = (n: number) => n.toLocaleString('ko-KR')
         <TabPanel value="basic">
           <fieldset :disabled="!editable" style="border: 0; margin: 0; padding: 0">
             <table class="ws-tb">
-              <colgroup><col style="width: 160px" /><col /></colgroup>
+              <colgroup><col style="width: 248px" /><col /></colgroup>
               <tbody>
                 <tr>
                   <th scope="row" class="req"><label for="d-name">사업명</label></th>
@@ -184,6 +184,7 @@ const won = (n: number) => n.toLocaleString('ko-KR')
                 <tr>
                   <th scope="row">기업구분별 참여인원 · 초과 허용</th>
                   <td>
+                    <div class="ws-xscroll">
                     <table class="ws-gtb">
                       <thead><tr><th scope="col">기업구분</th><th scope="col">참여인원 상한</th><th scope="col">상한 초과 허용</th><th scope="col">최소 참여율(%)</th></tr></thead>
                       <tbody>
@@ -195,6 +196,7 @@ const won = (n: number) => n.toLocaleString('ko-KR')
                         </tr>
                       </tbody>
                     </table>
+                    </div>
                   </td>
                 </tr>
                 <tr>

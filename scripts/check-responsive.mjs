@@ -23,6 +23,12 @@ for (const w of WIDTHS) {
       const res = { hOverflow: page.scrollWidth > page.clientWidth + 2, titleWrap: false, charWrap: [], btnWrap: [], outRight: [], thWrap: [] }
       const h1 = page.querySelector('h1')
       if (h1) { const cs = getComputedStyle(h1); res.titleWrap = h1.getBoundingClientRect().height > (parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.3) * 1.5 }
+      // 높이가 고정된 버튼·입력 표는 높이 비율로 줄 수를 못 잰다 — 글자 줄의 위치를 직접 센다
+      const lineCount = (el) => {
+        const tops = new Set()
+        for (const n of el.childNodes) if (n.nodeType === 3 && n.textContent.trim()) { const rg = document.createRange(); rg.selectNodeContents(n); for (const q of rg.getClientRects()) tops.add(Math.round(q.top)) }
+        return tops.size
+      }
       const own = (el) => [...el.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join('').trim()
       for (const el of page.querySelectorAll('*')) {
         const t = own(el); if (t.length < 2) continue
@@ -30,8 +36,11 @@ for (const w of WIDTHS) {
         const rc = el.getBoundingClientRect(); if (!rc.width) continue
         const fs = parseFloat(cs.fontSize), lines = rc.height / (parseFloat(cs.lineHeight) || fs * 1.4)
         if (rc.width < fs * 2.6 && lines >= 2.5 && t.length >= 3) res.charWrap.push(t.slice(0, 14))
-        else if (el.closest('button') && !el.closest('.tabulator') && lines >= 1.8) res.btnWrap.push(t.slice(0, 14))
-        else if (el.closest('th') && lines >= 1.8 && t.length <= 12) res.thWrap.push(t.slice(0, 14))
+        else if (el.closest('button') && !el.closest('.tabulator') && lineCount(el) >= 2) res.btnWrap.push(t.slice(0, 14))
+        else if (el.closest('th') && t.length <= 20) {
+          // 행 높이가 고정된 입력 표는 높이 비율로는 못 잰다 — 글자 줄 수를 직접 센다
+          if (lineCount(el) >= 2) res.thWrap.push(t.slice(0, 14))
+        }
         if (rc.right > main.right + 4 && !el.closest('.tabulator, .ws-xscroll')) res.outRight.push(t.slice(0, 14))
       }
       return res

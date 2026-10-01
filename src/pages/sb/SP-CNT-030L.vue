@@ -100,7 +100,7 @@ const openNew = () => router.push({ path: routeOf('SP-CNT-030D'), query: { posit
         </div>
       </div>
       <p v-if="limit && liveCount > limit" class="ws-err" role="alert" style="margin-bottom: 8px">노출 한도 {{ limit }}건을 넘었습니다(지금 {{ liveCount }}건 노출 중).</p>
-      <table class="ws-gtb">
+      <table class="ws-gtb ws-gtb--fixed">
         <thead>
           <tr>
             <th scope="col" style="width: 84px">순서</th>
@@ -124,9 +124,9 @@ const openNew = () => router.push({ path: routeOf('SP-CNT-030D'), query: { posit
               </div>
             </td>
             <td><span class="th" :style="{ background: `linear-gradient(135deg, ${b.tint}, color-mix(in srgb, ${b.tint} 45%, white))` }" aria-hidden="true" /></td>
-            <td>
-              <button type="button" class="ws-linklike" @click="openDetail(b)">{{ pos === 'SNS 링크' ? b.channel : b.name }}</button>
-              <span v-if="bannerLive(b)" :class="badgeClass('brand')" style="margin-left: 4px">노출 중</span>
+            <td class="ttl">
+              <button type="button" class="ws-linklike" :title="pos === 'SNS 링크' ? b.channel : b.name" @click="openDetail(b)">{{ pos === 'SNS 링크' ? b.channel : b.name }}</button>
+              <span v-if="bannerLive(b)" :class="badgeClass('brand')">노출 중</span>
             </td>
             <td style="text-align: center">{{ b.startDate }}</td>
             <td style="text-align: center">{{ b.endDate }}</td>
@@ -153,6 +153,8 @@ const openNew = () => router.push({ path: routeOf('SP-CNT-030D'), query: { posit
 .od .ws-cellbtn { width: 24px; padding: 0; }
 .od .ws-cellbtn:disabled { opacity: 0.4; cursor: default; }
 .th { display: inline-block; width: 72px; height: 32px; border-radius: var(--ws-radius-sm); }
-.ws-linklike { border: 0; background: none; padding: 0; color: var(--ws-text-link); font: inherit; cursor: pointer; }
+.ws-gtb--fixed { table-layout: fixed; }
+.ttl { display: flex; align-items: center; gap: 4px; min-width: 0; }
+.ws-linklike { min-width: 0; flex: 0 1 auto; overflow: hidden; border: 0; background: none; padding: 0; color: var(--ws-text-link); font: inherit; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
 .ws-linklike:hover { text-decoration: underline; }
 </style>

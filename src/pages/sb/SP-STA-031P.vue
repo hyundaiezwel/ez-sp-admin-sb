@@ -44,6 +44,7 @@ watch(ctxKey, search)
 
 const trendOption = computed(() => ({
   legend: { bottom: 0 },
+  grid: { bottom: 56 },
   xAxis: { type: 'category', data: rowsOf.value.map((r: any) => r.period) },
   yAxis: [{ type: 'value', name: '금액' }, { type: 'value', name: '건수' }],
   series: [
