@@ -78,8 +78,8 @@ const meItems = computed<PvItem[]>(() => [
     <div class="tp__r">
       <!-- SpContext는 칩 + 팝오버 두 뿌리라 class가 붙지 않는다 — 감싸서 아래 :deep 보정이 걸리게 한다 -->
       <div class="tp__ctx"><SpContext :hide-role="sys.id === 'sb'" /></div>
-      <div v-if="sys.id === 'sb'" class="tp__ctx"><SbRole /></div>
-      <button type="button" class="tp__ib" :aria-label="dark ? '라이트 테마로' : '다크 테마로'" v-tooltip.bottom="dark ? '라이트 테마로' : '다크 테마로'" @click="flipTheme">
+      <div v-if="sys.id === 'sb'" class="tp__ctx tp__ctx--role"><SbRole /></div>
+      <button type="button" class="tp__ib tp__theme" :aria-label="dark ? '라이트 테마로' : '다크 테마로'" v-tooltip.bottom="dark ? '라이트 테마로' : '다크 테마로'" @click="flipTheme">
         <AppIcon :name="dark ? 'sun' : 'moon'" :size="18" />
       </button>
       <button type="button" class="tp__ib" aria-haspopup="dialog" :aria-label="`알림 ${total}건`" @click="(e) => bell?.toggle(e)">
@@ -143,6 +143,25 @@ const meItems = computed<PvItem[]>(() => [
 .tp__ctx :deep(.cx:hover) { border-color: var(--ws-top-fg); }
 .tp__ctx :deep(.cx__k) { color: var(--ws-top-muted); }
 .tp__ctx :deep(.cx__role) { background: var(--ws-top-q); color: var(--ws-top-fg); }
+
+/* --- 좁은 폭 — 덜 중요한 것부터 접는다. 알림 · 사용자는 끝까지 줄이지 않는다 ------------------
+   1024에서 가장 긴 라벨(사업 '…5년차 이상 중기업', 역할 '지원기관 조회 전용')이면 알림 · 사용자 메뉴가
+   화면 밖으로 밀려 누를 수 없었다(2026-10-01 측정, 135px 넘침). 상단 바는 가로 스크롤이 없다 */
+.tp__r { min-width: 0; }
+.tp__ctx { min-width: 0; }
+.tp__ctx :deep(.cx) { display: flex; max-width: 100%; min-width: 0; } /* 칸이 줄면 칩도 함께 줄고 글자만 말줄임 */
+.tp__ctx :deep(.cx > b) { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.tp__ctx:not(.tp__ctx--role) :deep(.cx > b:not(.cx__biz)) { flex: none; } /* 연도는 줄이지 않는다 — 사업명 · 역할명만 말줄임 */
+.tp__ctx :deep(.cx > svg) { flex: none; } /* 펼침 꺾쇠는 줄어들어 사라지지 않게 */
+@media (max-width: 1279px) {
+  .tp__ctx :deep(.cx__k) { display: none; }                 /* '참여년도' · '사업' · '역할' 표시 글자 */
+  .tp__ctx :deep(.cx__biz)::before { content: '· '; color: var(--ws-top-muted); }
+  .tp__ctx :deep(.cx__k + b) { margin-right: 0; }
+  .tp__ctx :deep(.cx) { max-width: 260px; }
+  .tp__ctx--role :deep(.cx) { max-width: 140px; }
+}
+@media (max-width: 1151px) { .tp__theme { display: none; } } /* 사용자 메뉴 '화면 테마'에 같은 선택이 있다 */
+@media (max-width: 1023px) { .tp__name { display: none; } }
 
 .nt { width: 320px; }
 .nt__h { margin-bottom: 8px; font-weight: 600; }

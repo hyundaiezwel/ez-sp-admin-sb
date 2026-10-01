@@ -1,7 +1,7 @@
 // 화면 폭 검사 — 개발 서버에 떠 있는 77개 화면을 1280 · 1024 폭으로 열어 깨짐을 센다.
 //   npm run dev 로 서버를 띄운 뒤: SB_URL=http://localhost:5320 npm run check:responsive
 //   playwright-core 가 이 저장소에 없으면 PLAYWRIGHT_CORE=<…/playwright-core/index.mjs> 로 경로를 준다.
-// 실패(exit 1): 글자 세로 쪼개짐 · 제목 줄바꿈 · 본문 가로 넘침 · 영역 밖으로 나간 글자 · 버튼 글자 줄바꿈
+// 실패(exit 1): 상단 바 버튼 화면 밖 · 칩 넘침 · 글자 세로 쪼개짐 · 제목 줄바꿈 · 본문 가로 넘침 · 영역 밖으로 나간 글자 · 버튼 글자 줄바꿈
 // 경고만: 입력 표 라벨 두 줄
 import { readFileSync } from 'node:fs'
 const pw = await import(process.env.PLAYWRIGHT_CORE || 'playwright-core').catch(() => null)
@@ -49,6 +49,19 @@ for (const w of WIDTHS) {
     for (const k of FAIL) if (r[k] === true || r[k]?.length) (hits[k] ??= []).push(r[k] === true ? c : `${c} ${[...new Set(r[k])].slice(0, 3).join(' / ')}`)
     if (r.thWrap.length) warn.push(c)
   }
+  // 상단 바 — 가장 긴 라벨(사업 · 역할)로 한 번 더 연다. 버튼이 화면 밖으로 나가거나 칩 글자가 테두리를 넘으면 실패
+  const tp = await b.newPage({ viewport: { width: w, height: 600 } })
+  await tp.addInitScript(() => { try { localStorage.setItem('sp-context', JSON.stringify({ year: 2026, biz: 'BIZ-26-02', role: 'R1' })); localStorage.setItem('sb-role', 'AV') } catch {} })
+  await tp.goto(`${URL}/#/sb/s/SP-PRT-010L`); await tp.waitForTimeout(800)
+  const top = await tp.evaluate(() => {
+    const bar = document.querySelector('.sh-top'); if (!bar) return ['상단 바 없음']
+    const out = []
+    for (const e of bar.querySelectorAll('button, a, input')) { if (!e.offsetParent) continue; const r = e.getBoundingClientRect(); if (r.width && r.right > innerWidth + 1) out.push(`화면 밖: ${(e.getAttribute('aria-label') || e.textContent).trim().slice(0, 16)}`) }
+    for (const c of bar.querySelectorAll('.cx')) if (c.scrollWidth > c.clientWidth + 1) out.push(`칩 넘침: ${c.textContent.trim().slice(0, 16)}`)
+    return out
+  })
+  if (top.length) (hits.topbar ??= []).push(...top)
+  await tp.close()
   await p.close()
   const n = Object.values(hits).reduce((a, v) => a + v.length, 0)
   failed += n

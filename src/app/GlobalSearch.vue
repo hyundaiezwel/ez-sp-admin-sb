@@ -100,6 +100,7 @@ const placeholder = '메뉴 · 기업 · 회원 · 접수번호 검색'
 .gs__box input { flex: 1; min-width: 0; height: 100%; border: 0; background: none; color: var(--ws-top-fg); font: inherit; font-size: var(--ws-font-size-md); }
 .gs__box input::placeholder { color: var(--ws-top-muted); }
 .gs__box input:focus { outline: none; }
+.gs__box input:focus-visible { box-shadow: none; } /* 포커스는 바깥 상자 테두리(:focus-within)가 보여 준다 — 안쪽 링이 겹쳐 보였다 */
 .gs__box input::-webkit-search-cancel-button { display: none; }
 .gs__kbd { padding: 0 6px; border: 1px solid var(--ws-top-field); border-radius: 4px; font: inherit; font-size: 11px; line-height: 16px; }
 .gs__pop {
@@ -114,4 +115,16 @@ const placeholder = '메뉴 · 기업 · 회원 · 접수번호 검색'
 .gs__i small { flex: none; color: var(--ws-text-muted); font-size: var(--ws-font-size-sm); }
 .gs__none { padding: 16px 14px; color: var(--ws-text-muted); text-align: center; }
 .gs__foot { margin-top: 4px; padding: 8px 14px 4px; border-top: 1px solid var(--ws-border-lighter); color: var(--ws-text-muted); font-size: var(--ws-font-size-sm); }
+/* 1152 미만 — 돋보기만 남긴다. 누르거나 / · ⌘K로 들어오면 그 자리에서 펼쳐진다(포커스가 있는 동안) */
+@media (max-width: 1151px) {
+  .gs { width: 36px; height: 34px; flex: none; }
+  .gs__box { width: 36px; padding: 0; justify-content: center; border-color: transparent; background: none; cursor: pointer; }
+  .gs__box input, .gs__kbd { position: absolute; width: 1px; opacity: 0; pointer-events: none; }
+  .gs:focus-within .gs__box {
+    position: absolute; left: 0; top: 0; z-index: 61; width: min(420px, 70vw); padding: 0 10px 0 12px;
+    justify-content: flex-start; border-color: var(--ws-top-fg); background: var(--ws-top-q);
+  }
+  .gs:focus-within .gs__box input { position: static; width: auto; opacity: 1; pointer-events: auto; }
+  .gs__pop { right: auto; width: min(420px, 70vw); }
+}
 </style>
