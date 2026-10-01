@@ -43,6 +43,9 @@ for (const w of WIDTHS) {
         }
         if (rc.right > main.right + 4 && !el.closest('.tabulator, .ws-xscroll')) res.outRight.push(t.slice(0, 14))
       }
+      // 화면 코드 배지 — 한 줄이어야 한다(SbFrame 아래, .ws-page 밖)
+      const code = document.querySelector('.sbf__code .sb-code')
+      if (code && code.getBoundingClientRect().height > parseFloat(getComputedStyle(code).fontSize) * 2.2) res.charWrap.push('화면 코드 배지 줄바꿈')
       return res
     })
     if (!r) continue
