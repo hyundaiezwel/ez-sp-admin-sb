@@ -91,6 +91,16 @@
 .ws-tb th.req::after, .ws-req::after { content: ' *'; color: var(--ws-text-danger); }
 .ws-tb td > * + * { margin-left: var(--ws-gap-intra); }
 .ws-tb .ws-desc { display: block; margin: 4px 0 0; }
+/* 라벨 칸 기본 폭 — colgroup을 안 준 입력 표가 칸을 반반으로 나눠 라벨 칸이 지나치게 넓었다(FAQ 상세).
+   첫 행 th 폭이 열 폭이 된다(table-layout: fixed). 화면이 colgroup을 주면 그쪽이 이긴다. 조회 영역은 제외 */
+.ws-tb:not(.ws-sh .ws-tb) > tbody > tr:first-child > th,
+.ws-tb:not(.ws-sh .ws-tb) > thead > tr:first-child > th[scope='row'] { width: var(--ws-form-th-w, 160px); }
+
+/* --- 간단 폼  (라벨 · 칸 한 줄씩) — 모달·조건 몇 개처럼 표까지 쓸 일이 없는 곳 --------------- */
+.ws-form { display: grid; gap: 8px; }
+.ws-form__row { display: flex; align-items: center; gap: 12px; min-height: var(--ws-control-h); flex-wrap: wrap; }
+.ws-form__l { flex: none; width: var(--ws-form-th-w, 160px); color: var(--ws-text-sub); font-weight: 500; }
+.ws-form__row > :not(.ws-form__l) { min-width: 0; }
 
 /* --- 그리드 영역  (원본 .gvwbox) ------------------------------------------- */
 .ws-gv { position: relative; }

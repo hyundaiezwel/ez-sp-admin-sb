@@ -60,3 +60,8 @@
 
 /* 태그 — 원본 .badge 치수 */
 .p-tag { height: var(--ws-control-h-sm); padding: 0 8px; border-radius: var(--ws-radius-xs); font-size: var(--ws-font-size-md); font-weight: 500; }
+
+/* 숫자 입력 — 바깥(.p-inputnumber)에 준 폭을 안쪽 input이 따르게 한다. 안 그러면 input 기본 폭으로 밖으로 넘쳐
+   나란히 둔 칸끼리 겹친다(팝업 등록의 가로 크기 · 위치 X · Y, 2026-10-01) */
+.p-inputnumber { min-width: 0; }
+.p-inputnumber .p-inputnumber-input { width: 100%; min-width: 0; }

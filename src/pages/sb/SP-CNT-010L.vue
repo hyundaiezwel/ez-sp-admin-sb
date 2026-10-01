@@ -100,7 +100,7 @@ const openDetail = (m: CntMaterial) => router.push({ path: routeOf('SP-CNT-010D'
         <thead>
           <tr>
             <th scope="col" style="width: 84px">순서</th>
-            <th scope="col" style="width: 110px">자료 분류</th>
+            <th scope="col" style="width: 150px">자료 분류</th>
             <th scope="col">제목</th>
             <th scope="col" style="width: 84px">형식</th>
             <th scope="col" style="width: 90px">전시상태</th>
@@ -120,7 +120,7 @@ const openDetail = (m: CntMaterial) => router.push({ path: routeOf('SP-CNT-010D'
             </td>
             <td style="text-align: center">
               {{ m.category }}
-              <span v-if="m.category === '운영지침'" class="ws-badge ws-badge--info" style="margin-left: 4px">기업 어드민 출력</span>
+              <span v-if="m.category === '운영지침'" class="ws-badge ws-badge--info" style="display: inline-block; margin-top: 2px; white-space: nowrap">기업 어드민 출력</span>
             </td>
             <td><button type="button" class="ws-linklike" :title="m.title" @click="openDetail(m)">{{ m.title }}</button></td>
             <td style="text-align: center">{{ m.format }}</td>
