@@ -150,6 +150,9 @@ const fmt = (n: number) => (n > 999 ? '999+' : String(n))
 .sh {
   display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: var(--ws-top-h) minmax(0, 1fr);
   height: 100%; overflow: hidden; background: var(--ws-surface);
+  /* 앱 전체 최소 폭 = 레일 64 + 본문 최소 880. 이보다 좁은 창은 상단 바까지 함께 가로 스크롤한다 —
+     상단 바만 계속 줄이면 칩끼리 겹쳤다(약 660px 창, 2026-10-01) */
+  min-width: calc(var(--ws-side-w-rail) + 880px);
 }
 .sh-top { grid-column: 1 / -1; }
 

@@ -148,8 +148,10 @@ const meItems = computed<PvItem[]>(() => [
    1024에서 가장 긴 라벨(사업 '…5년차 이상 중기업', 역할 '지원기관 조회 전용')이면 알림 · 사용자 메뉴가
    화면 밖으로 밀려 누를 수 없었다(2026-10-01 측정, 135px 넘침). 상단 바는 가로 스크롤이 없다 */
 .tp__r { min-width: 0; }
-.tp__ctx { min-width: 0; }
-.tp__ctx :deep(.cx) { display: flex; max-width: 100%; min-width: 0; } /* 칸이 줄면 칩도 함께 줄고 글자만 말줄임 */
+.tp__ctx :deep(.cx) { display: flex; max-width: 100%; min-width: 0; }
+/* 칩 최소 폭 — 연도 + 사업명 몇 글자, 역할명 몇 글자는 늘 보인다. 이 밑으로는 줄지 않아 서로 겹치지 않는다 */
+.tp__ctx { flex-shrink: 1; min-width: 150px; }
+.tp__ctx--role { min-width: 110px; } /* 칸이 줄면 칩도 함께 줄고 글자만 말줄임 */
 .tp__ctx :deep(.cx > b) { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .tp__ctx:not(.tp__ctx--role) :deep(.cx > b:not(.cx__biz)) { flex: none; } /* 연도는 줄이지 않는다 — 사업명 · 역할명만 말줄임 */
 .tp__ctx :deep(.cx > svg) { flex: none; } /* 펼침 꺾쇠는 줄어들어 사라지지 않게 */
