@@ -1,0 +1,175 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="1044" viewBox="0 0 1180 1044" role="img" aria-label="노동자 휴가지원사업 DB ERD"><style>svg .bg{fill:#FFFFFF;stroke:#D9DFE6;stroke-width:1.2} svg .hd{fill:#EEF2F5}
+svg .core .bg{stroke:#1F6A86;stroke-width:1.6} svg .core .hd{fill:#E3EFF4}
+svg .ext .bg{stroke:#A86A12;stroke-dasharray:5 4} svg .ext .hd{fill:#FBF1E1}
+svg .tn{font:600 13px Consolas,"D2Coding",monospace;fill:#1B2330} svg .tk{font:500 12px "Malgun Gothic","Apple SD Gothic Neo",sans-serif;fill:#5D6A7C}
+svg .cn{font:400 12px Consolas,"D2Coding",monospace;fill:#1B2330} svg .cn.ez{fill:#A86A12;font-weight:500}
+svg .mk{font:600 10px Consolas,"D2Coding",monospace;fill:#1F6A86} svg .more{font:400 11px "Malgun Gothic","Apple SD Gothic Neo",sans-serif;fill:#5D6A7C}
+svg .ln{fill:none;stroke-width:1.6} svg .ln.rel{stroke:#1F6A86} svg .ln.soft{stroke:#5D6A7C;stroke-dasharray:4 4}
+svg .ln.ezw{stroke:#A86A12;stroke-dasharray:6 4} svg .ln.ext{stroke:#A86A12}
+svg .ll{font:500 11px "Malgun Gothic","Apple SD Gothic Neo",sans-serif} svg .ll.rel{fill:#1F6A86} svg .ll.soft{fill:#5D6A7C} svg .ll.ezw{fill:#A86A12}
+svg .band{font:600 12px "Malgun Gothic","Apple SD Gothic Neo",sans-serif;fill:#5D6A7C} svg .band.ezb{fill:#A86A12}</style><rect width="100%" height="100%" fill="#FFFFFF"/><path d="M274 80 H289 V100 H314" class="ln rel"/><text x="280" y="76" class="ll rel" text-anchor="end">1:N</text>
+<path d="M314 140 H300 V80 H314" class="ln rel"/>
+<path d="M564 80 H584 V100 H604" class="ln rel"/><text x="574" y="76" class="ll rel" text-anchor="end">1:N</text>
+<path d="M274 300 H296 V160 H314" class="ln rel"/><text x="290" y="296" class="ll rel" text-anchor="end">1:N</text>
+<path d="M24 300 H12 V580 H24" class="ln rel"/>
+<path d="M12 580 V760 H24" class="ln soft"/>
+<path d="M604 140 H590 V780 H274" class="ln soft"/><text x="440" y="774" class="ll soft" text-anchor="middle">person_key</text>
+<path d="M564 300 H576 V350 H870 V120 H904" class="ln ezw"/><text x="729" y="366" class="ll ezw" text-anchor="middle">소속1=연도 · 소속2=기업 코드 생성</text>
+<path d="M870 120 V334 H904" class="ln ezw"/>
+<path d="M854 80 H884 V294 H904" class="ln ezw"/>
+<path d="M1154 274 H1176 V604 H1154" class="ln ext"/>
+<text x="729" y="386" class="ll ezw" text-anchor="middle">회원생성 + 포인트 배정 = API 1회 · 이지웰이 wrkr_no 저장</text>
+<path d="M1154 624 H1168 V446 H1154" class="ln ext"/>
+<path d="M854 970 H868 V930 H854" class="ln rel"/>
+<g class="box core"><rect x="24" y="20" width="250" height="194" rx="6" class="bg"/>
+<rect x="24" y="20" width="250" height="40" rx="6" class="hd"/><rect x="24" y="52" width="250" height="8" class="hd"/>
+<text x="36" y="38" class="tn">vs_biz_b</text><text x="36" y="53" class="tk">사업기본</text>
+<text x="36" y="84" class="mk">PK</text><text x="62" y="84" class="cn">biz_no</text>
+<text x="36" y="104" class="mk"></text><text x="62" y="104" class="cn">biz_yr</text>
+<text x="36" y="124" class="mk"></text><text x="62" y="124" class="cn">sprt_div_cd</text>
+<text x="36" y="144" class="mk"></text><text x="62" y="144" class="cn">biz_nm</text>
+<text x="36" y="164" class="mk"></text><text x="62" y="164" class="cn">gov_shr_amt</text>
+<text x="36" y="184" class="mk"></text><text x="62" y="184" class="cn">comp_shr_amt</text>
+<text x="36" y="204" class="mk"></text><text x="62" y="204" class="cn">indv_shr_amt</text>
+<text x="262" y="38" class="more" text-anchor="end">컬럼 36개</text>
+</g>
+<g class="box core"><rect x="24" y="240" width="250" height="194" rx="6" class="bg"/>
+<rect x="24" y="240" width="250" height="40" rx="6" class="hd"/><rect x="24" y="272" width="250" height="8" class="hd"/>
+<text x="36" y="258" class="tn">vs_co_b</text><text x="36" y="273" class="tk">기업기본</text>
+<text x="36" y="304" class="mk">PK</text><text x="62" y="304" class="cn">bizr_no</text>
+<text x="36" y="324" class="mk"></text><text x="62" y="324" class="cn">co_nm</text>
+<text x="36" y="344" class="mk"></text><text x="62" y="344" class="cn">rprs_nm</text>
+<text x="36" y="364" class="mk"></text><text x="62" y="364" class="cn">corp_yn</text>
+<text x="36" y="384" class="mk"></text><text x="62" y="384" class="cn">rfnd_mthd_cd</text>
+<text x="36" y="404" class="mk"></text><text x="62" y="404" class="cn">rfnd_acnt_no_enc</text>
+<text x="36" y="424" class="mk"></text><text x="62" y="424" class="cn">version</text>
+<text x="262" y="258" class="more" text-anchor="end">컬럼 20개</text>
+</g>
+<g class="box tb"><rect x="24" y="460" width="250" height="174" rx="6" class="bg"/>
+<rect x="24" y="460" width="250" height="40" rx="6" class="hd"/><rect x="24" y="492" width="250" height="8" class="hd"/>
+<text x="36" y="478" class="tn">vs_mngr_b</text><text x="36" y="493" class="tk">계정기본</text>
+<text x="36" y="524" class="mk">PK</text><text x="62" y="524" class="cn">mngr_id</text>
+<text x="36" y="544" class="mk"></text><text x="62" y="544" class="cn">mngr_div_cd</text>
+<text x="36" y="564" class="mk"></text><text x="62" y="564" class="cn">auth_cd</text>
+<text x="36" y="584" class="mk">FK</text><text x="62" y="584" class="cn">bizr_no</text>
+<text x="36" y="604" class="mk"></text><text x="62" y="604" class="cn">acnt_st_cd</text>
+<text x="36" y="624" class="mk"></text><text x="62" y="624" class="cn">lgin_fail_cnt</text>
+<text x="262" y="478" class="more" text-anchor="end">컬럼 28개</text>
+</g>
+<g class="box tb"><rect x="24" y="660" width="250" height="154" rx="6" class="bg"/>
+<rect x="24" y="660" width="250" height="40" rx="6" class="hd"/><rect x="24" y="692" width="250" height="8" class="hd"/>
+<text x="36" y="678" class="tn">vs_ban_b</text><text x="36" y="693" class="tk">참여불가기본</text>
+<text x="36" y="724" class="mk">PK</text><text x="62" y="724" class="cn">ban_no</text>
+<text x="36" y="744" class="mk"></text><text x="62" y="744" class="cn">ban_div_cd</text>
+<text x="36" y="764" class="mk"></text><text x="62" y="764" class="cn">bizr_no</text>
+<text x="36" y="784" class="mk"></text><text x="62" y="784" class="cn">person_key</text>
+<text x="36" y="804" class="mk"></text><text x="62" y="804" class="cn">ban_end_dt</text>
+<text x="262" y="678" class="more" text-anchor="end">컬럼 21개</text>
+</g>
+<g class="box core"><rect x="314" y="20" width="250" height="314" rx="6" class="bg"/>
+<rect x="314" y="20" width="250" height="40" rx="6" class="hd"/><rect x="314" y="52" width="250" height="8" class="hd"/>
+<text x="326" y="38" class="tn">vs_join_b</text><text x="326" y="53" class="tk">참여건기본</text>
+<text x="326" y="84" class="mk">PK</text><text x="352" y="84" class="cn">join_no</text>
+<text x="326" y="104" class="mk">FK</text><text x="352" y="104" class="cn">biz_no</text>
+<text x="326" y="124" class="mk"></text><text x="352" y="124" class="cn">join_add_rn</text>
+<text x="326" y="144" class="mk">FK</text><text x="352" y="144" class="cn">up_join_no</text>
+<text x="326" y="164" class="mk">FK</text><text x="352" y="164" class="cn">bizr_no</text>
+<text x="326" y="184" class="mk"></text><text x="352" y="184" class="cn">co_fg_cd</text>
+<text x="326" y="204" class="mk"></text><text x="352" y="204" class="cn">join_st_cd</text>
+<text x="326" y="224" class="mk"></text><text x="352" y="224" class="cn">fnl_wrkr_cnt</text>
+<text x="326" y="244" class="mk"></text><text x="352" y="244" class="cn">vacct_no</text>
+<text x="326" y="264" class="mk"></text><text x="352" y="264" class="cn">dpst_amt</text>
+<text x="326" y="284" class="mk"></text><text x="352" y="284" class="cn ez">ezwel_br_cd</text>
+<text x="326" y="304" class="mk"></text><text x="352" y="304" class="cn ez">ezwel_dept_cd</text>
+<text x="326" y="324" class="mk"></text><text x="352" y="324" class="cn">version</text>
+<text x="552" y="38" class="more" text-anchor="end">컬럼 59개</text>
+</g>
+<g class="box core"><rect x="604" y="20" width="250" height="254" rx="6" class="bg"/>
+<rect x="604" y="20" width="250" height="40" rx="6" class="hd"/><rect x="604" y="52" width="250" height="8" class="hd"/>
+<text x="616" y="38" class="tn">vs_join_wrkr_b</text><text x="616" y="53" class="tk">참여근로자기본</text>
+<text x="616" y="84" class="mk">PK</text><text x="642" y="84" class="cn ez">wrkr_no</text>
+<text x="616" y="104" class="mk">FK</text><text x="642" y="104" class="cn">join_no</text>
+<text x="616" y="124" class="mk"></text><text x="642" y="124" class="cn">wrkr_nm</text>
+<text x="616" y="144" class="mk"></text><text x="642" y="144" class="cn">person_key</text>
+<text x="616" y="164" class="mk"></text><text x="642" y="164" class="cn">wrkr_jdg_st_cd</text>
+<text x="616" y="184" class="mk"></text><text x="642" y="184" class="cn">mbr_st_cd</text>
+<text x="616" y="204" class="mk"></text><text x="642" y="204" class="cn">use_stop_rsn_cd</text>
+<text x="616" y="224" class="mk"></text><text x="642" y="224" class="cn">rfnd_comp_amt</text>
+<text x="616" y="244" class="mk"></text><text x="642" y="244" class="cn ez">mbr_lnk_st_cd</text>
+<text x="616" y="264" class="mk"></text><text x="642" y="264" class="cn">version</text>
+<text x="842" y="38" class="more" text-anchor="end">컬럼 35개</text>
+</g>
+<g class="box ext"><rect x="904" y="20" width="250" height="154" rx="6" class="bg"/>
+<rect x="904" y="20" width="250" height="40" rx="6" class="hd"/><rect x="904" y="52" width="250" height="8" class="hd"/>
+<text x="916" y="38" class="tn">ct_cc_dtl_c</text><text x="916" y="53" class="tk">고객사공통상세코드</text>
+<text x="916" y="84" class="mk"></text><text x="942" y="84" class="cn ez">clnt_cd</text>
+<text x="916" y="104" class="mk"></text><text x="942" y="104" class="cn ez">cc_cd</text>
+<text x="916" y="124" class="mk"></text><text x="942" y="124" class="cn ez">cc_dtl_cd</text>
+<text x="916" y="144" class="mk"></text><text x="942" y="144" class="cn ez">high_cc_dtl_cd</text>
+<text x="916" y="164" class="mk"></text><text x="942" y="164" class="cn ez">sort_ordg</text>
+</g>
+<g class="box ext"><rect x="904" y="214" width="250" height="154" rx="6" class="bg"/>
+<rect x="904" y="214" width="250" height="40" rx="6" class="hd"/><rect x="904" y="246" width="250" height="8" class="hd"/>
+<text x="916" y="232" class="tn">ct_usr_b</text><text x="916" y="247" class="tk">사용자기본 (휴가샵 회원)</text>
+<text x="916" y="278" class="mk"></text><text x="942" y="278" class="cn ez">user_key</text>
+<text x="916" y="298" class="mk"></text><text x="942" y="298" class="cn ez">wrkr_no  (우리 키 · 신설)</text>
+<text x="916" y="318" class="mk"></text><text x="942" y="318" class="cn ez">clnt_cd</text>
+<text x="916" y="338" class="mk"></text><text x="942" y="338" class="cn ez">cc_br_cd  (소속1 연도)</text>
+<text x="916" y="358" class="mk"></text><text x="942" y="358" class="cn ez">cc_dept_cd  (소속2 기업)</text>
+</g>
+<g class="box ext"><rect x="904" y="386" width="250" height="114" rx="6" class="bg"/>
+<rect x="904" y="386" width="250" height="40" rx="6" class="hd"/><rect x="904" y="418" width="250" height="8" class="hd"/>
+<text x="916" y="404" class="tn">cp_wsp_asg_wrk_b</text><text x="916" y="419" class="tk">복지제도포인트배정작업기본</text>
+<text x="916" y="450" class="mk"></text><text x="942" y="450" class="cn ez">wsp_asg_wrk_no</text>
+<text x="916" y="470" class="mk"></text><text x="942" y="470" class="cn ez">clnt_cd</text>
+<text x="916" y="490" class="mk"></text><text x="942" y="490" class="cn ez">wsp_asg_wrk_typ_cd</text>
+</g>
+<g class="box ext"><rect x="904" y="524" width="250" height="174" rx="6" class="bg"/>
+<rect x="904" y="524" width="250" height="40" rx="6" class="hd"/><rect x="904" y="556" width="250" height="8" class="hd"/>
+<text x="916" y="542" class="tn">cp_wsp_asg_b</text><text x="916" y="557" class="tk">복지제도포인트배정기본</text>
+<text x="916" y="588" class="mk"></text><text x="942" y="588" class="cn ez">wsp_asg_no</text>
+<text x="916" y="608" class="mk"></text><text x="942" y="608" class="cn ez">user_key</text>
+<text x="916" y="628" class="mk"></text><text x="942" y="628" class="cn ez">wsp_asg_wrk_no</text>
+<text x="916" y="648" class="mk"></text><text x="942" y="648" class="cn ez">wsp_cd  (특복)</text>
+<text x="916" y="668" class="mk"></text><text x="942" y="668" class="cn ez">wsp_amt</text>
+<text x="916" y="688" class="mk"></text><text x="942" y="688" class="cn ez">use_poss_end_dtm</text>
+</g>
+<g class="box tb"><rect x="24" y="870" width="250" height="154" rx="6" class="bg"/>
+<rect x="24" y="870" width="250" height="40" rx="6" class="hd"/><rect x="24" y="902" width="250" height="8" class="hd"/>
+<text x="36" y="888" class="tn">vs_hist_h</text><text x="36" y="903" class="tk">이력</text>
+<text x="36" y="934" class="mk">PK</text><text x="62" y="934" class="cn">hist_no</text>
+<text x="36" y="954" class="mk"></text><text x="62" y="954" class="cn">hist_typ_cd</text>
+<text x="36" y="974" class="mk"></text><text x="62" y="974" class="cn">tgt_tbl_nm</text>
+<text x="36" y="994" class="mk"></text><text x="62" y="994" class="cn">tgt_key</text>
+<text x="36" y="1014" class="mk"></text><text x="62" y="1014" class="cn">dtl_json</text>
+<text x="262" y="888" class="more" text-anchor="end">컬럼 13개</text>
+</g>
+<g class="box tb"><rect x="314" y="870" width="250" height="154" rx="6" class="bg"/>
+<rect x="314" y="870" width="250" height="40" rx="6" class="hd"/><rect x="314" y="902" width="250" height="8" class="hd"/>
+<text x="326" y="888" class="tn">vs_file_b</text><text x="326" y="903" class="tk">첨부파일기본</text>
+<text x="326" y="934" class="mk">PK</text><text x="352" y="934" class="cn">file_no</text>
+<text x="326" y="954" class="mk"></text><text x="352" y="954" class="cn">tgt_tbl_nm</text>
+<text x="326" y="974" class="mk"></text><text x="352" y="974" class="cn">tgt_key</text>
+<text x="326" y="994" class="mk"></text><text x="352" y="994" class="cn">file_div_cd</text>
+<text x="326" y="1014" class="mk"></text><text x="352" y="1014" class="cn">strg_path</text>
+<text x="552" y="888" class="more" text-anchor="end">컬럼 15개</text>
+</g>
+<g class="box tb"><rect x="604" y="870" width="250" height="154" rx="6" class="bg"/>
+<rect x="604" y="870" width="250" height="40" rx="6" class="hd"/><rect x="604" y="902" width="250" height="8" class="hd"/>
+<text x="616" y="888" class="tn">vs_bbs_b</text><text x="616" y="903" class="tk">게시물기본</text>
+<text x="616" y="934" class="mk">PK</text><text x="642" y="934" class="cn">bbs_no</text>
+<text x="616" y="954" class="mk"></text><text x="642" y="954" class="cn">bbs_div_cd</text>
+<text x="616" y="974" class="mk">FK</text><text x="642" y="974" class="cn">up_bbs_no</text>
+<text x="616" y="994" class="mk"></text><text x="642" y="994" class="cn">prcs_st_cd</text>
+<text x="616" y="1014" class="mk"></text><text x="642" y="1014" class="cn">ans_cntn</text>
+<text x="842" y="888" class="more" text-anchor="end">컬럼 29개</text>
+</g>
+<g class="box tb"><rect x="904" y="870" width="250" height="134" rx="6" class="bg"/>
+<rect x="904" y="870" width="250" height="40" rx="6" class="hd"/><rect x="904" y="902" width="250" height="8" class="hd"/>
+<text x="916" y="888" class="tn">vs_cd_c</text><text x="916" y="903" class="tk">공통코드</text>
+<text x="916" y="934" class="mk">PK</text><text x="942" y="934" class="cn">cd_grp</text>
+<text x="916" y="954" class="mk">PK</text><text x="942" y="954" class="cn">cd</text>
+<text x="916" y="974" class="mk"></text><text x="942" y="974" class="cn">cd_nm</text>
+<text x="916" y="994" class="mk"></text><text x="942" y="994" class="cn">sort_ordg</text>
+<text x="1142" y="888" class="more" text-anchor="end">컬럼 14개</text>
+</g><text x="24" y="852" class="band">공통 — 이력 · 첨부는 tgt_tbl_nm + tgt_key 로 어느 테이블이든 가리킨다 (FK 없음)</text><text x="904" y="12" class="band ezb">이지웰 (복지몰) — 조회는 우리 키(wrkr_no)로</text></svg>
