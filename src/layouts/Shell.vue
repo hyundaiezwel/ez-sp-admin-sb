@@ -19,8 +19,10 @@ import { open as openTab } from '../app/tabs'
 import AppIcon from '../app/AppIcon.vue'
 import TabBar from '../app/TabBar.vue'
 import Toast from 'primevue/toast'
+import { REAL } from '../auth/mode'
 // 세션 알림도 늦게 싣는다 — Dialog가 첫 로드에 끌려와 67 → 80KB가 됐다. 만료 시각은 session.ts가 들고 있어 늦게 떠도 맞다
-const SessionGuard = defineAsyncComponent(() => import('../app/SessionGuard.vue'))
+// 실제 모드(VITE_API_BASE)는 서버 만료 시각 기준 알림(src/auth). 목업은 지금 그대로
+const SessionGuard = defineAsyncComponent(() => (REAL ? import('../auth/SessionGuardReal.vue') : import('../app/SessionGuard.vue')))
 
 const route = useRoute()
 

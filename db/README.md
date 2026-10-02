@@ -1,6 +1,6 @@
 # 노동자 휴가지원사업 — 초기 DB 설계 (강병헌안)
 
-기준일 2026-10-02 (v2) · PostgreSQL 16 · 대상: 누리집 FO · 기업 어드민 · 공사 어드민이 함께 쓰는 DB
+기준일 2026-10-02 (v3) · PostgreSQL 16 · 대상: 누리집 FO · 기업 어드민 · 공사 어드민이 함께 쓰는 DB
 
 **[ERD 보기 (웹 페이지)](https://claude.ai/artifact/BG4DHMUaxjBHsM8iZXQxF6)** — 이지웰 연동까지 그린 ERD와 검색 가능한 컬럼 명세. 비공개 페이지라 **공유받은 사람만** 열린다(접근 요청은 강병헌). 열리지 않으면 이 폴더의 [erd.html](erd.html)을 받아 브라우저로 연다.
 
@@ -10,7 +10,7 @@
 
 | 파일 | 내용 |
 |---|---|
-| [01_ddl.sql](01_ddl.sql) | 테이블 10개 · 시퀀스 1개 · 이력 보호 트리거 |
+| [01_ddl.sql](01_ddl.sql) | 테이블 11개 · 시퀀스 1개 · 이력 보호 트리거 |
 | [04_comment.sql](04_comment.sql) | 테이블·컬럼 설명 COMMENT (DBeaver Comment 칸에 보인다) |
 | [02_code_seed.sql](02_code_seed.sql) | 코드 21그룹 (AS-IS 실측값 + 이번에 새로 정한 값) |
 | [03_check.sql](03_check.sql) | 빈 DB에 적용한 뒤 핵심 제약을 확인하는 스크립트 (`OK` 출력 시 통과) |
@@ -26,7 +26,7 @@ psql -v ON_ERROR_STOP=1 -d <빈DB> -f 01_ddl.sql -f 04_comment.sql -f 02_code_se
 근거 자료: 이 저장소 `admin/` 분석(특히 A6 데이터 맵 · 06 코드 · 07 업무 규칙 · A4 에스크로),
 누리집 IA 시트(0928 업무프로세스 · 0929 회의 · 메모 탭), Tobe IA · Tobe 공사 어드민 기능정의 시트,
 이지웰 테이블 샘플 4종(`ct_usr_b` · `ct_cc_dtl_c` · `cp_wsp_asg_b` · `cp_wsp_asg_wrk_b`),
-류상오안 `hyundaiezwel/vacation-support-admin-asis` docs/db-design.md(v2에서 일부 반영 — 7절).
+류상오안 [db/류상오](https://github.com/hyundaiezwel/vacation-support-admin-asis/tree/main/db/류상오/README.md)(v2·v3에서 일부 반영 — 7절), SB 77화면 [`ez-sp-admin-sb`](https://github.com/hyundaiezwel/ez-sp-admin-sb)(v3에서 대조 — 3.6절).
 
 ---
 
@@ -41,6 +41,7 @@ psql -v ON_ERROR_STOP=1 -d <빈DB> -f 01_ddl.sql -f 04_comment.sql -f 02_code_se
 | 포인트 잔액·사용내역 | 저장하지 않음. 이지웰 API 조회 |
 | 이력 | **공통 이력 1테이블** `vs_hist_h`. 트리거로 UPDATE/DELETE 차단 |
 | 동시 처리 | 상태가 바뀌는 테이블에 `version`(v2). 갱신은 `where version = :읽은값`으로만 |
+| 권한 | **계정구분(`mngr_div_cd`) + 역할(`auth_cd`) 고정**(v3). 계정별 권한 추가·회수 없음, 메뉴·권한 테이블 없음 — 메뉴 트리와 역할×동작 권한표는 코드(SB `roles.ts` 기준). 계정별 사업 범위도 두지 않는다 |
 | 상태코드 | **AS-IS 코드값 유지** (`JOIN_ST` 27종 · `MBR_ST` 7종). 라벨은 정본으로 통일 |
 | 과년도 데이터 | **이관하지 않음.** 2027 신규 데이터만 |
 | 테이블 접두 | `vs_` (vacation support) |
@@ -52,10 +53,12 @@ erDiagram
     vs_co_b ||--o{ vs_join_b : "bizr_no"
     vs_co_b ||--o{ vs_mngr_b : "bizr_no (기업담당자)"
     vs_biz_b ||--o{ vs_join_b : "biz_no"
+    vs_biz_b ||--o{ vs_dvlp_co_b : "biz_no (발전모델 지정기업)"
     vs_join_b ||--o{ vs_join_b : "up_join_no (추가차수)"
     vs_join_b ||--o{ vs_join_wrkr_b : "join_no"
     vs_co_b }o..o{ vs_ban_b : "bizr_no (참여불가 기업)"
-    vs_join_wrkr_b }o..o{ vs_ban_b : "person_key (참여불가 회원)"
+    vs_join_wrkr_b }o..o{ vs_ban_b : "person_key · wrkr_no (참여불가 회원)"
+    vs_join_wrkr_b }o..o{ vs_bbs_b : "wrkr_no (부정행위 신고·적발)"
     vs_bbs_b ||--o{ vs_bbs_b : "up_bbs_no (요청/답변 사이클)"
 ```
 
@@ -63,19 +66,21 @@ erDiagram
 
 | # | 테이블 | 1행 = | 흡수한 것 (AS-IS 엔티티) |
 |---|---|---|---|
-| 1 | `vs_biz_b` 사업 | 연도 × 차수 × 지원구분 | E01 사업 · E02 발전모델 · E03 추가모집 설정(JSONB) · E14 사용기간 기본값 · 동반성장 협력사업(`sprt_div_cd='PRTN'` 행) |
+| 1 | `vs_biz_b` 사업 | 연도 × 차수 × 지원구분 | E01 사업 · E02 발전모델(`sprt_div_cd='DVLP'` 행 1개 = 모델 1개) · E03 추가모집 창구(JSONB, `rcpt_ord`) · E14 사용기간 기본값 · 동반성장 협력사업(`sprt_div_cd='PRTN'` 행) |
+| 1-1 | `vs_dvlp_co_b` 발전모델 지정기업 | 발전모델 × 사업자번호 | 적용 방식이 지정기업(`DSGN`)인 모델의 대상 기업 (v3) |
 | 2 | `vs_co_b` 기업 | 사업자번호 | E04 기업 고정정보 · 환불계좌 |
 | 3 | `vs_join_b` 참여건 | 기업 × 사업 × 신청차수 | E05 참여건 · E06 추가인원 신청(`join_add_rn>0` 행) · E11 가상계좌·입금 · 그해 기업구분·인원·신청 담당자 · 이지웰 소속1(연도)·소속2(기업) |
 | 4 | `vs_join_wrkr_b` 참여근로자 | 참여건 × 근로자 | E09 근로자 · 근로자 심사 · E15 이용정지 · E16 환불 · 회원생성+배정 연동 결과 · 동일인 키 |
 | 5 | `vs_mngr_b` 계정 | 로그인 ID | E07 기업담당자 · E08 공사 계정 · 이지웰 운영 계정 (역할은 SB 체계 AM·AL·AS·AV·OM·OO·CM) |
 | 6 | `vs_hist_h` 이력 | 이벤트 1건 | 상태변경 · 메모 · 정보수정 · E24 알림발송 · 입금 · 이지웰 연동 · E25 다운로드 · 접속 · 개인정보 접근 · 일괄처리 묶음 |
 | 7 | `vs_file_b` 첨부 | 파일 1개 | E10 제출서류 · 참여확인서 · 입금확인증 · 게시물 첨부 |
-| 8 | `vs_bbs_b` 게시물 | 게시물 1건 (업무요청은 사이클 1회) | E22 신고 · E23 업무요청 · E26 공지·FAQ·자료실·팝업·배너 · 누리집 문의 · 매뉴얼 |
+| 8 | `vs_bbs_b` 게시물 | 게시물 1건 (업무요청은 사이클 1회) | E22 신고 + E21 중고거래 모니터링 적발(`RPT` 하나, `ctgr_cd` WEB/MON) · E23 업무요청 · E26 공지·FAQ·자료실·팝업·배너 · 누리집 문의 · 매뉴얼 |
 | 9 | `vs_ban_b` 참여불가 | 제재 1건 | E19 참여불가 기업 · E20 참여불가 회원 |
 | 10 | `vs_cd_c` 코드 | 코드 1개 | 이지웰 `ct_cc_dtl_c` 모양 |
 
-**만들지 않은 것:** E12 배정 · E13 사용 거래 · E17 청구서 · E18 잔여금 (이지웰 API 조회), E27 통계 (이지웰 배치 — 0929 회의),
-E21 부정행위 스크래핑 결과 · 부적합 상품 모니터링 (수집 주체 미정. 정해지면 테이블 추가).
+**만들지 않은 것:** E12 배정 · E13 사용 거래 · E17 청구서 · E18 잔여금 (이지웰 API 조회), E27 포인트·이용 통계 (이지웰 배치 — 0929 회의),
+부적합 상품·키워드 (Tobe IA "스크래핑 필요 — 화면 UI만". 키워드·판정·조치는 외부(검색) 쪽이 저장하고 우리는 API만 부른다 — v3),
+메뉴 · 메뉴권한 (권한은 계정구분 + 역할 고정 — v3).
 
 ## 3. 핵심 모델링
 
@@ -111,6 +116,30 @@ AS-IS의 `70 → 72 → 74` 흐름을 추가인원 단위로 다시 도는 구�
 
 - 두 관리자가 같은 신청을 동시에 심사하면 나중 저장이 실패한다: `update … set …, version = version + 1 where join_no = :id and version = :v` → 0건이면 충돌.
 - 중복 로그인 차단 · 30분 무활동 로그아웃 · 2차 인증번호는 **DB가 아니라 Redis**(운영 AWS ElastiCache, 로컬 Redis 컨테이너)가 맡는다. 설계는 [docs/dev/login.md](../docs/dev/login.md).
+
+### 3.6 SB 77화면 대조 (v3)
+
+SB(`ez-sp-admin-sb`) 77화면을 화면마다 이 DDL에 맞대 보았다. 구현이 안 되는 화면은 없다. v3는 대조에서 나온 부족분을 채운 판이다.
+
+| 판정 | 화면 수 | 예 |
+|---|---|---|
+| v2 그대로 가능 | 약 30 | 로그인 · 접속이력 · 공지 · FAQ · 배너 · 담당자 · 인원추가심사 · 통계 대부분 |
+| 컬럼 추가로 가능 (v3 반영) | 약 30 | 사업상세 · 신청/기업/노동자 상세 · 참여증서 · 환불 · 팝업 · 문의 · 신고 |
+| 이지웰 API 조회 | 약 15 | 포인트 · 청구 · 잔액 · 일매출 · 이용 통계 (조회 키 `wrkr_no` · 소속1·2 모두 있음) |
+
+v3에서 바뀐 것:
+
+- **발전모델** = `vs_biz_b` DVLP 행 1개 = 모델 1개. 모델 분담금은 그 행의 `gov/comp/indv_shr_amt`(v2의 `dvlp_*_shr_amt` 삭제). 지정 기업은 새 테이블 `vs_dvlp_co_b`. 참여건은 적용 모델을 `dvlp_biz_no`로 가리킨다.
+- **누적 참여년수** `vs_co_b.accum_pcpt_yr_cnt` — 과년도를 이관하지 않으므로 AS-IS 값으로 1회 시드한다(발전모델 대상 판정).
+- **환불**: 환불수단은 그해 값이라 `vs_co_b` → `vs_join_b.rfnd_mthd_cd`로 옮겼다. 개인분담금을 돌려줄 **개인 계좌**(`rfnd_bank_cd` · `rfnd_acnt_no_enc` · …)와 환불 차수 `rfnd_ord`를 근로자에 추가.
+- **참여건**: 신청 계정 `apl_mngr_id`, 추가모집 창구 `add_rcpt_ord`, 참여증서 `cert_*`, 가상계좌 만료·상태, 미제출·예외 사유, 등록구분(누리집/일괄).
+  기업 전체 최종인원 = 최초 행 + 추가완료(7640) 행의 `fnl_wrkr_cnt` 합. 최초 행 값을 덮어쓰지 않는다.
+- **부정행위 신고·적발 한 게시판**: `vs_bbs_b` `RPT` + `ctgr_cd` WEB(누리집 신고) / MON(중고거래 적발). 처리상태는 `RPT_ST` 조치 4종 공통. 검색되는 값만 컬럼(`site_cd` · `pst_dtm` · `expl_st_cd` · `wrkr_no` · 연락처 · 이메일 해시), 나머지는 `disp_opt_json`.
+- **참여불가**: 회원은 `wrkr_no`(그해 적발 행)와 `person_key`(다음 연도 매칭)를 함께, 근거 신고 `dtct_bbs_no`, 조치 여부·내용.
+- **서류 심사**: `vs_file_b`에 파일 단위 심사 결과 · 보완 사유 · 제출 차수.
+- **다운로드 사유 확인**: `vs_hist_h.chk_tgt_yn`(확인 대상)과 `CHK` 이력 행(원 이력을 `tgt_key`로 가리킴) — 이력은 여전히 INSERT 전용. `tgt_key`는 외부 키(청구번호·상품코드)를 위해 40자로 늘렸다.
+- **게시물**: `del_yn`, 공지 상단고정, 팝업 노출 페이지, 업무요청 담당자(이관).
+- **계정**: 기업 마스터 담당자 `mstr_yn`, 아이디 찾기용 휴대폰 해시, 잠금일시, 계정 신청 사유, 빠른메뉴.
 
 ## 4. 이지웰 연동
 
@@ -179,8 +208,23 @@ AS-IS의 `70 → 72 → 74` 흐름을 추가인원 단위로 다시 도는 구�
 | 11 | 이름 · 생년월일 암호화 여부 (ISMS) | `wrkr_nm` · `brdt` | 보안(최환호책임) |
 | 12 | 성별 수집 여부 (0928 질문) — 수집하면 컬럼 추가 | `vs_join_wrkr_b` | 기획 |
 | 13 | 업무요청 · 문의 유형과 처리상태 코드가 시트마다 다르다 — 정본 확정 후 시드 추가 | `ctgr_cd` · `prcs_st_cd` | 기획 |
+| 14 | 사번 수집 여부 — SB 포인트 지급·청구내역·노동자 통계가 사번을 보이거나 검색한다. 수집하면 `emp_no` 추가, 아니면 화면에서 뺀다 | `vs_join_wrkr_b` | 기획 |
+| 15 | 전자청구서 승인·반려(공사)를 이지웰이 정본으로 들고 필터를 지원하는지. 아니면 청구서 테이블이 필요하다 | (신규 테이블 후보) | 이지웰 |
+| 16 | 분할입금 허용 여부 — 허용하면 가상계좌 목록의 "입금 차수" 필터 때문에 입금 테이블(`vs_dpst_h`)이 필요하다. 지금은 누적액 + 이력 | `dpst_amt` | 기획 · 공사 |
+| 17 | 동반성장 참여기관 담당자가 어느 어드민을 쓰는지 — 계정이 필요하면 `MNGR_DIV`에 PRTN 추가 · `vs_mngr_b_ck1` 수정 | `vs_mngr_b` | 공사 |
+| 18 | 신청 전 기업을 동반성장 지원기업으로 연계하는지(외부 상생 플랫폼 수신 포함) — 그렇다면 기관×기업×연도 매핑 테이블 | `vs_join_b.prtn_*` | 공사 |
+| 19 | 거래사이트(`SITE`) · 다운로드 사유(`rsn_div_cd`) 코드값 | `vs_cd_c` | 기획 |
+| 20 | 중고거래 적발(MON) 행을 누가 넣는지 — 수집 쪽이 우리 DB/API로 INSERT 하는 연동 방식 | `vs_bbs_b` | 솔루션 |
+| 21 | 누적 참여년수 시드 출처 — AS-IS에서 기업별 값을 받을 수 있는지 | `accum_pcpt_yr_cnt` | 공사 |
+| 22 | 신청 · 확정 · 이용정지 · 참여기업 · CS 통계는 원천이 우리 테이블이다 — "통계는 이지웰 배치"(0929)에서 이 부분은 우리 집계로 나눌지. 포인트 통계의 기업구분 축은 이지웰이 `co_fg`를 모른다 | 통계 | 기획 · 이지웰 |
+| 23 | 성별 수집 여부(#12와 같음) — SB 이용내역 성별 필터가 있으나 우리·이지웰 어디에도 값이 없다 | `vs_join_wrkr_b` | 기획 |
 
-## 7. 류상오안(`vacation-support-admin-asis` docs/db-design.md)과 비교
+## 7. 류상오안과 비교
+
+> v3(10-02): 류상오안 v6.1([db/류상오](https://github.com/hyundaiezwel/vacation-support-admin-asis/tree/main/db/류상오/README.md), 26테이블)을 다시 대조했다. 26개 중 22개는 이 안의 테이블로 흡수되고,
+> 나머지 4개 — `menu` · `menu_permission`(권한은 역할 고정으로 결정), `unfit_item`(외부 저장으로 결정), `fraud_report`의 모니터링 적발(`vs_bbs_b` RPT MON으로 흡수) — 도 결정으로 정리됐다.
+> 류상오안에 남은 과년도 이관 컬럼(`data_source_cd` LEGACY · `legacy_*`)과 근로자별 포인트 기한(`point_expire_on`)은 이 안의 결정(이관 안 함 · 이지웰 조회)과 다르다.
+> 아래 표는 v1(61테이블) 대조 기록이다.
 
 근거가 다르다. 류상오안은 SB 명세(`ez-sp-admin-sb`, 77화면), 이 안은 AS-IS 분석 · 회의록 시트 · 이지웰 샘플이다.
 

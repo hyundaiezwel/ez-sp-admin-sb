@@ -12,7 +12,7 @@
  * 어두운 바 위 대비 3.34(라이트 색) · 3.91(다크 색) — 둘 다 3:1 위.
  * 테마 버튼을 따로 둔다 — 사용자 메뉴 안에만 있을 때 다크 전환을 찾지 못했다.
  */
-import { computed, defineAsyncComponent, ref } from 'vue'
+import { computed, defineAsyncComponent, ref, shallowRef } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Menu from 'primevue/menu'
 import type { MenuItem as PvItem } from 'primevue/menuitem'
@@ -22,6 +22,8 @@ import GlobalSearch from './GlobalSearch.vue'
 import { PENDING, SYSTEMS, systemOf } from './menu'
 import { prefs, type Theme } from './theme'
 import { previewExpiry } from './session'
+import { REAL } from '../auth/mode'
+import type { useAuth } from '../auth/store'
 // 늦게 싣는다 — 정적으로 물면 Select · Popover가 첫 로드에 실린다
 const SpContext = defineAsyncComponent(() => import('../sp/SpContext.vue'))
 const SbRole = defineAsyncComponent(() => import('../sb/SbRoleSwitch.vue'))
@@ -44,16 +46,22 @@ const bell = ref<InstanceType<typeof Popover> | null>(null)
 const notes = PENDING
 const total = notes.reduce((s, n) => s + n.count, 0)
 
-/* 사용자 */
+/* 사용자 — 실제 모드면 로그인한 사람(스토어는 늦게 싣는다), 목업이면 예시 인물 */
+const auth = shallowRef<ReturnType<typeof useAuth> | null>(null)
+if (REAL) import('../auth/store').then((m) => { auth.value = m.useAuth() })
+const who = computed(() => auth.value?.user ? `${auth.value.user.name} · ${auth.value.roleLabel}` : REAL ? '' : '김하늘 · 운영팀 관리자')
+const whoName = computed(() => auth.value?.user?.name ?? (REAL ? '' : '김하늘'))
 const me = ref<InstanceType<typeof Menu> | null>(null)
 const THEME_LABEL: Record<Theme, string> = { light: '라이트', dark: '다크', system: '시스템 설정 따르기' }
 const meItems = computed<PvItem[]>(() => [
-  { label: '김하늘 · 운영팀 관리자', items: [] },
+  { label: who.value, items: [] },
   { label: '화면 테마', items: (['light', 'dark', 'system'] as Theme[]).map((t) => ({ label: THEME_LABEL[t], icon: prefs.theme === t ? 'ws-check' : 'ws-blank', command: () => { prefs.theme = t } })) },
   { separator: true },
-  { label: '비밀번호 변경', command: () => router.push('/login') },
-  { label: '세션 만료 알림 보기(미리보기)', command: previewExpiry },
-  { label: '로그아웃', command: () => router.push('/login') },
+  ...(REAL ? [] : [
+    { label: '비밀번호 변경', command: () => router.push('/login') },
+    { label: '세션 만료 알림 보기(미리보기)', command: previewExpiry },
+  ]),
+  { label: '로그아웃', command: () => (auth.value ? auth.value.logout('MANUAL') : router.push('/login')) },
 ])
 </script>
 
@@ -98,8 +106,8 @@ const meItems = computed<PvItem[]>(() => [
           </ul>
         </div>
       </Popover>
-      <button type="button" class="tp__me" aria-haspopup="menu" aria-label="사용자 메뉴 — 김하늘" @click="(e) => me?.toggle(e)">
-        <span class="tp__av" aria-hidden="true">김</span>
+      <button type="button" class="tp__me" aria-haspopup="menu" :aria-label="`사용자 메뉴 — ${whoName}`" @click="(e) => me?.toggle(e)">
+        <span class="tp__av" aria-hidden="true">{{ whoName.charAt(0) }}</span>
       </button>
       <Menu ref="me" :model="meItems" popup>
         <template #itemicon="{ item }"><span class="me-ic" aria-hidden="true">{{ item.icon === 'ws-check' ? '✓' : '' }}</span></template>

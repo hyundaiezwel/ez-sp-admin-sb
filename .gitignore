@@ -2,3 +2,13 @@ node_modules
 dist
 .DS_Store
 *.log
+
+# backend (Gradle)
+backend/.gradle/
+backend/**/build/
+
+# 로컬 비밀 env — .env.secret.example 만 커밋
+deploy/local/.env.secret
+
+# 프론트 로컬 env (VITE_API_BASE)
+.env.local

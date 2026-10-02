@@ -12,12 +12,17 @@
  * 관리자센터가 따로 떠 있어서다. 지원 사업 관리는 시스템이 하나라 뺐다(2026-09-28 관리자 센터 폐기).
  *
  * 비밀번호 보기 토글은 원본에도 있다(`btn_pwDisp`). 버튼 이름을 상태에 맞춰 바꾼다.
+ *
+ * 실제 모드(`VITE_API_BASE`)면 카드 안쪽만 `src/auth/LoginForm.vue`(ID·비밀번호 → 본인인증)로 바꾼다.
+ * 목업 빌드에서는 그 파일 · axios가 번들에 들어오지 않는다.
  */
-import { ref } from 'vue'
+import { defineAsyncComponent, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import Button from 'primevue/button'
+import { REAL } from '../auth/mode'
+const LoginForm = REAL ? defineAsyncComponent(() => import('../auth/LoginForm.vue')) : null
 
 const router = useRouter()
 const base = import.meta.env.BASE_URL
@@ -40,7 +45,8 @@ function submit() {
   <div class="lg" :style="{ backgroundImage: `url(${base}img/login_bg.svg)` }">
     <div class="lg__box">
       <img class="lg__logo" :src="`${base}img/login_logo.svg`" alt="지원 사업 관리" width="200" height="29" />
-      <form class="lg__card" novalidate @submit.prevent="submit">
+      <div v-if="LoginForm" class="lg__card"><component :is="LoginForm" /></div>
+      <form v-else class="lg__card" novalidate @submit.prevent="submit">
         <h1 class="lg__tit">지원 사업 관리 로그인</h1>
         <ul class="lg__fields">
           <li>
@@ -60,8 +66,8 @@ function submit() {
       </form>
       <div class="lg__msg">
         <ul>
-          <li>비밀번호를 5회 틀리면 계정이 잠긴다. 잠금 해제는 관리자에게 요청한다.</li>
-          <li>목업이라 어떤 값을 넣어도 들어간다.</li>
+          <li>비밀번호를 5회 틀리면 계정이 잠긴다. 잠금 해제는 소속 마스터에게 요청한다.</li>
+          <li v-if="!LoginForm">목업이라 어떤 값을 넣어도 들어간다.</li>
         </ul>
       </div>
     </div>
