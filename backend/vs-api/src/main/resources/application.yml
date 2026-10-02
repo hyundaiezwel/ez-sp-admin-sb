@@ -1,0 +1,53 @@
+# 환경값은 전부 env(VS_*)로 받는다. 로컬 값은 deploy/local/.env.secret (scripts/local-dev-api.sh 가 읽는다).
+server:
+  port: ${VS_API_PORT:8090}
+
+spring:
+  application:
+    name: vs-api
+  datasource:
+    url: ${VS_DB_URL}
+    username: ${VS_DB_USER}
+    password: ${VS_DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 5
+      connection-timeout: 5000
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: false
+    validate-on-migrate: true
+  data:
+    redis:
+      host: ${VS_REDIS_HOST:localhost}
+      port: ${VS_REDIS_PORT:6389}
+      password: ${VS_REDIS_PASSWORD:}
+      ssl:
+        enabled: ${VS_REDIS_SSL:false}
+      # 장애를 "전 요청 60초 지연"이 아니라 즉시 503 으로 드러낸다(fail-closed).
+      timeout: 2s
+      connect-timeout: 2s
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+    # record 생성자를 인자 이름으로 매핑한다(빌드에 -parameters 필요 — backend/build.gradle)
+    arg-name-based-constructor-auto-mapping: true
+
+vs:
+  jwt:
+    signing-key: ${VS_JWT_SIGNING_KEY}
+  redis:
+    key-prefix: ${VS_REDIS_KEY_PREFIX:vs:}
+  auth:
+    idle-timeout: ${VS_AUTH_IDLE_TIMEOUT:PT30M}
+    absolute-timeout: ${VS_AUTH_ABSOLUTE_TIMEOUT:PT12H}
+    warn-before: ${VS_AUTH_WARN_BEFORE:PT5M}
+    dormant-after: ${VS_AUTH_DORMANT_AFTER:P6M}
+    admin-url: ${VS_ADMIN_URL:}
+    comp-url: ${VS_COMP_URL:}
+  # 기본값은 운영 쪽(pass·standard). 로컬 구현체는 local 프로필 + 아래 값이 local·plain 일 때만 등록된다.
+  identity:
+    verifier: ${VS_IDENTITY_VERIFIER:pass}
+  pii:
+    cipher: ${VS_PII_CIPHER:standard}

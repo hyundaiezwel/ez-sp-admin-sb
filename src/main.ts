@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import { createPinia } from 'pinia'
 import PrimeVue from 'primevue/config'
 import ToastService from 'primevue/toastservice'
 import Tooltip from 'primevue/tooltip'
@@ -14,6 +15,7 @@ import './ws/primevue.css'
 import './grid/tabulator-ws.css'
 
 createApp(App)
+  .use(createPinia())
   .use(router)
   .use(PrimeVue, {
     theme: {

@@ -1,0 +1,26 @@
+apply plugin: 'java-library'
+
+dependencies {
+    api project(':vs-domain')
+
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
+    runtimeOnly 'org.postgresql:postgresql'
+
+    // 세션·challenge 저장소. 로컬은 컨테이너, 운영은 ElastiCache — 접속 정보만 env 로 바꾼다.
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // 이력 dtl_json 직렬화
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+    // JWT — H-PMS 와 같은 라이브러리·버전. jjwt 타입은 TokenIssuer 포트 밖으로 새지 않는다.
+    implementation 'io.jsonwebtoken:jjwt-api:0.13.0'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.13.0'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.13.0'
+
+    // BCrypt — BcryptPasswordHasher 안에서만 쓴다. vs-api 는 import 금지(ModuleDependencyArchTest).
+    implementation 'org.springframework.security:spring-security-crypto'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}

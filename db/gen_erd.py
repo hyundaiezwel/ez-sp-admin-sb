@@ -15,21 +15,22 @@ EXT = {  # 이지웰 테이블 (첨부 샘플 기준)
 }
 SHOW = {
     'vs_biz_b': ['biz_no', 'biz_yr', 'sprt_div_cd', 'biz_nm', 'gov_shr_amt', 'comp_shr_amt', 'indv_shr_amt'],
-    'vs_co_b': ['bizr_no', 'co_nm', 'rprs_nm', 'corp_yn', 'rfnd_mthd_cd', 'rfnd_acnt_no_enc', 'version'],
+    'vs_dvlp_co_b': ['biz_no', 'bizr_no', 'co_nm', 'lnk_dtm'],
+    'vs_co_b': ['bizr_no', 'co_nm', 'rprs_nm', 'corp_yn', 'accum_pcpt_yr_cnt', 'rfnd_acnt_no_enc', 'version'],
     'vs_join_b': ['join_no', 'biz_no', 'join_add_rn', 'up_join_no', 'bizr_no', 'co_fg_cd', 'join_st_cd', 'fnl_wrkr_cnt',
                   'vacct_no', 'dpst_amt', 'ezwel_br_cd', 'ezwel_dept_cd', 'version'],
     'vs_join_wrkr_b': ['wrkr_no', 'join_no', 'wrkr_nm', 'person_key', 'wrkr_jdg_st_cd', 'mbr_st_cd', 'use_stop_rsn_cd',
                        'rfnd_comp_amt', 'mbr_lnk_st_cd', 'version'],
     'vs_mngr_b': ['mngr_id', 'mngr_div_cd', 'auth_cd', 'bizr_no', 'acnt_st_cd', 'lgin_fail_cnt'],
-    'vs_ban_b': ['ban_no', 'ban_div_cd', 'bizr_no', 'person_key', 'ban_end_dt'],
+    'vs_ban_b': ['ban_no', 'ban_div_cd', 'bizr_no', 'person_key', 'wrkr_no', 'ban_end_dt'],
     'vs_hist_h': ['hist_no', 'hist_typ_cd', 'tgt_tbl_nm', 'tgt_key', 'dtl_json'],
     'vs_file_b': ['file_no', 'tgt_tbl_nm', 'tgt_key', 'file_div_cd', 'strg_path'],
-    'vs_bbs_b': ['bbs_no', 'bbs_div_cd', 'up_bbs_no', 'prcs_st_cd', 'ans_cntn'],
+    'vs_bbs_b': ['bbs_no', 'bbs_div_cd', 'up_bbs_no', 'ctgr_cd', 'prcs_st_cd', 'wrkr_no', 'ans_cntn'],
     'vs_cd_c': ['cd_grp', 'cd', 'cd_nm', 'sort_ordg'],
 }
 BOT = 870  # 공통 행 y
 POS = {'vs_biz_b': (24, 20), 'vs_co_b': (24, 240), 'vs_mngr_b': (24, 460), 'vs_ban_b': (24, 660),
-       'vs_join_b': (314, 20), 'vs_join_wrkr_b': (604, 20),
+       'vs_join_b': (314, 20), 'vs_join_wrkr_b': (604, 20), 'vs_dvlp_co_b': (314, 470),
        'ct_cc_dtl_c': (904, 20), 'ct_usr_b': (904, 214), 'cp_wsp_asg_wrk_b': (904, 386), 'cp_wsp_asg_b': (904, 524),
        'vs_hist_h': (24, BOT), 'vs_file_b': (314, BOT), 'vs_bbs_b': (604, BOT), 'vs_cd_c': (904, BOT)}
 EZW_COLS = {'wrkr_no', 'ezwel_clnt_cd', 'ezwel_br_cd', 'ezwel_dept_cd', 'br_lnk_st_cd', 'br_lnk_dtm',
@@ -84,6 +85,9 @@ def path(d, cls, label=None, lx=0, ly=0, anchor='start'):
     return s
 
 lines = []
+# 사업(DVLP 행) → 발전모델 지정기업
+y1, y2 = rowy('vs_biz_b', 'biz_no'), rowy('vs_dvlp_co_b', 'biz_no')
+lines.append(path(f'M{R("vs_biz_b")} {y1} H282 V{y2} H{L("vs_dvlp_co_b")}', 'rel', '1:N 발전모델 지정기업', 318, POS['vs_dvlp_co_b'][1] - 6))
 # 사업 → 참여건
 y1, y2 = rowy('vs_biz_b', 'biz_no'), rowy('vs_join_b', 'biz_no')
 lines.append(path(f'M{R("vs_biz_b")} {y1} H289 V{y2} H{L("vs_join_b")}', 'rel', '1:N', 280, y1 - 4, 'end'))
@@ -214,8 +218,8 @@ tr.ez td.mono:first-of-type{{color:var(--ez)}} tr.ez{{background:color-mix(in sr
 <div class="wrap">
 <header>
 <h1>노동자 휴가지원사업 DB 설계도</h1>
-<p>누리집 · 기업 어드민 · 공사 어드민이 함께 쓰는 초기 설계(강병헌안 v2). 업무단위 와이드 테이블 {len(cat)}개에, 이지웰 복지몰 테이블 4개와의 연동 지점을 함께 그렸다.</p>
-<div class="meta"><span>기준 <b>2026-10-02 (v2)</b></span><span>PostgreSQL <b>16</b></span><span>테이블 <b>{len(cat)}</b> · 컬럼 <b>{sum(len(t["cols"]) for t in cat)}</b></span><span>소스 <b class="mono">db/강병헌/</b></span></div>
+<p>누리집 · 기업 어드민 · 공사 어드민이 함께 쓰는 초기 설계(강병헌안 v3). 업무단위 와이드 테이블 {len(cat)}개에, 이지웰 복지몰 테이블 4개와의 연동 지점을 함께 그렸다.</p>
+<div class="meta"><span>기준 <b>2026-10-02 (v3)</b></span><span>PostgreSQL <b>16</b></span><span>테이블 <b>{len(cat)}</b> · 컬럼 <b>{sum(len(t["cols"]) for t in cat)}</b></span><span>소스 <b class="mono">db/강병헌/</b></span></div>
 </header>
 <section>
 <h2>ERD</h2>
@@ -275,10 +279,12 @@ for t in cat:
 rels = '''    vs_co_b ||--o{ vs_join_b : "bizr_no"
     vs_co_b ||--o{ vs_mngr_b : "bizr_no"
     vs_biz_b ||--o{ vs_join_b : "biz_no"
+    vs_biz_b ||--o{ vs_dvlp_co_b : "biz_no 발전모델 지정기업"
     vs_join_b ||--o{ vs_join_b : "up_join_no 추가차수"
     vs_join_b ||--o{ vs_join_wrkr_b : "join_no"
     vs_co_b }o..o{ vs_ban_b : "bizr_no"
-    vs_join_wrkr_b }o..o{ vs_ban_b : "person_key"
+    vs_join_wrkr_b }o..o{ vs_ban_b : "person_key · wrkr_no"
+    vs_join_wrkr_b }o..o{ vs_bbs_b : "wrkr_no 부정행위"
     vs_bbs_b ||--o{ vs_bbs_b : "up_bbs_no"'''
 md = ('# ERD — 전체 컬럼\n\n`gen_erd.py`가 DB 카탈로그(테이블·컬럼 COMMENT)에서 생성한다. 손으로 고치지 말 것.\n'
       '이력(`vs_hist_h`)·첨부(`vs_file_b`)는 `tgt_tbl_nm + tgt_key`로 어느 테이블이든 가리키므로 관계선을 그리지 않았다.\n'

@@ -1,0 +1,10 @@
+// JDK 21 툴체인 자동 다운로드 허용(H-PMS와 같다). 이미 JDK 21이 있으면 영향 없음.
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
+}
+
+rootProject.name = 'vs-backend'
+
+include 'vs-domain'
+include 'vs-infra'
+include 'vs-api'

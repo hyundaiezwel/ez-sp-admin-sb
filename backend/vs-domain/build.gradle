@@ -1,0 +1,5 @@
+// 도메인 — 프레임워크 무의존. 판정·상태 변경 규칙과 포트 인터페이스만 둔다.
+dependencies {
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
